@@ -63,13 +63,15 @@ class Command(BaseCommand):
         try:
             function, created = Function.objects.update_or_create(
                 code=cols[6],
+                season=SEASON,
                 defaults={
                     'name_m': cols[8],
                     'name_f': cols[9],
                 }
             )
             rate, created = Rate.objects.get_or_create(
-                name=cols[40]
+                name=cols[40],
+                season=SEASON
             )
             person, created = Person.objects.update_or_create(
                 number=cols[1],

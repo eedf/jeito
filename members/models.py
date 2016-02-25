@@ -38,7 +38,8 @@ class Structure(MPTTModel):
 
 
 class Function(models.Model):
-    code = models.CharField("Code", max_length=5, unique=True)
+    code = models.CharField("Code", max_length=5)
+    season = models.IntegerField()
     name_m = models.CharField("Nom masculin", max_length=100)
     name_f = models.CharField("Nom féminin", max_length=100)
 
@@ -47,6 +48,7 @@ class Function(models.Model):
 
     class Meta:
         verbose_name = "Fonction"
+        unique_together = ('code', 'season')
 
 
 class Rate(models.Model):
@@ -59,7 +61,8 @@ class Rate(models.Model):
         (6, 'Découverte'),
     )
 
-    name = models.CharField("Nom", max_length=256, unique=True)
+    name = models.CharField("Nom", max_length=256)
+    season = models.IntegerField()
     rate = models.DecimalField("Tarif", max_digits=5, decimal_places=2, null=True, blank=True)
     rate_after_tax_ex = models.DecimalField(
         "Tarif après défiscalisation", max_digits=5, decimal_places=2,
@@ -72,6 +75,7 @@ class Rate(models.Model):
 
     class Meta:
         verbose_name = "Tarif"
+        unique_together = ('name', 'season')
 
 
 class Person(PermissionsMixin, AbstractBaseUser):

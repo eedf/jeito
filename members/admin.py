@@ -12,13 +12,14 @@ class StructureAdmin(admin.ModelAdmin):
 
 @admin.register(Function)
 class FunctionAdmin(admin.ModelAdmin):
-    list_display = ('code', 'name_m', 'name_f')
+    list_display = ('code', 'season', 'name_m', 'name_f')
     search_fields = ('code', 'name_m', 'name_f')
+    list_filter = ('season', )
 
 
 @admin.register(Rate)
 class RateAdmin(admin.ModelAdmin):
-    list_display = ('name', 'rate', 'rate_after_tax_ex', 'bracket', 'category')
+    list_display = ('name', 'season', 'rate', 'rate_after_tax_ex', 'bracket', 'category')
     list_filter = ('category', 'bracket')
     search_fields = ('name', )
 

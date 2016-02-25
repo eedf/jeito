@@ -16,6 +16,7 @@ class FunctionFactory(factory.django.DjangoModelFactory):
         model = models.Function
 
     code = factory.Sequence(lambda n: "CD%3d" % n)
+    season = 2015
     name_m = factory.Sequence(lambda n: "Function M %03d" % n)
     name_f = factory.Sequence(lambda n: "Function F %03d" % n)
 
@@ -25,6 +26,7 @@ class RateFactory(factory.django.DjangoModelFactory):
         model = models.Rate
 
     name = factory.Sequence(lambda n: "Rate %3d" % n)
+    season = 2015
 
 
 class MinimalPersonFactory(factory.django.DjangoModelFactory):
