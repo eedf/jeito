@@ -115,6 +115,8 @@ class Person(PermissionsMixin, AbstractBaseUser):
 
     @property
     def is_active(self):
+        if self.is_superuser:
+            return True
         today = now()
         if today.month < 9:
             seasons = [today.year]
