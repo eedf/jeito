@@ -56,10 +56,26 @@ class Structure(MPTTModel):
 
 
 class Function(models.Model):
+    SECTOR_CHOICES = (
+        (1, "Groupes locaux"),
+        (2, "Formation"),
+        (3, "Services vacances"),
+        (4, "Activités ouvertes"),
+        (5, "Structures support"),
+    )
+    CATEGORY_CHOICES = (
+        (1, "Participants"),
+        (2, "Cadres bénévoles/CEE"),
+        (3, "Salariés/SC"),
+        (4, "Amis"),
+    )
+
     code = models.CharField("Code", max_length=5)
     season = models.IntegerField()
     name_m = models.CharField("Nom masculin", max_length=100)
     name_f = models.CharField("Nom féminin", max_length=100)
+    sector = models.IntegerField("Secteur", choices=SECTOR_CHOICES, null=True, blank=True)
+    category = models.IntegerField("Categorie", choices=CATEGORY_CHOICES, null=True, blank=True)
 
     def __str__(self):
         return self.name_m
@@ -146,25 +162,9 @@ class Person(PermissionsMixin, AbstractBaseUser):
 
 
 class Adhesion(models.Model):
-    SECTOR_CHOICES = (
-        (1, "Groupes locaux"),
-        (2, "Formation"),
-        (3, "Services vacances"),
-        (4, "Activités ouvertes"),
-        (5, "Structures support"),
-    )
-    CATEGORY_CHOICES = (
-        (1, "Participants"),
-        (2, "Cadres bénévoles/CEE"),
-        (3, "Salariés"),
-        (4, "Amis"),
-    )
-
     person = models.ForeignKey(Person, related_name='adhesions')
     season = models.IntegerField("Saison")
     date = models.DateField()
     rate = models.ForeignKey(Rate, verbose_name="Tarif")
     structure = models.ForeignKey(Structure, verbose_name="Structure", related_name='adherents')
     function = models.ForeignKey(Function, verbose_name="Fonction")
-    sector = models.IntegerField("Secteur", choices=SECTOR_CHOICES, null=True, blank=True)
-    category = models.IntegerField("Categorie", choices=CATEGORY_CHOICES, null=True, blank=True)
