@@ -6,8 +6,9 @@ from .models import Structure, Function, Rate, Person, Adhesion
 
 @admin.register(Structure)
 class StructureAdmin(admin.ModelAdmin):
-    list_display = ('number', 'name', 'parent')
+    list_display = ('number', 'name', 'type', 'parent')
     search_fields = ('number', 'name')
+    list_filter = ('type', )
 
 
 @admin.register(Function)

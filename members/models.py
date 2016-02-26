@@ -18,6 +18,23 @@ class PersonManager(BaseUserManager):
 
 
 class Structure(MPTTModel):
+    TYPE_CHOICES = (
+        (1, "Cercle"),
+        (2, "Clan Ainé"),
+        (3, "Comité directeur"),
+        (4, "Département"),
+        (5, "Pôle"),
+        (6, "Région"),
+        (7, "Ronde"),
+        (8, "Siège"),
+        (9, "Sommet"),
+        (10, "Structure locale d'activité"),
+        (11, "Structure locale rattachée"),
+        (12, "Unité Défi"),
+        (13, "Unité Eclé"),
+        (14, "Unité Nomade"),
+    )
+
     number = models.CharField(
         "Numéro", max_length=10, unique=True,
         validators=[
@@ -26,6 +43,7 @@ class Structure(MPTTModel):
     )
     name = models.CharField("Nom", max_length=100)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
+    type = models.IntegerField("Type", choices=TYPE_CHOICES)
 
     def __str__(self):
         return self.name

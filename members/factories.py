@@ -9,6 +9,7 @@ class StructureFactory(factory.django.DjangoModelFactory):
 
     number = factory.Sequence(lambda n: "%10d" % n)
     name = factory.Sequence(lambda n: "Name %03d" % n)
+    type = 10
 
 
 class FunctionFactory(factory.django.DjangoModelFactory):
