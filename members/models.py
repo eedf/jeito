@@ -34,6 +34,12 @@ class Structure(MPTTModel):
         (13, "Unité Eclé"),
         (14, "Unité Nomade"),
     )
+    SUBTYPE_CHOICES = (
+        (1, "Centre et terrain"),
+        (2, "Groupe local"),
+        (3, "Ludotheque"),
+        (4, "Service vacances"),
+    )
 
     number = models.CharField(
         "Numéro", max_length=10, unique=True,
@@ -44,6 +50,7 @@ class Structure(MPTTModel):
     name = models.CharField("Nom", max_length=100)
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
     type = models.IntegerField("Type", choices=TYPE_CHOICES)
+    subtype = models.IntegerField("Sous-type", choices=SUBTYPE_CHOICES, null=True, blank=True)
 
     def __str__(self):
         return self.name
@@ -65,8 +72,8 @@ class Function(models.Model):
     )
     CATEGORY_CHOICES = (
         (1, "Participants"),
-        (2, "Cadres bénévoles/CEE"),
-        (3, "Salariés/SC"),
+        (2, "Cadres bénévoles / CEE"),
+        (3, "Salariés / SC"),
         (4, "Amis"),
     )
 

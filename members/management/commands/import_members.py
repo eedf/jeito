@@ -287,6 +287,13 @@ class Command(BaseCommand):
         if type in ("Départementale fonctionnel", "Délégation départementale"):
             type = "Département"
         type = dict((val, key) for key, val in Structure.TYPE_CHOICES)[type]
+        try:
+            sous_type_id = 'ctl00_ctl00_MainContent_DivsContent__resume__lbSouType'
+            subtype = self.tree.get_element_by_id(sous_type_id).text.rstrip()
+        except KeyError:
+            subtype = None
+        else:
+            subtype = dict((val, key) for key, val in Structure.SUBTYPE_CHOICES)[subtype]
         code_struct_id = 'ctl00_ctl00_MainContent_DivsContent__resume__lblCodeStructure'
         assert number == self.tree.get_element_by_id(code_struct_id).text
 
@@ -306,7 +313,8 @@ class Command(BaseCommand):
         defaults = {
             'name': name,
             'type': type,
-            'parent': parent
+            'subtype': subtype,
+            'parent': parent,
         }
         structure, created = Structure.objects.update_or_create(number=number, defaults=defaults)
         values = {
