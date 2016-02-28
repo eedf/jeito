@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from datetime import date
 from django.db import connection
 from django.db.models import Count
@@ -5,31 +6,23 @@ from django.http import JsonResponse
 from django.utils.timezone import now
 from django.views.generic import View, TemplateView
 from .forms import AdhesionsForm
-from .models import Adhesion
+from .models import Adhesion, Structure
+from .utils import current_season
 
 
 class AdhesionsJsonView(View):
-    def serie(self, season, category):
+    def serie(self, season):
         self.today = now().date()
         start = date(season - 1, 9, 1)
         end = min(date(season, 8, 31), self.today)
-        if category:
-            sql = '''
-                SELECT date, SUM(COUNT(members_rate.id)) OVER (ORDER BY date)
-                FROM generate_series(%s::date, %s::date, '1 day'::interval) AS date
-                LEFT JOIN members_adhesion USING (date)
-                LEFT JOIN members_rate ON (members_rate.id=rate_id AND category=%s)
-                GROUP BY date
-                ORDER BY date'''
-            params = [start, end, category]
-        else:
-            sql = '''
-                SELECT date, SUM(COUNT(members_adhesion.id)) OVER (ORDER BY date)
-                FROM generate_series(%s::date, %s::date, '1 day'::interval) AS date
-                LEFT JOIN members_adhesion USING (date)
-                GROUP BY date
-                ORDER BY date'''
-            params = [start, end]
+        sql = '''
+            SELECT date, SUM(COUNT(members_structure.id)) OVER (ORDER BY date)
+            FROM generate_series(%s::date, %s::date, '1 day'::interval) AS date
+            LEFT JOIN members_adhesion USING (date)
+            LEFT JOIN members_structure ON (members_structure.id = structure_id AND (subtype != 4 OR subtype IS NULL))
+            GROUP BY date
+            ORDER BY date'''
+        params = [start, end]
         cursor = connection.cursor()
         cursor.execute(sql, params)
         return cursor.fetchall()
@@ -37,9 +30,8 @@ class AdhesionsJsonView(View):
     def get(self, request):
         season = int(self.request.GET['season'])
         reference = int(self.request.GET.get('reference', '0')) or season - 1
-        category = self.request.GET.get('category')
-        result = self.serie(int(season), category)
-        ref_result = self.serie(int(reference), category)
+        result = self.serie(int(season))
+        ref_result = self.serie(int(reference))
         cmp_idx = min(len(result), len(ref_result)) - 1
         date1 = ref_result[cmp_idx][0].strftime('%d/%m/%Y')
         date2 = result[-1][0].strftime('%d/%m/%Y')
@@ -71,16 +63,12 @@ class AdhesionsView(TemplateView):
     template_name = 'members/adhesions.html'
 
     def get_context_data(self, **kwargs):
-        today = now().date()
-        current_season = str(today.year + (1 if today.month >= 9 else 0))
-        season = self.request.GET.get('season', current_season)
+        season = self.request.GET.get('season', current_season())
         reference = self.request.GET.get('reference')
-        category = self.request.GET.get('category')
         initial = self.request.GET.dict()
         initial.update({
             'season': season,
             'reference': reference,
-            'category': category,
         })
         form = AdhesionsForm(initial=initial)
         context = super().get_context_data(**kwargs)
@@ -121,3 +109,112 @@ class TranchesJsonView(View):
 
 class TranchesView(TemplateView):
     template_name = 'members/tranches.html'
+
+
+class TableauRegionsView(TemplateView):
+    template_name = 'members/tableau_regions.html'
+
+    def set_data(self, season):
+        for region in self.regions:
+            structures = region.get_descendants(include_self=True)
+            adhesions = Adhesion.objects.filter(structure__in=structures, season=season)
+            adhesions = adhesions.exclude(structure__subtype=4)
+            count = adhesions.count()
+            self.data.setdefault(region.name, OrderedDict())[season] = count
+        total_regions = sum([self.data[region.name][season] for region in self.regions])
+        self.data.setdefault('<b>REGIONS</b>', OrderedDict())[season] = total_regions
+        structures = Structure.objects.filter(number__in=('0000100000', '0000200000'))
+        structures = structures.get_descendants(include_self=True)
+        count = Adhesion.objects.filter(structure__in=structures, season=season).count()
+        self.data.setdefault('<b>SIEGE NATIONAL</b>', OrderedDict())[season] = count
+        services = Structure.objects.filter(subtype=4).order_by('name')
+        for service in services:
+            adhesions = Adhesion.objects.filter(structure=service, season=season)
+            count = adhesions.count()
+            self.data.setdefault(service.name, OrderedDict())[season] = count
+        count = Adhesion.objects.filter(structure__subtype=4, season=season).count()
+        self.data.setdefault('<b>SERVICES VACANCES</b>', OrderedDict())[season] = count
+        total = Adhesion.objects.filter(season=season).count()
+        self.data.setdefault('<b>TOTAL</b>', OrderedDict())[season] = total
+        count = self.data['<b>REGIONS</b>'][season]
+        count += self.data['<b>SIEGE NATIONAL</b>'][season]
+        count += self.data['<b>SERVICES VACANCES</b>'][season]
+        assert count == total
+
+    def get_context_data(self, **kwargs):
+        season = int(self.request.GET.get('season', current_season()))
+        reference = int(self.request.GET.get('reference', '0')) or season - 1
+        self.regions = Structure.objects.filter(type=6).order_by('name')
+        self.data = OrderedDict()
+        self.set_data(reference)
+        self.set_data(season)
+        for key, val in self.data.items():
+            diff = val[season] - val[reference]
+            if diff > 0:
+                val['diff'] = "+{}".format(diff)
+            elif diff == 0:
+                val['diff'] = "="
+            else:
+                val['diff'] = "{}".format(diff)
+        context = {
+            'seasons': [
+                "{}/{}".format(reference - 1, reference),
+                "{}/{}".format(season - 1, season),
+                "Variation",
+            ],
+            'data': self.data,
+        }
+        return context
+
+
+class TableauFunctionsView(TemplateView):
+    template_name = 'members/tableau_functions.html'
+
+    def set_data(self, season):
+        for function in self.functions:
+            adhesions = Adhesion.objects.filter(function__name_m=function, season=season)
+            adhesions = adhesions.exclude(structure__subtype=4)
+            self.data.setdefault(function, OrderedDict())[season] = adhesions.count()
+        adhesions = Adhesion.objects.filter(season=season)
+        adhesions = adhesions.exclude(structure__subtype=4)
+        total = adhesions.count()
+        others = total - sum([self.data[function][season] for function in self.functions])
+        self.data.setdefault('Autre', OrderedDict())[season] = others
+        self.data.setdefault('<b>TOTAL</b>', OrderedDict())[season] = total
+
+    def get_context_data(self, **kwargs):
+        season = self.request.GET.get('season', current_season())
+        self.functions = (
+            "Stagiaire",
+            "Lutin",
+            "Louveteau",
+            "Eclaireur",
+            "Ainé",
+            "Participant activité",
+            "Ami",
+            "Parent",
+            "Nomade",
+            "Service civique",
+        )
+        season = int(self.request.GET.get('season', current_season()))
+        reference = int(self.request.GET.get('reference', '0')) or season - 1
+        self.data = OrderedDict()
+        self.set_data(reference)
+        self.set_data(season)
+        for key, val in self.data.items():
+            diff = val[season] - val[reference]
+            if diff > 0:
+                val['diff'] = "+{}".format(diff)
+            elif diff == 0:
+                val['diff'] = "="
+            else:
+                val['diff'] = "{}".format(diff)
+        context = {
+            'seasons': [
+                "{}/{}".format(reference - 1, reference),
+                "{}/{}".format(season - 1, season),
+                "Variation",
+            ],
+            'data': self.data,
+        }
+        return context

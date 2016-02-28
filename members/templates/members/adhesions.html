@@ -12,7 +12,7 @@
 
 {% block content %}
 
-<h1>Cumul des adhésion sur une saison</h1>
+<h1>Cumul des membres actifs hors SV</h1>
 
 <div class="alert alert-danger" role="alert">
   ATTENTION !!! Ces chiffres sont publiés sous réserve de validité des informations exportées par le portail
@@ -64,7 +64,7 @@
     axisY: {
     }
   };
-  $.getJSON("{% url 'members:adhesions_data' %}?season={{ season }}{% if reference %}&reference={{ reference }}{% endif %}{% if category %}&category={{ category }}{% endif %}", function(data) {
+  $.getJSON("{% url 'members:adhesions_data' %}?season={{ season }}{% if reference %}&reference={{ reference }}{% endif %}", function(data) {
     new Chartist.Line('.ct-chart', data, options);
     $('#comment').html(data['comment']);
   });

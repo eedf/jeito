@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load staticfiles crispy_forms_tags %}
+
+
+{% block breadcrumbs %}
+
+{{ block.super }}
+<li class="active">Tableau par fonction (hors SV)</li>
+
+{% endblock breadcrumbs %}
+
+
+{% block content %}
+
+<h1>Tableau par fonction</h1>
+
+<div class="alert alert-danger" role="alert">
+  ATTENTION !!! Ces chiffres sont publiés sous réserve de validité des informations exportées par le portail
+  <a href="http://entrecles.eedf.fr">Entréclés</a>
+</div>
+
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+        <th>Structure</th>
+        {% for season in seasons %}
+            <td align="right">{{  season }}</td>
+        {% endfor %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for function, counts in data.items %}
+        <tr>
+            <td>{{ function|safe }}</td>
+            {% for count in counts.values %}
+                <td align="right">{{ count }}</td>
+            {% endfor %}
+        </tr>
+    {%  endfor %}
+  </tbody>
+</table>
+
+{% endblock content %}
