@@ -71,10 +71,9 @@ class Function(models.Model):
         (5, "Structures support"),
     )
     CATEGORY_CHOICES = (
-        (1, "Participants"),
-        (2, "Cadres bénévoles / CEE"),
-        (3, "Salariés / SC"),
-        (4, "Amis"),
+        (0, "Jeune"),
+        (1, "Responsable"),
+        (2, "Membre associé"),
     )
 
     code = models.CharField("Code", max_length=5)

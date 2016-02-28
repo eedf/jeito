@@ -67,6 +67,7 @@ class Command(BaseCommand):
                 defaults={
                     'name_m': cols[8],
                     'name_f': cols[9],
+                    'category': cols[7],
                 }
             )
             rate, created = Rate.objects.get_or_create(

@@ -21,7 +21,7 @@ class FunctionAdmin(admin.ModelAdmin):
 @admin.register(Rate)
 class RateAdmin(admin.ModelAdmin):
     list_display = ('name', 'season', 'rate', 'rate_after_tax_ex', 'bracket', 'category')
-    list_filter = ('category', 'bracket')
+    list_filter = ('season', 'category', 'bracket')
     search_fields = ('name', )
 
 
