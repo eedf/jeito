@@ -3,6 +3,7 @@ from datetime import date
 from django.db import connection
 from django.db.models import Count
 from django.http import JsonResponse
+from django.utils.formats import date_format
 from django.utils.timezone import now
 from django.views.generic import View, TemplateView
 from .forms import AdhesionsForm
@@ -43,13 +44,13 @@ class AdhesionsJsonView(View):
             comment = """Au <strong>{}</strong> : <strong>{}</strong> adhérents<br>
                          Au <strong>{}</strong> : <strong>{}</strong> adhérents,
                          c'est-à-dire <strong>{:+f}</strong> adhérents
-                         (<strong>{:+0.2f} %</strong>)
+                         (<strong>{:+0.1f} %</strong>)
                       """.format(date1, nb1, date2, nb2, diff, percent)
         else:
             comment = """Au <strong>{}</strong> : <strong>{}</strong> adhérents
                       """.format(date2, nb2)
         data = {
-            'labels': [x[0].strftime('%b') if x[0].day == 1 else '' for x in ref_result],
+            'labels': [date_format(x[0], 'b') if x[0].day == 1 else '' for x in ref_result],
             'series': [
                 [x[1] for x in ref_result],
                 [x[1] for x in result],
