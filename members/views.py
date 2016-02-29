@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from datetime import date
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
 from django.db.models import Count
 from django.http import JsonResponse
@@ -11,7 +12,7 @@ from .models import Adhesion, Structure
 from .utils import current_season
 
 
-class AdhesionsJsonView(View):
+class AdhesionsJsonView(LoginRequiredMixin, View):
     def serie(self, season):
         self.today = now().date()
         start = date(season - 1, 9, 1)
@@ -60,7 +61,7 @@ class AdhesionsJsonView(View):
         return JsonResponse(data)
 
 
-class AdhesionsView(TemplateView):
+class AdhesionsView(LoginRequiredMixin, TemplateView):
     template_name = 'members/adhesions.html'
 
     def get_context_data(self, **kwargs):
@@ -78,7 +79,7 @@ class AdhesionsView(TemplateView):
         return context
 
 
-class TranchesJsonView(View):
+class TranchesJsonView(LoginRequiredMixin, View):
 
     def get(self, request):
         qs = Adhesion.objects.filter(season=2016).exclude(rate__bracket="")
@@ -108,11 +109,11 @@ class TranchesJsonView(View):
         return JsonResponse(data)
 
 
-class TranchesView(TemplateView):
+class TranchesView(LoginRequiredMixin, TemplateView):
     template_name = 'members/tranches.html'
 
 
-class TableauRegionsView(TemplateView):
+class TableauRegionsView(LoginRequiredMixin, TemplateView):
     template_name = 'members/tableau_regions.html'
 
     def set_data(self, season, end):
@@ -178,7 +179,7 @@ class TableauRegionsView(TemplateView):
         return context
 
 
-class TableauFunctionsView(TemplateView):
+class TableauFunctionsView(LoginRequiredMixin, TemplateView):
     template_name = 'members/tableau_functions.html'
 
     def set_data(self, season, end):
