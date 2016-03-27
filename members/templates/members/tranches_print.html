@@ -1,0 +1,29 @@
+{% load staticfiles %}
+<html>
+<head>
+<link href="{% static 'core/chartist/chartist.min.css' %}" rel="stylesheet">
+<style>
+.container {
+}
+.ct-label {
+  font-size: 175%;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  fill: white;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="ct-chart ct-major-tenth"></div>
+</div>
+<script src="{% static 'core/js/jquery-1.12.0.min.js' %}"></script>
+<script src="{% static 'core/chartist/chartist.min.js' %}"></script>
+<script>
+  var options = {
+  };
+  $.getJSON("{% url 'members:tranches_data' %}", function(data) {
+    new Chartist.Pie('.ct-chart', data, options);
+  });
+</script>
+</body>

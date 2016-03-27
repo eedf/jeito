@@ -2,7 +2,7 @@ from collections import OrderedDict
 from datetime import date
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
-from django.db.models import Count
+from django.db.models import Count, Sum
 from django.http import JsonResponse
 from django.utils.formats import date_format
 from django.utils.timezone import now
@@ -12,7 +12,7 @@ from .models import Adhesion, Structure
 from .utils import current_season
 
 
-class AdhesionsJsonView(LoginRequiredMixin, View):
+class AdhesionsJsonView(View):
     def serie(self, season):
         self.today = now().date()
         start = date(season - 1, 9, 1)
@@ -61,8 +61,12 @@ class AdhesionsJsonView(LoginRequiredMixin, View):
         return JsonResponse(data)
 
 
-class AdhesionsView(LoginRequiredMixin, TemplateView):
-    template_name = 'members/adhesions.html'
+class AdhesionsView(TemplateView):
+    def get_template_names(self):
+        if 'print' in self.request.GET:
+            return 'members/adhesions_print.html'
+        else:
+            return 'members/adhesions.html'
 
     def get_context_data(self, **kwargs):
         season = self.request.GET.get('season', current_season())
@@ -82,15 +86,16 @@ class AdhesionsView(LoginRequiredMixin, TemplateView):
 class TranchesJsonView(LoginRequiredMixin, View):
 
     def get(self, request):
-        qs = Adhesion.objects.filter(season=2016).exclude(rate__bracket="")
-        qs1 = qs.order_by('rate__bracket')
-        qs1 = qs1.values('rate__bracket')
+        qs = Adhesion.objects.filter(season=2016).exclude(rate__bracket="").exclude(function__name_m="Stagiaire")
+        qs1 = qs.order_by('rate__bracket', 'rate__name')
+        qs1 = qs1.values('rate__name')
         qs1 = qs1.annotate(n=Count('id'))
         qs2 = qs.values('rate__name', 'rate__rate', 'rate__rate_after_tax_ex')
         qs2 = qs2.annotate(n=Count('id'))
         total1 = sum(x['n'] for x in qs1)
         total2 = sum(x['n'] for x in qs2)
         assert total1 == total2
+        qs3 = Adhesion.objects.filter(season=2016).aggregate(amount=Sum('rate__rate'))
         if qs.filter(rate__rate=None).exists():
             comment = "Données manquantes pour calculer la cotisation moyenne"
         else:
@@ -102,7 +107,7 @@ class TranchesJsonView(LoginRequiredMixin, View):
             average_price_after_tax_ex = sum([x['n'] * x['rate__rate_after_tax_ex'] for x in qs2]) / total2
             comment += " ({:0.02f} € après défiscalisation)".format(float(average_price_after_tax_ex))
         data = {
-            'labels': [x['rate__bracket'] + ' (%0.0f %%)' % (100 * x['n'] / total1) for x in qs1],
+            'labels': [x['rate__name'] + ' (%0.1f %%)' % (100 * x['n'] / total1) for x in qs1],
             'series': [x['n'] for x in qs1],
             'comment': comment,
         }
@@ -110,7 +115,11 @@ class TranchesJsonView(LoginRequiredMixin, View):
 
 
 class TranchesView(LoginRequiredMixin, TemplateView):
-    template_name = 'members/tranches.html'
+    def get_template_names(self):
+        if 'print' in self.request.GET:
+            return 'members/tranches_print.html'
+        else:
+            return 'members/tranches.html'
 
 
 class TableauRegionsView(LoginRequiredMixin, TemplateView):
@@ -147,6 +156,8 @@ class TableauRegionsView(LoginRequiredMixin, TemplateView):
         season = int(self.request.GET.get('season', current_season()))
         reference = int(self.request.GET.get('reference', '0')) or season - 1
         end = min(date(season, 8, 31), now().date())
+        if end.month == 2 and end.day == 29:
+            end = end.replace(day=28)
         self.regions = Structure.objects.filter(type=6).order_by('name')
         self.data = OrderedDict()
         self.set_data(reference, end.replace(year=reference))
@@ -186,6 +197,8 @@ class TableauFunctionsView(LoginRequiredMixin, TemplateView):
         all_adhesions = Adhesion.objects.filter(season=season)
         all_adhesions = all_adhesions.filter(date__lte=end)
         all_adhesions = all_adhesions.exclude(structure__subtype=4)
+        #all_adhesions = all_adhesions.exclude(rate__name__in=("Découverte groupe local 2 jours", "Assurance week-end"))
+        #all_adhesions = all_adhesions.filter(date__lte=end.replace(month=2, day=28))
         for function in self.functions:
             count_func = all_adhesions.filter(function__name_m=function).count()
             self.data.setdefault(function, OrderedDict())[season] = count_func
@@ -195,7 +208,6 @@ class TableauFunctionsView(LoginRequiredMixin, TemplateView):
         self.data.setdefault('<b>TOTAL</b>', OrderedDict())[season] = count_all
 
     def get_context_data(self, **kwargs):
-        season = self.request.GET.get('season', current_season())
         self.functions = (
             "Stagiaire",
             "Lutin",
@@ -211,6 +223,8 @@ class TableauFunctionsView(LoginRequiredMixin, TemplateView):
         season = int(self.request.GET.get('season', current_season()))
         reference = int(self.request.GET.get('reference', '0')) or season - 1
         end = min(date(season, 8, 31), now().date())
+        if end.month == 2 and end.day == 29:
+            end = end.replace(day=28)
         self.data = OrderedDict()
         self.set_data(reference, end.replace(year=reference))
         self.set_data(season, end)
@@ -238,5 +252,32 @@ class TableauFunctionsView(LoginRequiredMixin, TemplateView):
                 "Variation %",
             ],
             'data': self.data,
+        }
+        return context
+
+
+class TableauAmountView(LoginRequiredMixin, TemplateView):
+    template_name = 'members/tableau_amount.html'
+
+    def get_context_data(self, **kwargs):
+        season = int(self.request.GET.get('season', current_season()))
+        reference = int(self.request.GET.get('reference', '0')) or season - 1
+        end = min(date(season, 8, 31), now().date())
+        if end.month == 2 and end.day == 29:
+            end = end.replace(day=28)
+        self.data = OrderedDict()
+        qs1 = Adhesion.objects.filter(season=reference, date__lte=end.replace(year=reference))
+        qs1 = qs1.exclude(rate__name="Service Vacance import")
+        qs1 = qs1.values('rate__name').annotate(nb=Count('id'), amount=Sum('rate__rate'))
+        qs2 = Adhesion.objects.filter(season=season, date__lte=end)
+        qs2 = qs2.exclude(rate__name="Service Vacance import")
+        qs2 = qs2.values('rate__name').annotate(nb=Count('id'), amount=Sum('rate__rate'))
+        context = {
+            'seasons': [
+                "{}/{}".format(reference - 1, reference),
+                "{}/{}".format(season - 1, season),
+            ],
+            'data1': qs1,
+            'data2': qs2,
         }
         return context

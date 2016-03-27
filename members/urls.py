@@ -11,4 +11,5 @@ urlpatterns = [
     url(r'^tranches/data/$', views.TranchesJsonView.as_view(), name='tranches_data'),
     url(r'^tableau/regions/$', views.TableauRegionsView.as_view(), name='tableau_regions'),
     url(r'^tableau/functions/$', views.TableauFunctionsView.as_view(), name='tableau_functions'),
+    url(r'^tableau/amount/$', views.TableauAmountView.as_view(), name='amount'),
 ]

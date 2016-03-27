@@ -1,0 +1,56 @@
+{% load staticfiles %}
+<html>
+<head>
+<link href="{% static 'core/chartist/chartist.min.css' %}" rel="stylesheet">
+<style>
+.container {
+    padding-top: 20px;
+}
+.ct-chart-line {
+  overflow: visible;
+}
+.ct-label {
+  font-size: 200%;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #000;
+}
+.ct-series-a .ct-line {
+  stroke: red;
+  stroke-width: 4px;
+  stroke-dasharray: 6px 8px;
+}
+.ct-series-b .ct-line {
+  stroke: red;
+  stroke-width: 4px;
+}
+.ct-grid {
+    stroke: rgba(0, 0, 0, 0.4);
+    stroke-width: 2px;
+    stroke-dasharray: none;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="ct-chart ct-major-tenth"></div>
+</div>
+<script src="{% static 'core/js/jquery-1.12.0.min.js' %}"></script>
+<script src="{% static 'core/chartist/chartist.min.js' %}"></script>
+<script>
+  var options = {
+    showPoint: false,
+    lineSmooth: false,
+    axisX: {
+      showGrid: false,
+      offset: 50
+    },
+    axisY: {
+      offset: 100,
+      scaleMinSpace: 25
+    }
+  };
+  $.getJSON("{% url 'members:adhesions_data' %}?season={{ season }}{% if reference %}&reference={{ reference }}{% endif %}", function(data) {
+    new Chartist.Line('.ct-chart', data, options);
+  });
+</script>
+</body>
