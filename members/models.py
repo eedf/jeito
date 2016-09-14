@@ -160,7 +160,7 @@ class Person(PermissionsMixin, AbstractBaseUser):
         today = now()
         if today.month < 9:
             seasons = [today.year]
-        elif today.mont == 9:
+        elif today.month == 9:
             seasons = [today.year, today.year + 1]
         else:
             seasons = [today.year + 1]
