@@ -84,7 +84,8 @@ class Command(BaseCommand):
                 }
             )
             if cols[39] == "0":
-                date = min(datetime.date(int(cols[37][6:10]), int(cols[37][3:5]), int(cols[37][0:2])), datetime.date(SEASON, 8, 31))
+                date = min(datetime.date(int(cols[37][6:10]), int(cols[37][3:5]), int(cols[37][0:2])),
+                           datetime.date(SEASON, 8, 31))
                 adhesion, created = Adhesion.objects.update_or_create(
                     person=person,
                     season=SEASON,

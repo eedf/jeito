@@ -55,7 +55,8 @@ class AdhesionsJsonView(View):
         result = self.serie(int(season), sv, centres)
         ref_result = self.serie(int(reference), sv, centres)
         date_max = max(result.keys())
-        ref_date_max = date_max.replace(year=reference if date_max.month <=8 else reference - 1, month=date_max.month, day=date_max.day)
+        ref_date_max = date_max.replace(year=reference if date_max.month <= 8 else reference - 1,
+                                        month=date_max.month, day=date_max.day)
         date1 = ref_date_max.strftime('%d/%m/%Y')
         date2 = date_max.strftime('%d/%m/%Y')
         nb1 = ref_result[ref_date_max]
@@ -111,7 +112,9 @@ class TranchesJsonView(LoginRequiredMixin, View):
     def get(self, request):
         season = self.request.GET.get('season', current_season())
         season = 2016
-        qs = Adhesion.objects.filter(season=season, structure__subtype=2).exclude(rate__bracket="").exclude(function__name_m="Stagiaire")
+        qs = Adhesion.objects.filter(season=season, structure__subtype=2)
+        qs = qs.exclude(rate__bracket="")
+        qs = qs.exclude(function__name_m="Stagiaire")
         qs1 = qs.order_by('rate__bracket')
         qs1 = qs1.values('rate__bracket')
         qs1 = qs1.annotate(n=Count('id'))
@@ -120,7 +123,6 @@ class TranchesJsonView(LoginRequiredMixin, View):
         total1 = sum(x['n'] for x in qs1)
         total2 = sum(x['n'] for x in qs2)
         assert total1 == total2
-        qs3 = Adhesion.objects.filter(season=2016).aggregate(amount=Sum('rate__rate'))
         if qs.filter(rate__rate=None).exists():
             comment = "Données manquantes pour calculer la cotisation moyenne"
         else:
