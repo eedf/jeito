@@ -1,0 +1,674 @@
+[
+{
+    "model": "members.rate",
+    "pk": 1,
+    "fields": {
+        "name": "1er enfant < 9600 \u20ac",
+        "season": 2016,
+        "rate": "20.00",
+        "rate_after_tax_ex": "20.00",
+        "bracket": "1) < 9 600 \u20ac",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 2,
+    "fields": {
+        "name": "D\u00e9couverte groupe local 2 jours",
+        "season": 2016,
+        "rate": "0.00",
+        "rate_after_tax_ex": "0.00",
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 3,
+    "fields": {
+        "name": "1er enfant 9 601 - 16 800 \u20ac",
+        "season": 2016,
+        "rate": "60.00",
+        "rate_after_tax_ex": "20.00",
+        "bracket": "2) 9 601 - 16 800 \u20ac",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 4,
+    "fields": {
+        "name": "Service Vacance import",
+        "season": 2016,
+        "rate": "20.00",
+        "rate_after_tax_ex": "20.00",
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 5,
+    "fields": {
+        "name": "Enfants suivants < 9 600 \u20ac",
+        "season": 2016,
+        "rate": "15.00",
+        "rate_after_tax_ex": "15.00",
+        "bracket": "1) < 9 600 \u20ac",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 6,
+    "fields": {
+        "name": "Responsable + don",
+        "season": 2016,
+        "rate": "20.00",
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 7,
+    "fields": {
+        "name": "Enfants suivants 16 801 - 26 400 \u20ac",
+        "season": 2016,
+        "rate": "70.00",
+        "rate_after_tax_ex": "23.33",
+        "bracket": "3) 16 801 - 26 400 \u20ac",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 8,
+    "fields": {
+        "name": "Soutien \u00e0 l'association + don",
+        "season": 2016,
+        "rate": "20.00",
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 9,
+    "fields": {
+        "name": "1er enfant 16 801 - 26 400 \u20ac",
+        "season": 2016,
+        "rate": "90.00",
+        "rate_after_tax_ex": "30.00",
+        "bracket": "3) 16 801 - 26 400 \u20ac",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 10,
+    "fields": {
+        "name": "1er enfant > 26 400 \u20ac",
+        "season": 2016,
+        "rate": "120.00",
+        "rate_after_tax_ex": "40.00",
+        "bracket": "4) > 26 400 \u20ac",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 11,
+    "fields": {
+        "name": "Enfants suivants 9 601 - 16 800 \u20ac",
+        "season": 2016,
+        "rate": "45.00",
+        "rate_after_tax_ex": "15.00",
+        "bracket": "2) 9 601 - 16 800 \u20ac",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 12,
+    "fields": {
+        "name": "Enfants suivants > 26 400 \u20ac",
+        "season": 2016,
+        "rate": "90.00",
+        "rate_after_tax_ex": "30.00",
+        "bracket": "4) > 26 400 \u20ac",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 13,
+    "fields": {
+        "name": "Acc\u00e8s administratif salari\u00e9",
+        "season": 2016,
+        "rate": "0.00",
+        "rate_after_tax_ex": "0.00",
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 14,
+    "fields": {
+        "name": "D\u00e9couverte groupe local 6 jours",
+        "season": 2016,
+        "rate": "18.00",
+        "rate_after_tax_ex": "18.00",
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 15,
+    "fields": {
+        "name": "Stagiaire",
+        "season": 2016,
+        "rate": "20.00",
+        "rate_after_tax_ex": "20.00",
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 16,
+    "fields": {
+        "name": "Assurance week-end",
+        "season": 2014,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 17,
+    "fields": {
+        "name": "Plein tarif",
+        "season": 2014,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 18,
+    "fields": {
+        "name": "Service Vacance import",
+        "season": 2014,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 19,
+    "fields": {
+        "name": "Plein tarif Responsable",
+        "season": 2014,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 20,
+    "fields": {
+        "name": "Tarif familial",
+        "season": 2014,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 21,
+    "fields": {
+        "name": "Parent gratuit",
+        "season": 2014,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 22,
+    "fields": {
+        "name": "D\u00e9couverte 7 jours",
+        "season": 2014,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 23,
+    "fields": {
+        "name": "Salari\u00e9",
+        "season": 2014,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 24,
+    "fields": {
+        "name": "Plein tarif",
+        "season": 2015,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 25,
+    "fields": {
+        "name": "Assurance week-end",
+        "season": 2015,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 26,
+    "fields": {
+        "name": "Service Vacance import",
+        "season": 2015,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 27,
+    "fields": {
+        "name": "D\u00e9couverte 7 jours",
+        "season": 2015,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 28,
+    "fields": {
+        "name": "Tarif familial",
+        "season": 2015,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 29,
+    "fields": {
+        "name": "Salari\u00e9",
+        "season": 2015,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 30,
+    "fields": {
+        "name": "Parent gratuit",
+        "season": 2015,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 31,
+    "fields": {
+        "name": "Plein tarif",
+        "season": 2013,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 32,
+    "fields": {
+        "name": "Salari\u00e9",
+        "season": 2013,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 33,
+    "fields": {
+        "name": "Service Vacance import",
+        "season": 2013,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 34,
+    "fields": {
+        "name": "Plein tarif Responsable",
+        "season": 2013,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 35,
+    "fields": {
+        "name": "D\u00e9couverte 7 jours",
+        "season": 2013,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 36,
+    "fields": {
+        "name": "Tarif familial",
+        "season": 2013,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 37,
+    "fields": {
+        "name": "Assurance week-end",
+        "season": 2013,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 38,
+    "fields": {
+        "name": "Parent gratuit",
+        "season": 2013,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 39,
+    "fields": {
+        "name": "Tarif familial responsable",
+        "season": 2013,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 40,
+    "fields": {
+        "name": "ami",
+        "season": 2013,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 41,
+    "fields": {
+        "name": "Stagiaire",
+        "season": 2013,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 42,
+    "fields": {
+        "name": "Service Vacance import",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 43,
+    "fields": {
+        "name": "Plein tarif",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 44,
+    "fields": {
+        "name": "Assurance week-end",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 45,
+    "fields": {
+        "name": "ami",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 46,
+    "fields": {
+        "name": "Plein tarif Responsable",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 47,
+    "fields": {
+        "name": "Stagiaire",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 48,
+    "fields": {
+        "name": "Tarif familial",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 49,
+    "fields": {
+        "name": "Service Vacance",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 50,
+    "fields": {
+        "name": "D\u00e9couverte 7 jours",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 51,
+    "fields": {
+        "name": "Parent gratuit",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 52,
+    "fields": {
+        "name": "Salari\u00e9",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 53,
+    "fields": {
+        "name": "Tarif familial responsable",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 54,
+    "fields": {
+        "name": "Defi",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 55,
+    "fields": {
+        "name": "Tarif familial Service Vacance",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+},
+{
+    "model": "members.rate",
+    "pk": 56,
+    "fields": {
+        "name": "Tarif familial defi",
+        "season": 2012,
+        "rate": null,
+        "rate_after_tax_ex": null,
+        "bracket": "",
+        "category": null
+    }
+}
+]
