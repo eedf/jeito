@@ -13,9 +13,9 @@ class StructureAdmin(admin.ModelAdmin):
 
 @admin.register(Function)
 class FunctionAdmin(admin.ModelAdmin):
-    list_display = ('code', 'season', 'name_m', 'sector', 'category')
+    list_display = ('code', 'season', 'name_m', 'category')
     search_fields = ('code', 'name_m', 'name_f')
-    list_filter = ('season', 'sector', 'category')
+    list_filter = ('season', 'category')
 
 
 @admin.register(Rate)

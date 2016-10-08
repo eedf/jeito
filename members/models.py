@@ -80,7 +80,6 @@ class Function(models.Model):
     season = models.IntegerField()
     name_m = models.CharField("Nom masculin", max_length=100)
     name_f = models.CharField("Nom féminin", max_length=100)
-    sector = models.IntegerField("Secteur", choices=SECTOR_CHOICES, null=True, blank=True)
     category = models.IntegerField("Categorie", choices=CATEGORY_CHOICES, null=True, blank=True)
 
     def __str__(self):
