@@ -13,7 +13,7 @@ class PersonBackend(ModelBackend):
         if person:
             return person
         try:
-            person = Person._default_manager.get_by_natural_key(username)
+            person = Person.objects.get_by_natural_key(username)
         except Person.DoesNotExist:
             return None
         session = requests.Session()
