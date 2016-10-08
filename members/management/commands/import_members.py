@@ -296,6 +296,8 @@ class Command(BaseCommand):
             subtype = None
         else:
             subtype = dict((val, key) for key, val in Structure.SUBTYPE_CHOICES)[subtype]
+        if subtype is None and parent is not None:
+            subtype = parent.subtype
         code_struct_id = 'ctl00_ctl00_MainContent_DivsContent__resume__lblCodeStructure'
         assert number == self.tree.get_element_by_id(code_struct_id).text
 

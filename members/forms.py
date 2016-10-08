@@ -11,6 +11,8 @@ class AdhesionsForm(forms.Form):
     ]
     season = forms.ChoiceField(label="Saison", choices=season_choices)
     reference = forms.ChoiceField(label="Référence", choices=[(None, "Année N-1")] + season_choices)
+    sv = forms.BooleanField(label="Avec SV")
+    centres = forms.BooleanField(label="Avec centres")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -21,6 +23,8 @@ class AdhesionsForm(forms.Form):
         self.helper.layout = Layout(
             'season',
             'reference',
+            'sv',
+            'centres',
             HTML("""<button type="submit" class=\"btn btn-success\">
                     <span class="glyphicon glyphicon-ok-sign"></span> Appliquer
                     </button>"""),
