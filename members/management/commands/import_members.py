@@ -19,7 +19,7 @@ PASSWORD = os.getenv('ENTRECLES_PASSWORD')
 FONCTION = os.getenv('ENTRECLES_FUNCTION')
 STRUCTURE = os.getenv('ENTRECLES_STRUCTURE')
 today = datetime.date.today()
-SEASON = os.getenv('ENTRECLES_SEASON', today.year if today.month <= 9 else today.year + 1)
+SEASON = os.getenv('ENTRECLES_SEASON', today.year if today.month <= 8 else today.year + 1)
 
 
 class Command(BaseCommand):
@@ -84,13 +84,14 @@ class Command(BaseCommand):
                 }
             )
             if cols[39] == "0":
+                date = min(datetime.date(int(cols[37][6:10]), int(cols[37][3:5]), int(cols[37][0:2])), datetime.date(SEASON, 8, 31))
                 adhesion, created = Adhesion.objects.update_or_create(
                     person=person,
                     season=SEASON,
                     defaults={
                         'structure': structure,
                         'function': function,
-                        'date': datetime.date(int(cols[37][6:10]), int(cols[37][3:5]), int(cols[37][0:2])),
+                        'date': date,
                         'rate': rate,
                     }
                 )
