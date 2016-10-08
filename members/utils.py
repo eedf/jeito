@@ -1,4 +1,4 @@
-from django.utils.timezone import now
+from django.conf import settings
 
 
 def first_season():
@@ -6,7 +6,7 @@ def first_season():
 
 
 def current_season():
-    today = now().date()
+    today = settings.NOW().date()
     if today.month >= 9:
         return today.year + 1
     return today.year

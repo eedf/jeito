@@ -1,7 +1,7 @@
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import RegexValidator
-from django.utils.timezone import now
 
 from mptt.models import MPTTModel, TreeForeignKey
 
@@ -143,6 +143,9 @@ class Person(PermissionsMixin, AbstractBaseUser):
     class Meta:
         verbose_name = "Personne"
 
+    def __str__(self):
+        return self.number
+
     def get_short_name(self):
         return u'{first_name}'.format(**self.__dict__)
 
@@ -157,7 +160,7 @@ class Person(PermissionsMixin, AbstractBaseUser):
     def is_active(self):
         if self.is_superuser:
             return True
-        today = now()
+        today = settings.NOW()
         if today.month < 9:
             seasons = [today.year]
         elif today.month == 9:
@@ -174,3 +177,6 @@ class Adhesion(models.Model):
     rate = models.ForeignKey(Rate, verbose_name="Tarif")
     structure = models.ForeignKey(Structure, verbose_name="Structure", related_name='adherents')
     function = models.ForeignKey(Function, verbose_name="Fonction")
+
+    def __str__(self):
+        return "{self.season}-{self.person}".format(self=self)

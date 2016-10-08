@@ -49,8 +49,8 @@ class AdhesionFactory(factory.django.DjangoModelFactory):
         model = models.Adhesion
 
     person = factory.SubFactory(PersonFactory)
-    season = 2016
-    date = date(2015, 10, 15)
+    season = 2015
+    date = date(2014, 10, 15)
     rate = factory.SubFactory(RateFactory)
     structure = factory.SubFactory(StructureFactory)
     function = factory.SubFactory(FunctionFactory)

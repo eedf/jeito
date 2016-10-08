@@ -1,11 +1,11 @@
 from collections import OrderedDict
 from datetime import date, timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.conf import settings
 from django.db import connection
 from django.db.models import Count, Sum, Q
 from django.http import JsonResponse
 from django.utils.formats import date_format
-from django.utils.timezone import now
 from django.views.generic import View, TemplateView
 from .forms import AdhesionsForm
 from .models import Adhesion, Structure
@@ -14,7 +14,7 @@ from .utils import current_season
 
 class AdhesionsJsonView(View):
     def serie(self, season, sv=False, centres=False):
-        self.today = now().date()
+        self.today = settings.NOW().date()
         start = date(season - 1, 9, 1)
         end = min(date(season, 8, 31), self.today)
         sql = '''
@@ -182,7 +182,7 @@ class TableauRegionsView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         season = int(self.request.GET.get('season', current_season()))
         reference = int(self.request.GET.get('reference', '0')) or season - 1
-        end = min(date(season, 8, 31), now().date())
+        end = min(date(season, 8, 31), settings.NOW().date())
         if end.month == 2 and end.day == 29:
             end = end.replace(day=28)
         self.regions = Structure.objects.filter(type=6).order_by('name')
@@ -247,7 +247,7 @@ class TableauFunctionsView(LoginRequiredMixin, TemplateView):
         )
         season = int(self.request.GET.get('season', current_season()))
         reference = int(self.request.GET.get('reference', '0')) or season - 1
-        end = min(date(season, 8, 31), now().date())
+        end = min(date(season, 8, 31), settings.NOW().date())
         if end.month == 2 and end.day == 29:
             end = end.replace(day=28)
         self.data = OrderedDict()
@@ -287,7 +287,7 @@ class TableauAmountView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         season = int(self.request.GET.get('season', current_season()))
         reference = int(self.request.GET.get('reference', '0')) or season - 1
-        end = min(date(season, 8, 31), now().date())
+        end = min(date(season, 8, 31), settings.NOW().date())
         if end.month == 2 and end.day == 29:
             end = end.replace(day=28)
         self.data = OrderedDict()

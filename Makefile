@@ -3,6 +3,9 @@ VENV=env
 run: $(VENV)/bin/django-admin
 	./manage.py runserver 0.0.0.0:8000
 
+test: $(VENV)/bin/django-admin
+	./manage.py test --settings=jeito.test_settings
+
 $(VENV)/bin/django-admin: $(VENV)/bin/python /usr/bin/virtualenv /usr/include/postgresql/libpq /usr/include/python3.5/pyconfig.h /usr/include/libxml2/libxml/xmlversion.h /usr/bin/xslt-config
 	$(VENV)/bin/pip install -r requirements.txt
 

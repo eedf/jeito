@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
+from django.utils.timezone import now
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -149,3 +150,5 @@ TAGULOUS_AUTOCOMPLETE_JS = ()
 TAGULOUS_AUTOCOMPLETE_CSS = {}
 
 TRACK_ANONYMOUS_USERS = False
+
+NOW = now
