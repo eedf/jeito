@@ -3,7 +3,7 @@ VENV=env
 run: $(VENV)/bin/django-admin
 	./manage.py runserver 0.0.0.0:8000
 
-$(VENV)/bin/django-admin: $(VENV)/bin/python /usr/bin/virtualenv /usr/include/postgresql/libpq /usr/include/python3.4/pyconfig.h /usr/include/libxml2/libxml/xmlversion.h /usr/bin/xslt-config
+$(VENV)/bin/django-admin: $(VENV)/bin/python /usr/bin/virtualenv /usr/include/postgresql/libpq /usr/include/python3.5/pyconfig.h /usr/include/libxml2/libxml/xmlversion.h /usr/bin/xslt-config
 	$(VENV)/bin/pip install -r requirements.txt
 
 $(VENV)/bin/python: /usr/bin/virtualenv
@@ -16,8 +16,8 @@ $(VENV)/bin/python: /usr/bin/virtualenv
 /usr/include/postgresql/libpq:
 	sudo apt-get install -y libpq-dev
 
-/usr/include/python3.4/pyconfig.h:
-	sudo apt-get install -y libpython3.4-dev
+/usr/include/python3.*/pyconfig.h:
+	sudo apt-get install -y libpython-dev
 
 /usr/include/libxml2/libxml/xmlversion.h:
 	sudo apt-get install -y libxml2-dev
