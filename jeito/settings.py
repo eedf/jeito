@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'core',
     'members',
     'docs',
+    'becours',
 ]
 
 MIDDLEWARE_CLASSES = [
