@@ -1,15 +1,28 @@
 from collections import defaultdict
 from datetime import timedelta
 from django.db import models
+from tracking_fields.decorators import track
 
 
+@track('type', 'name', 'firstname', 'lastname', 'tel', 'email', 'invoice', 'number', 'begin',
+       'end', 'comfort', 'nights', 'overnights', 'comments', 'state')
 class Group(models.Model):
+    STATE_CHOICES = (
+        (1, "Demande de renseignements"),
+        (2, "Demande de devis"),
+        (3, "Devis établi"),
+        (4, "Devis signé"),
+        (5, "Facture établie"),
+        (6, "Facture payée"),
+        (7, "Annulé"),
+    )
     type = models.IntegerField(choices=((1, "EEDF"), (2, "Scout"), (3, "Extérieur")))
     name = models.CharField(max_length=100)
     firstname = models.CharField(max_length=100, blank=True)
     lastname = models.CharField(max_length=100, blank=True)
     tel = models.CharField(max_length=100, blank=True)
     email = models.EmailField(blank=True)
+    estimate = models.FileField(blank=True)
     invoice = models.FileField(blank=True)
     number = models.PositiveIntegerField(null=True, editable=False)
     begin = models.DateField(null=True, editable=False)
@@ -17,6 +30,8 @@ class Group(models.Model):
     comfort = models.IntegerField(null=True, choices=((1, 'Terrain'), (2, 'Village'), (3, 'Mixte')), editable=False)
     nights = models.PositiveIntegerField(null=True, editable=False)
     overnights = models.PositiveIntegerField(null=True, editable=False)
+    comments = models.TextField(blank=True)
+    state = models.IntegerField(choices=STATE_CHOICES, default=1)
 
     def __str__(self):
         return self.name
@@ -25,7 +40,7 @@ class Group(models.Model):
         headcounts = self.headcounts.all()
         self.begin = min([headcount.begin for headcount in headcounts] or [None])
         self.end = max([headcount.end for headcount in headcounts] or [None])
-        self.nights = (self.end - self.begin).days
+        self.nights = self.begin and self.end and (self.end - self.begin).days
         self.comfort = None
         for headcount in headcounts:
             self.comfort = self.comfort or headcount.comfort

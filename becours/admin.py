@@ -7,9 +7,9 @@ class HeadCountInline(admin.TabularInline):
 
 
 class GroupAdmin(admin.ModelAdmin):
-    list_display = ('name', 'type', 'comfort', 'number', 'begin', 'end', 'nights', 'overnights')
+    list_display = ('name', 'state', 'type', 'comfort', 'number', 'begin', 'end', 'nights', 'overnights')
     search_fields = ('name', 'firstname', 'lastname', 'email', 'tel')
-    list_filter = ('type', 'comfort')
+    list_filter = ('state', 'type', 'comfort')
     date_hierarchy = 'end'
     inlines = (HeadCountInline, )
 
