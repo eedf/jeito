@@ -32,6 +32,11 @@ class Group(models.Model):
     overnights = models.PositiveIntegerField(null=True, editable=False)
     comments = models.TextField(blank=True)
     state = models.IntegerField(choices=STATE_CHOICES, default=1)
+    hosting_cost = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, editable=False)
+    coop_cost = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    additional_cost = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    cost = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, editable=False)
+    invoice_number = models.CharField(max_length=10, blank=True)
 
     def __str__(self):
         return self.name
@@ -42,16 +47,23 @@ class Group(models.Model):
         self.end = max([headcount.end for headcount in headcounts] or [None])
         self.nights = self.begin and self.end and (self.end - self.begin).days
         self.comfort = None
+        self.hosting_cost = None
+        overnights = defaultdict(int)
         for headcount in headcounts:
             self.comfort = self.comfort or headcount.comfort
             if self.comfort != headcount.comfort:
                 self.comfort = 3
-        overnights = defaultdict(int)
-        for headcount in headcounts:
-            for i in range((headcount.end - headcount.begin).days):
+            nights = (headcount.end - headcount.begin).days
+            if headcount.cost is not None:
+                self.hosting_cost = (self.hosting_cost or 0) + (headcount.number * max(nights, 1) * headcount.cost)
+            for i in range(nights):
                 overnights[headcount.begin + timedelta(days=i)] += headcount.number
         self.number = max(overnights.values() or [None])
         self.overnights = sum(overnights.values() or [0]) or None
+        if self.hosting_cost is None and self.coop_cost is None and self.additional_cost is None:
+            self.cost = None
+        else:
+            self.cost = (self.hosting_cost or 0) + (self.coop_cost or 0) + (self.additional_cost or 0)
 
     def save(self, *args, **kwargs):
         self.denormalize()
@@ -64,6 +76,9 @@ class Headcount(models.Model):
     begin = models.DateField()
     end = models.DateField()
     comfort = models.IntegerField(choices=((1, 'Terrain'), (2, 'Village')))
+    cost = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    overnights = models.PositiveIntegerField(null=True, editable=False)
+    hosting_cost = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, editable=False)
 
     def __str__(self):
         return "{} p. du {} au {}".format(
@@ -71,3 +86,12 @@ class Headcount(models.Model):
             self.begin.strftime('%d/%m/%y'),
             self.end.strftime('%d/%m/%y'),
         )
+
+    def denormalize(self):
+        self.overnights = (self.end - self.begin).days * self.number
+        self.hosting_cost = self.cost and self.cost * self.overnights
+
+    def save(self, *args, **kwargs):
+        self.denormalize()
+        self.group.denormalize()
+        return super().save(*args, **kwargs)
