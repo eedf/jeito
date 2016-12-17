@@ -33,6 +33,7 @@ class Structure(MPTTModel):
         (12, "Unité Défi"),
         (13, "Unité Eclé"),
         (14, "Unité Nomade"),
+        (15, "Centre permanent national"),
     )
     SUBTYPE_CHOICES = (
         (1, "Centre et terrain"),
