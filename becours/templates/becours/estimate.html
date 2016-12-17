@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ group.name }}</title>
+    <table>
+        {% for headcount in group.headcounts %}
+            <tr>
+                <td>{{ headcount.number }} pers.</td>
+            </tr>
+        {% endfor %}
+    </table>
+</head>
+<body>
+
+</body>
+</html>

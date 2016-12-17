@@ -1,6 +1,10 @@
 from django.db.models import Sum
-from django.views.generic.base import TemplateView
+from django.views.generic import TemplateView, ListView, DetailView
 from becours.models import Group, Headcount
+
+
+class HomeView(ListView):
+    model = Group
 
 
 class StatsView(TemplateView):
@@ -54,3 +58,8 @@ class StatsView(TemplateView):
             kwargs[name]['hosting_cost_rate'] = (100 * kwargs[name]['hosting_cost'] / kwargs['stats']['hosting_cost'])
             kwargs[name]['overnight_cost'] = (kwargs[name]['hosting_cost'] / kwargs[name]['overnights'])
         return kwargs
+
+
+class EstimateView(DetailView):
+    template_name = 'becours/estimate.html'
+    model = Group

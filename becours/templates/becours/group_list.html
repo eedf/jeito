@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List</title>
+</head>
+<body>
+    <table>
+        {%  for group in group_list %}
+            <tr>
+                <td>{{  group.name }}</td>
+                <td>{{  group.begin|date:"d/m/y" }}</td>
+                <td>{{  group.end|date:"d/m/y" }}</td>
+                <td><a href="{% url 'becours:estimate' group.pk %}">Estimate</a></td>
+            </tr>
+        {%  endfor %}
+    </table>
+</body>
+</html>
