@@ -10,9 +10,9 @@ class AdhesionsForm(forms.Form):
         for i in range(current_season(), first_season() - 1, -1)
     ]
     season = forms.ChoiceField(label="Saison", choices=season_choices)
-    reference = forms.ChoiceField(label="Référence", choices=[(None, "Année N-1")] + season_choices)
-    sv = forms.BooleanField(label="Avec SV")
-    centres = forms.BooleanField(label="Avec centres")
+    reference = forms.ChoiceField(label="Référence", choices=[(None, "Année N-1")] + season_choices, required=False)
+    sv = forms.BooleanField(label="Avec SV", required=False)
+    centres = forms.BooleanField(label="Avec centres", required=False)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
