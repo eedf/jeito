@@ -1,5 +1,5 @@
 FROM python:3.5
-RUN apt-get install postgresql-client
+RUN apt-get update && apt-get install -y postgresql-client
 RUN useradd -ms /bin/bash django
 WORKDIR /home/django
 ADD requirements.txt .
