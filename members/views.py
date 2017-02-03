@@ -326,10 +326,9 @@ class TableauStructureTypeView(LoginRequiredMixin, TemplateView):
         data = {}
         for i, qsi in enumerate((qs0, qs1)):
             for obj in qsi:
+                type = dict(Structure.TYPE_CHOICES)[obj['structure__type']]
                 if obj['structure__subtype']:
-                    type = dict(Structure.SUBTYPE_CHOICES)[obj['structure__subtype']]
-                else:
-                    type = dict(Structure.TYPE_CHOICES)[obj['structure__type']]
+                    type += " (" + dict(Structure.SUBTYPE_CHOICES)[obj['structure__subtype']] + ")"
                 data.setdefault(type, [0, 0])[i] = obj['headcount']
         for headcounts in data.values():
             headcounts.append(headcounts[1] - headcounts[0])
@@ -340,4 +339,34 @@ class TableauStructureTypeView(LoginRequiredMixin, TemplateView):
             ],
             'data': data,
         }
+        return context
+
+
+class TableauStructureView(LoginRequiredMixin, TemplateView):
+    template_name = 'members/tableau_structures.html'
+
+    def get_context_data(self, **kwargs):
+        season = int(self.request.GET.get('season', current_season()))
+        reference = int(self.request.GET.get('reference', '0')) or season - 1
+        end = min(date(season, 8, 31), settings.NOW().date())
+        if end.month == 2 and end.day == 29:
+            end = end.replace(day=28)
+        qs0 = Structure.objects.filter(adherents__season=reference, adherents__date__lte=end.replace(year=reference)).annotate(headcount=Count('adherents'))
+        qs1 = Structure.objects.filter(adherents__season=season, adherents__date__lte=end).annotate(headcount=Count('adherents'))
+        data = {}
+        for i, qsi in enumerate((qs0, qs1)):
+            for structure in qsi:
+                data.setdefault(structure, [0, 0])[i] = structure.headcount
+        for headcounts in data.values():
+            headcounts.append(headcounts[1] - headcounts[0])
+        data = list(data.items())
+        data.sort(key=lambda x:x[1][2])
+        context = {
+            'seasons': [
+                "{}/{}".format(reference - 1, reference),
+                "{}/{}".format(season - 1, season),
+            ],
+            'data': data,
+        }
+        print(data)
         return context

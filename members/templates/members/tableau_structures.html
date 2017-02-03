@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load staticfiles crispy_forms_tags %}
+
+
+{% block breadcrumbs %}
+
+{{ block.super }}
+<li class="active">Tableau par structure</li>
+
+{% endblock breadcrumbs %}
+
+
+{% block content %}
+
+<h1>Tableau par structure</h1>
+
+    {{ data }}
+
+<div class="alert alert-danger" role="alert">
+  ATTENTION !!! Ces chiffres sont publiés sous réserve de validité des informations exportées par le portail
+  <a href="http://entrecles.eedf.fr">Entréclés</a>
+</div>
+
+<table class="table table-striped table-bordered table-hover">
+  <thead>
+    <tr>
+        <th>Structure</th>
+        {% for season in seasons %}
+            <th align="right">{{ season }}</th>
+        {% endfor %}
+        <th align="right">Variation</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for structure, headcounts in data %}
+        <tr>
+            <td>{{ structure.name }}</td>
+            {% for headcount in headcounts %}
+                <td align="right">{% if forloop.last and headcount > 0 %}+{% endif %}{{ headcount }}</td>
+            {% endfor %}
+        </tr>
+    {%  endfor %}
+  </tbody>
+</table>
+
+{% endblock content %}
