@@ -12,4 +12,5 @@ urlpatterns = [
     url(r'^tableau/regions/$', views.TableauRegionsView.as_view(), name='tableau_regions'),
     url(r'^tableau/functions/$', views.TableauFunctionsView.as_view(), name='tableau_functions'),
     url(r'^tableau/amount/$', views.TableauAmountView.as_view(), name='amount'),
+    url(r'^tableau/structure_type/$', views.TableauStructureTypeView.as_view(), name='structure_type'),
 ]

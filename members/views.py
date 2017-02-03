@@ -308,3 +308,36 @@ class TableauAmountView(LoginRequiredMixin, TemplateView):
             'data2': qs2,
         }
         return context
+
+
+class TableauStructureTypeView(LoginRequiredMixin, TemplateView):
+    template_name = 'members/tableau_structure_types.html'
+
+    def get_context_data(self, **kwargs):
+        season = int(self.request.GET.get('season', current_season()))
+        reference = int(self.request.GET.get('reference', '0')) or season - 1
+        end = min(date(season, 8, 31), settings.NOW().date())
+        if end.month == 2 and end.day == 29:
+            end = end.replace(day=28)
+        qs = Adhesion.objects.values('structure__type', 'structure__subtype').annotate(headcount=Count('id'))
+        qs = qs.order_by('-headcount')
+        qs0 = qs.filter(season=reference, date__lte=end.replace(year=reference))
+        qs1 = qs.filter(season=season, date__lte=end)
+        data = {}
+        for i, qsi in enumerate((qs0, qs1)):
+            for obj in qsi:
+                if obj['structure__subtype']:
+                    type = dict(Structure.SUBTYPE_CHOICES)[obj['structure__subtype']]
+                else:
+                    type = dict(Structure.TYPE_CHOICES)[obj['structure__type']]
+                data.setdefault(type, [0, 0])[i] = obj['headcount']
+        for headcounts in data.values():
+            headcounts.append(headcounts[1] - headcounts[0])
+        context = {
+            'seasons': [
+                "{}/{}".format(reference - 1, reference),
+                "{}/{}".format(season - 1, season),
+            ],
+            'data': data,
+        }
+        return context
