@@ -16,7 +16,7 @@ class HaystackTestCase(TestCase):
 class LoggedTests(LoggedTestMixin, HaystackTestCase):
     def test_index_view(self):
         response = self.client.get('/docs/')
-        self.assertContains(response, '<li class="active">Documents</li>')
+        self.assertContains(response, '<form method="get" id="docs-search-form">')
 
     def test_create_view(self):
         response = self.client.get('/docs/create/')
