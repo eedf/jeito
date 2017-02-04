@@ -10,13 +10,25 @@ class AdhesionsForm(forms.Form):
         for i in range(current_season(), first_season() - 1, -1)
     ]
     sector_choices = (
-        (1, 'Tous'),
-        (2, 'SLA & régions'),
-        (3, 'Services vacances'),
-        (4, 'Centres permanents'),
+        (0, 'Tous'),
+        (1, 'SLA & régions'),
+        (2, 'Services vacances'),
+        (3, 'Centres permanents'),
+    )
+    branch_choices = (
+        (0, "Toutes"),
+        (1, "Lutins"),
+        (2, "Ainés"),
+        (7, "Louveteaux"),
+        (13, "Eclés"),
+        (99, "Autres"),
     )
     season = forms.ChoiceField(label="Saison", choices=season_choices)
     sector = forms.ChoiceField(label="Secteur", choices=sector_choices)
+    branch = forms.ChoiceField(label="Branche", choices=branch_choices)
+    # rate
+    # function
+    # region
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -27,7 +39,5 @@ class AdhesionsForm(forms.Form):
         self.helper.layout = Layout(
             'season',
             'sector',
-            HTML("""<button type="submit" class=\"btn btn-success\">
-                    <span class="glyphicon glyphicon-ok-sign"></span> Appliquer
-                    </button>"""),
+            'branch',
         )

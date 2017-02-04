@@ -13,7 +13,7 @@ from .utils import current_season
 
 
 class AdhesionsJsonView(LoginRequiredMixin, View):
-    def serie(self, season, sector):
+    def serie(self, season, sector, branch):
         self.today = (settings.NOW() - timedelta(days=1)).date()
         start = date(season - 1, 9, 1)
         end = min(date(season, 8, 31), self.today)
@@ -23,20 +23,27 @@ class AdhesionsJsonView(LoginRequiredMixin, View):
             LEFT JOIN members_structure ON (members_structure.id = structure_id)
             WHERE season=%s
         '''
-        if sector == 2:
+        if sector == 1:
             sql += '''AND SUBSTR(members_structure.number, 1, 8) NOT IN (\'03000002\', \'05000001\', \'19001401\',
                       \'18000002\', \'14005719\', \'27000006\', \'17000003\', \'27000005\')\n'''
-        elif sector == 3:
+        elif sector == 2:
             sql += 'AND members_structure.number IN (\'0300000200\', \'0500000100\', \'1900140100\')\n'
-        elif sector == 4:
+        elif sector == 3:
             sql += '''AND SUBSTR(members_structure.number, 1, 8) IN (\'18000002\', \'14005719\', \'27000006\',
                       \'17000003\', \'27000005\')\n'''
+
+        if branch == 99:
+            sql += '''AND type NOT IN (1, 2, 7, 13)\n'''
+        elif branch:
+            sql += '''AND type=%s\n'''
 
         sql += '''
             GROUP BY date
             ORDER BY date
         '''
         params = [season]
+        if branch and branch !=99:
+            params.append(branch)
         cursor = connection.cursor()
         cursor.execute(sql, params)
         res = dict(cursor.fetchall())
@@ -54,8 +61,9 @@ class AdhesionsJsonView(LoginRequiredMixin, View):
         season = int(self.request.GET['season'])
         reference = season - 1
         sector = int(self.request.GET['sector'])
-        result = self.serie(season, sector)
-        ref_result = self.serie(reference, sector)
+        branch = int(self.request.GET['branch'])
+        result = self.serie(season, sector, branch)
+        ref_result = self.serie(reference, sector, branch)
         date_max = max(result.keys())
         ref_date_max = date_max.replace(year=reference if date_max.month <= 8 else reference - 1,
                                         month=date_max.month, day=date_max.day)
@@ -94,11 +102,13 @@ class AdhesionsView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         season = self.request.GET.get('season', current_season())
-        sector = self.request.GET.get('sector', 1)
+        sector = self.request.GET.get('sector', 0)
+        branch = self.request.GET.get('branch', 0)
         initial = self.request.GET.dict()
         initial.update({
             'season': season,
             'sector': sector,
+            'branch': branch,
         })
         form = AdhesionsForm(initial=initial)
         context = super().get_context_data(**kwargs)

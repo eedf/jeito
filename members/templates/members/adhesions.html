@@ -6,7 +6,7 @@
 
     <div class="container">
 
-        <h1>Cumul des membres actifs</h1>
+        <h1>Cumul annuel des membres actifs</h1>
 
         {% crispy form %}
 
@@ -56,10 +56,32 @@
             axisY: {
             }
         };
-        $.getJSON("{% url 'members:adhesions_data' %}?season={{ season }}&sector={{ sector }}", function(data) {
-            new Chartist.Line('.ct-chart', data, options);
-            $('#comment').html(data['comment']);
-        });
+        function updateGraph(updateHistory=true) {
+            params = $('form').serialize();
+            state = {};
+            $('select').each(function() { state[$(this).attr('id')] = $(this).val(); });
+            $.getJSON("{% url 'members:adhesions_data' %}?" + params, function(data) {
+                new Chartist.Line('.ct-chart', data, options);
+                $('#comment').html(data['comment']);
+                if (updateHistory) {
+                    history.pushState(state, "", "?" + params);
+                }
+            });
+        }
+        window.onpopstate = function(event) {
+            if (event.state === null) {
+                $('select').each(function() {
+                   $(this).val($(this).children("option:first").val());
+                });
+            } else {
+                Object.keys(event.state).forEach(function (key) {
+                    $('#' + key).val(event.state[key]);
+                });
+            }
+            updateGraph(false);
+        };
+        $('select').change(updateGraph);
+        updateGraph(false);
     </script>
 
 {% endblock js %}
