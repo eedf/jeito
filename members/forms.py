@@ -9,11 +9,14 @@ class AdhesionsForm(forms.Form):
         (i, "{}/{}".format(i - 1, i))
         for i in range(current_season(), first_season() - 1, -1)
     ]
+    sector_choices = (
+        (1, 'Tous'),
+        (2, 'SLA & régions'),
+        (3, 'Services vacances'),
+        (4, 'Centres permanents'),
+    )
     season = forms.ChoiceField(label="Saison", choices=season_choices)
-    reference = forms.ChoiceField(label="Référence", choices=[(None, "Année N-1")] + season_choices, required=False)
-    sv = forms.BooleanField(label="Avec SV", required=False)
-    centres = forms.BooleanField(label="Avec centres", required=False)
-
+    sector = forms.ChoiceField(label="Secteur", choices=sector_choices)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
@@ -22,9 +25,7 @@ class AdhesionsForm(forms.Form):
         self.helper.form_method = 'get'
         self.helper.layout = Layout(
             'season',
-            'reference',
-            'sv',
-            'centres',
+            'sector',
             HTML("""<button type="submit" class=\"btn btn-success\">
                     <span class="glyphicon glyphicon-ok-sign"></span> Appliquer
                     </button>"""),

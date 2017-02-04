@@ -12,8 +12,8 @@ from .models import Adhesion, Structure
 from .utils import current_season
 
 
-class AdhesionsJsonView(View):
-    def serie(self, season, sv=False, centres=False):
+class AdhesionsJsonView(LoginRequiredMixin, View):
+    def serie(self, season, sector):
         self.today = settings.NOW().date()
         start = date(season - 1, 9, 1)
         end = min(date(season, 8, 31), self.today)
@@ -23,12 +23,13 @@ class AdhesionsJsonView(View):
             LEFT JOIN members_structure ON (members_structure.id = structure_id)
             WHERE season=%s
         '''
-        if not sv and not centres:
-            sql += 'AND (subtype = 2)\n'
-        elif not sv:
-            sql += 'AND (subtype != 4 OR subtype IS NULL)\n'
-        elif not centres:
-            sql += 'AND (subtype != 1 OR subtype IS NULL)\n'
+        if sector == 2:
+            sql += 'AND SUBSTR(members_structure.number, 1, 8) NOT IN (\'03000002\', \'05000001\', \'19001401\', \'18000002\', \'14005719\', \'27000006\', \'17000003\', \'27000005\')\n'
+        elif sector == 3:
+            sql += 'AND members_structure.number IN (\'0300000200\', \'0500000100\', \'1900140100\')\n'
+        elif sector == 4:
+            sql += 'AND SUBSTR(members_structure.number, 1, 8) IN (\'18000002\', \'14005719\', \'27000006\', \'17000003\', \'27000005\')\n'
+
         sql += '''
             GROUP BY date
             ORDER BY date
@@ -49,11 +50,10 @@ class AdhesionsJsonView(View):
 
     def get(self, request):
         season = int(self.request.GET['season'])
-        reference = int(self.request.GET.get('reference', '0')) or season - 1
-        sv = 'sv' in self.request.GET
-        centres = 'centres' in self.request.GET
-        result = self.serie(int(season), sv, centres)
-        ref_result = self.serie(int(reference), sv, centres)
+        reference = season - 1
+        sector = int(self.request.GET['sector'])
+        result = self.serie(season, sector)
+        ref_result = self.serie(reference, sector)
         date_max = max(result.keys())
         ref_date_max = date_max.replace(year=reference if date_max.month <= 8 else reference - 1,
                                         month=date_max.month, day=date_max.day)
@@ -83,7 +83,7 @@ class AdhesionsJsonView(View):
         return JsonResponse(data)
 
 
-class AdhesionsView(TemplateView):
+class AdhesionsView(LoginRequiredMixin, TemplateView):
     def get_template_names(self):
         if 'print' in self.request.GET:
             return 'members/adhesions_print.html'
@@ -92,13 +92,11 @@ class AdhesionsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         season = self.request.GET.get('season', current_season())
-        reference = self.request.GET.get('reference')
-        sv = 'sv' in self.request.GET
+        sector = self.request.GET.get('sector', 1)
         initial = self.request.GET.dict()
         initial.update({
             'season': season,
-            'reference': reference,
-            'sv': sv,
+            'sector': sector,
         })
         form = AdhesionsForm(initial=initial)
         context = super().get_context_data(**kwargs)
