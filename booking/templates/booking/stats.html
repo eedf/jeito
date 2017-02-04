@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container stats">
+
+    <h1>Réservations</h1>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th></th>
+            <th>CA</th>
+            <th>%</th>
+            <th>Nuitées</th>
+            <th>%</th>
+            <th>prix</th>
+        </tr>
+        <tr>
+            <th>Terrain EEDF</th>
+            <td>{{ stats_terrain_eedf.amount_hosting|floatformat:"0" }}</td>
+            <td>{{ stats_terrain_eedf.amount_hosting_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_terrain_eedf.overnights }}</td>
+            <td>{{ stats_terrain_eedf.overnights_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_terrain_eedf.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>Terrain ext</th>
+            <td>{{ stats_terrain_ext.amount_hosting|floatformat:"0" }}</td>
+            <td>{{ stats_terrain_ext.amount_hosting_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_terrain_ext.overnights }}</td>
+            <td>{{ stats_terrain_ext.overnights_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_terrain_ext.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>Village EEDF</th>
+            <td>{{ stats_village_eedf.amount_hosting|floatformat:"0" }}</td>
+            <td>{{ stats_village_eedf.amount_hosting_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_village_eedf.overnights }}</td>
+            <td>{{ stats_village_eedf.overnights_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_village_eedf.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>Village externe</th>
+            <td>{{ stats_village_ext.amount_hosting|floatformat:"0" }}</td>
+            <td>{{ stats_village_ext.amount_hosting_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_village_ext.overnights }}</td>
+            <td>{{ stats_village_ext.overnights_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_village_ext.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>Terrain</th>
+            <td>{{ stats_terrain.amount_hosting|floatformat:"0" }}</td>
+            <td>{{ stats_terrain.amount_hosting_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_terrain.overnights }}</td>
+            <td>{{ stats_terrain.overnights_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_terrain.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>Village</th>
+            <td>{{ stats_village.amount_hosting|floatformat:"0" }}</td>
+            <td>{{ stats_village.amount_hosting_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_village.overnights }}</td>
+            <td>{{ stats_village.overnights_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_village.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>EEDF</th>
+            <td>{{ stats_eedf.amount_hosting|floatformat:"0" }}</td>
+            <td>{{ stats_eedf.amount_hosting_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_eedf.overnights }}</td>
+            <td>{{ stats_eedf.overnights_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_eedf.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>Externe</th>
+            <td>{{ stats_ext.amount_hosting|floatformat:"0" }}</td>
+            <td>{{ stats_ext.amount_hosting_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_ext.overnights }}</td>
+            <td>{{ stats_ext.overnights_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_ext.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>Avril</th>
+            <td>{{ stats_avr.amount_hosting|floatformat:"0" }}</td>
+            <td>{{ stats_avr.amount_hosting_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_avr.overnights }}</td>
+            <td>{{ stats_avr.overnights_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_avr.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>Juillet/août</th>
+            <td>{{ stats_ete.amount_hosting|floatformat:"0" }}</td>
+            <td>{{ stats_ete.amount_hosting_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_ete.overnights }}</td>
+            <td>{{ stats_ete.overnights_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_ete.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>Octobre</th>
+            <td>{{ stats_oct.amount_hosting|floatformat:"0" }}</td>
+            <td>{{ stats_oct.amount_hosting_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_oct.overnights }}</td>
+            <td>{{ stats_oct.overnights_rate|floatformat:"0" }} %</td>
+            <td>{{ stats_oct.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>Hébergement</th>
+            <td>{{ stats.amount_hosting|floatformat:"0" }}</td>
+            <td></td>
+            <td>{{ stats.overnights }}</td>
+            <td></td>
+            <td>{{ stats.overnight_cost|floatformat:"2" }}</td>
+        </tr>
+        <tr>
+            <th>Contrat de coopération</th>
+            <td>{{ stats.amount_cot|floatformat:"0" }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Matériel, consommables</th>
+            <td>{{ stats.amount_other|floatformat:"0" }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Total</th>
+            <td>{{ stats.amount|floatformat:"0" }}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+
+{% endblock content %}
