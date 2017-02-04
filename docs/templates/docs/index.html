@@ -1,31 +1,22 @@
-{% extends 'base.html' %}
+{% extends 'docs/base.html' %}
 
-
-{% block breadcrumbs %}
-
-{{ block.super }}
-<li class="active">Documents</li>
-
-{% endblock breadcrumbs %}
 
 {% block actions %}
 
-<hr>
-
-<a href="{% url 'docs:create' %}" class="btn btn-primary">
-  <span class="glyphicon glyphicon-plus"></span>
-  Ajouter un document
-</a>
+    <a href="{% url 'docs:create' %}" class="btn btn-primary">
+        <span class="glyphicon glyphicon-plus"></span>
+        Ajouter un document
+    </a>
 
 {% endblock actions %}
 
 
-{% block content %}
+{% block docs-content %}
 
-<form method="get" id="docs-search-form">
-  <div class="input-group">
-    {{ form.q }}
-    <span class="input-group-btn">
+    <form method="get" id="docs-search-form">
+        <div class="input-group">
+            {{ form.q }}
+            <span class="input-group-btn">
       <button class="btn btn-default" type="submit" title="Appliquer">
         <span class="glyphicon glyphicon-search"></span>
       </button>
@@ -33,42 +24,42 @@
         <span class="glyphicon glyphicon-remove"></span>
       </a>
     </span>
-  </div>
-</form>
+        </div>
+    </form>
 
-<table class="table table-striped table-bordered table-hover docs">
-  <thead>
-    <tr>
-      <th>Titre</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for object in object_list %}
-      <tr>
-        <td>
-          <a href="{{ object.object.file.url }}">{{ object.object.title }}</a>
-          {% for tag in object.object.tags.all %}
-            <a href="{% url 'docs:index' %}?q={{ tag }}" class="label label-default">
-              {{ tag }}
-            </a>
-          {% endfor %}
-        </td>
-        <td>
-          <a href="{% url 'docs:update' object.pk %}">
-            <span class="glyphicon glyphicon-pencil" title="Modifier"></span>
-          </a>
-          <a href="{% url 'docs:delete' object.pk %}">
-            <span class="glyphicon glyphicon-trash" title="Supprimer"></span>
-          </a>
-        </td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
+    <table class="table table-striped table-bordered table-hover docs">
+        <thead>
+        <tr>
+            <th>Titre</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for object in object_list %}
+            <tr>
+                <td>
+                    <a href="{{ object.object.file.url }}">{{ object.object.title }}</a>
+                    {% for tag in object.object.tags.all %}
+                        <a href="{% url 'docs:index' %}?q={{ tag }}" class="label label-default">
+                            {{ tag }}
+                        </a>
+                    {% endfor %}
+                </td>
+                <td>
+                    <a href="{% url 'docs:update' object.pk %}">
+                        <span class="glyphicon glyphicon-pencil" title="Modifier"></span>
+                    </a>
+                    <a href="{% url 'docs:delete' object.pk %}">
+                        <span class="glyphicon glyphicon-trash" title="Supprimer"></span>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 
-{% if more %}
-  <p>Il y a plus de {{ limit }} documents. Merci de préciser votre recherche.</p>
-{% endif %}
+    {% if more %}
+        <p>Il y a plus de {{ limit }} documents. Merci de préciser votre recherche.</p>
+    {% endif %}
 
-{% endblock content %}
+{% endblock docs-content %}

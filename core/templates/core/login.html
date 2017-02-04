@@ -1,41 +1,38 @@
 {% extends "base.html" %}
 
-{% block breadcrumbs %}
-  {{ block.super }}
-  <li class="active">Connexion</li>
-{% endblock breadcrumbs %}
-
 {% block content %}
 
-<h1>Connexion</h1>
+    <div class="container">
 
-<div class="alert alert-warning">
-  Tu trouveras ton numéro d'adhérent sur ta carte d'adhésion.
-  Le mot de passe est identique à celui du portail <a href="http://entrecles.eedf.fr">Entréclés</a>.
-  Il t'a été communiqué dans le courrier qui accompagne ta carte d'adhésion.
-  Si la personne qui a saisi ton adhésion sur le portail a bien renseigné ton adresse, tu peux également le
-  <a href="http://entrecles.eedf.fr/securite/OubliMotDePasse.aspx">recevoir par email</a>.
-</div>
+        <h1>Connexion</h1>
 
-{% if form.errors %}
-  <div class="alert alert-danger" role="alert">Le numéro d'adhérent ou le mot de passe sont incorrects. Merci de réessayer.</div>
-{% endif %}
+        <div class="alert alert-warning">
+            Tu trouveras ton numéro d'adhérent sur ta carte d'adhésion.
+            Le mot de passe est identique à celui du portail <a href="http://entrecles.eedf.fr">Entréclés</a>.
+            Il t'a été communiqué dans le courrier qui accompagne ta carte d'adhésion.
+            Si la personne qui a saisi ton adhésion sur le portail a bien renseigné ton adresse, tu peux également le
+            <a href="http://entrecles.eedf.fr/securite/OubliMotDePasse.aspx">recevoir par email</a>.
+        </div>
 
-<form method="post" action="{% url 'core:login' %}">
-  {% csrf_token %}
-  <input type="hidden" name="next" value="{{ next }}" />
-  <div class="form-group">
-    <label for="id_username">Numéro d'adhérent</label>
-    <input type="text" class="form-control" name="username" id="id_number">
-  </div>
-  <div class="form-group">
-    <label for="id_numero">Mot de passe</label>
-    <input type="password" class="form-control" name="password" id="id_password">
-  </div>
-  <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Connexion</button>
-  <a href="http://entrecles.eedf.fr/securite/OubliMotDePasse.aspx" class="btn btn-default">Mot de passe perdu ?</a>
-</form>
+        {% if form.errors %}
+            <div class="alert alert-danger" role="alert">Le numéro d'adhérent ou le mot de passe sont incorrects. Merci de réessayer.</div>
+        {% endif %}
 
+        <form method="post" action="{% url 'core:login' %}">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}" />
+            <div class="form-group">
+                <label for="id_username">Numéro d'adhérent</label>
+                <input type="text" class="form-control" name="username" id="id_number">
+            </div>
+            <div class="form-group">
+                <label for="id_numero">Mot de passe</label>
+                <input type="password" class="form-control" name="password" id="id_password">
+            </div>
+            <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span> Connexion</button>
+            <a href="http://entrecles.eedf.fr/securite/OubliMotDePasse.aspx" class="btn btn-default">Mot de passe perdu ?</a>
+        </form>
 
+    </div>
 
 {% endblock %}

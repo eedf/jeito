@@ -368,5 +368,4 @@ class TableauStructureView(LoginRequiredMixin, TemplateView):
             ],
             'data': data,
         }
-        print(data)
         return context

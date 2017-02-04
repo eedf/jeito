@@ -11,13 +11,17 @@ html {
 }
 
 body {
-    margin: 10px 0 60px 0; /* bottom = footer height */
+    margin: 70px 0 60px 0; /* bottom = footer height */
 }
 
-.main-logo {
-  background: url(/static/core/img/logo.png) no-repeat;
-  height: 180px;
-  width: 100%;
+.navbar-brand {
+    background: url(/static/core/img/logo.png) no-repeat 15px 0;
+    width: 80px;
+}
+
+h1 {
+    font-size: 24px;
+    margin-top: 0;
 }
 
 footer {

@@ -2,11 +2,10 @@
 
 {% block content %}
 
-<p>Bonjour {{ request.user.first_name.title }} ! Tu trouveras sur ce site :</p>
+    <div class="container">
 
-<a href="{% url 'docs:index' %}" class="btn btn-primary">
-  <span class="glyphicon glyphicon-file"></span>
-  Une base documentaire
-</a>
+        <p>Bonjour {{ request.user.first_name.title }} !</p>
+
+    </div>
 
 {% endblock content %}

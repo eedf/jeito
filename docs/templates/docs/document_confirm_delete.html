@@ -1,30 +1,21 @@
-{% extends 'base.html' %}
+{% extends 'docs/base.html' %}
 {% load crispy_forms_tags %}
 
 
-{% block breadcrumbs %}
+{% block docs-content %}
 
-  {{ block.super }}
-  <li><a href="{% url 'docs:index' %}">Documents</a></li>
-  <li class="active">Supprimer</li>
+    <h1>Supprimer le document</h1>
+    <form action="{% url 'docs:delete' object.pk %}" method="post">
+        {% csrf_token %}
+        <p>Êtes-vous sûr de vouloir supprimer le document « {{ object.title }} » ?</p>
+        <button type="submit" class="btn btn-danger">
+            <span class="glyphicon glyphicon-trash"></span>
+            Supprimer
+        </button>
+        <a href="{% url 'docs:index' %}" class="btn btn-default">
+            <span class="glyphicon glyphicon-remove-sign"></span>
+            Annuler
+        </a>
+    </form>
 
-{% endblock breadcrumbs %}
-
-
-{% block content %}
-
-  <h1>Supprimer le document</h1>
-  <form action="{% url 'docs:delete' object.pk %}" method="post">
-    {% csrf_token %}
-    <p>Êtes-vous sûr de vouloir supprimer le document « {{ object.title }} » ?</p>
-    <button type="submit" class="btn btn-danger">
-      <span class="glyphicon glyphicon-trash"></span>
-      Supprimer
-    </button>
-    <a href="{% url 'docs:index' %}" class="btn btn-default">
-      <span class="glyphicon glyphicon-remove-sign"></span>
-      Annuler
-    </a>
-  </form>
-
-{% endblock content %}
+{% endblock docs-content %}
