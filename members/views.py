@@ -14,7 +14,7 @@ from .utils import current_season
 
 class AdhesionsJsonView(LoginRequiredMixin, View):
     def serie(self, season, sector):
-        self.today = settings.NOW().date()
+        self.today = (settings.NOW() - timedelta(days=1)).date()
         start = date(season - 1, 9, 1)
         end = min(date(season, 8, 31), self.today)
         sql = '''
@@ -24,11 +24,13 @@ class AdhesionsJsonView(LoginRequiredMixin, View):
             WHERE season=%s
         '''
         if sector == 2:
-            sql += 'AND SUBSTR(members_structure.number, 1, 8) NOT IN (\'03000002\', \'05000001\', \'19001401\', \'18000002\', \'14005719\', \'27000006\', \'17000003\', \'27000005\')\n'
+            sql += '''AND SUBSTR(members_structure.number, 1, 8) NOT IN (\'03000002\', \'05000001\', \'19001401\',
+                      \'18000002\', \'14005719\', \'27000006\', \'17000003\', \'27000005\')\n'''
         elif sector == 3:
             sql += 'AND members_structure.number IN (\'0300000200\', \'0500000100\', \'1900140100\')\n'
         elif sector == 4:
-            sql += 'AND SUBSTR(members_structure.number, 1, 8) IN (\'18000002\', \'14005719\', \'27000006\', \'17000003\', \'27000005\')\n'
+            sql += '''AND SUBSTR(members_structure.number, 1, 8) IN (\'18000002\', \'14005719\', \'27000006\',
+                      \'17000003\', \'27000005\')\n'''
 
         sql += '''
             GROUP BY date
@@ -349,8 +351,10 @@ class TableauStructureView(LoginRequiredMixin, TemplateView):
         end = min(date(season, 8, 31), settings.NOW().date())
         if end.month == 2 and end.day == 29:
             end = end.replace(day=28)
-        qs0 = Structure.objects.filter(adherents__season=reference, adherents__date__lte=end.replace(year=reference)).annotate(headcount=Count('adherents'))
-        qs1 = Structure.objects.filter(adherents__season=season, adherents__date__lte=end).annotate(headcount=Count('adherents'))
+        qs0 = Structure.objects.filter(adherents__season=reference, adherents__date__lte=end.replace(year=reference))
+        qs0 = qs0.annotate(headcount=Count('adherents'))
+        qs1 = Structure.objects.filter(adherents__season=season, adherents__date__lte=end)
+        qs1 = qs1.annotate(headcount=Count('adherents'))
         data = {}
         for i, qsi in enumerate((qs0, qs1)):
             for structure in qsi:
@@ -358,7 +362,7 @@ class TableauStructureView(LoginRequiredMixin, TemplateView):
         for headcounts in data.values():
             headcounts.append(headcounts[1] - headcounts[0])
         data = list(data.items())
-        data.sort(key=lambda x:x[1][2])
+        data.sort(key=lambda x: x[1][2])
         context = {
             'seasons': [
                 "{}/{}".format(reference - 1, reference),

@@ -1,14 +1,12 @@
 from cuser.middleware import CuserMiddleware
-from decimal import Decimal
 from django.db import models
-from django.db.models import Case, ExpressionWrapper, F, Min, Max, Sum, Value, When
+from django.db.models import Case, ExpressionWrapper, F, Min, Max, Sum, When
 from django.db.models.functions import Cast, Coalesce, ExtractDay
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.timezone import now
-from math import floor
 
 
 class TrackingEvent(models.Model):
@@ -87,6 +85,7 @@ class Agreement(TrackingMixin, models.Model):
 
     def number(self):
         return "{year}-{order:03}".format(year=self.date.year, order=self.order)
+
     number.short_description = "Numéro"
 
     def __str__(self):
@@ -115,7 +114,7 @@ class BookingState(TrackingMixin, models.Model):
 
     class Meta:
         verbose_name = "Statut"
-        ordering = ('title', )
+        ordering = ('title',)
 
     def __str__(self):
         return self.title
@@ -131,7 +130,8 @@ class BookingManager(models.Manager):
         qs = qs.annotate(overnights=ExpressionWrapper(Sum(overnights), output_field=models.DecimalField()))
         qs = qs.annotate(price=Coalesce(Sum('items__price'), 0))
         amount_pppn = ExtractDay(F('items__end') - F('items__begin')) * F('items__headcount') * F('items__price_pppn')
-        qs = qs.annotate(amount_pppn=ExpressionWrapper(Coalesce(Sum(amount_pppn), 0), output_field=models.DecimalField()))
+        qs = qs.annotate(amount_pppn=ExpressionWrapper(Coalesce(Sum(amount_pppn), 0),
+                                                       output_field=models.DecimalField()))
         amount_pp = F('items__headcount') * F('items__price_pp')
         qs = qs.annotate(amount_pp=ExpressionWrapper(Coalesce(Sum(amount_pp), 0), output_field=models.DecimalField()))
         amount_pn = ExtractDay(F('items__end') - F('items__begin')) * F('items__price_pn')
@@ -140,8 +140,10 @@ class BookingManager(models.Manager):
                                            output_field=models.DecimalField())
         amount_cot = Case(When(items__cotisation=True, then=sub_amount_cot))
         qs = qs.annotate(amount_cot=ExpressionWrapper(Coalesce(Sum(amount_cot), 0), output_field=models.DecimalField()))
-        qs = qs.annotate(amount=Cast(F('price') + F('amount_pppn') + F('amount_pp') + F('amount_pn') + F('amount_cot'), output_field=models.DecimalField(max_digits=8, decimal_places=2)))
-        qs = qs.annotate(deposit=Cast(F('amount') * .3, output_field=models.DecimalField(max_digits=8, decimal_places=2)))
+        qs = qs.annotate(amount=Cast(F('price') + F('amount_pppn') + F('amount_pp') + F('amount_pn') + F('amount_cot'),
+                                     output_field=models.DecimalField(max_digits=8, decimal_places=2)))
+        qs = qs.annotate(deposit=Cast(F('amount') * .3,
+                                      output_field=models.DecimalField(max_digits=8, decimal_places=2)))
         return qs
 
 
@@ -215,7 +217,8 @@ class BookingItemManager(models.Manager):
         qs = qs.annotate(amount_pn=ExpressionWrapper(amount_pn, output_field=models.DecimalField()))
         amount_cot = Coalesce(Case(When(cotisation=True, then=F('overnights'))), 0)
         qs = qs.annotate(amount_cot=ExpressionWrapper(amount_cot, output_field=models.DecimalField()))
-        qs = qs.annotate(amount=Coalesce(F('price'), 0) + F('amount_pppn') + F('amount_pp') + F('amount_pn') + F('amount_cot'))
+        qs = qs.annotate(
+            amount=Coalesce(F('price'), 0) + F('amount_pppn') + F('amount_pp') + F('amount_pn') + F('amount_cot'))
         return qs
 
 

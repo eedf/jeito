@@ -17,6 +17,7 @@ class AdhesionsForm(forms.Form):
     )
     season = forms.ChoiceField(label="Saison", choices=season_choices)
     sector = forms.ChoiceField(label="Secteur", choices=sector_choices)
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
