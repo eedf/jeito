@@ -142,8 +142,6 @@ class BookingManager(models.Manager):
         qs = qs.annotate(amount_cot=ExpressionWrapper(Coalesce(Sum(amount_cot), 0), output_field=models.DecimalField()))
         qs = qs.annotate(amount=F('price') + F('amount_pppn') + F('amount_pp') + F('amount_pn') + F('amount_cot'))
         qs = qs.annotate(deposit=F('amount') * .3)
-        qs = qs.annotate(payment=Sum('payments__amount'))
-        qs = qs.annotate(balance=F('amount') - F('payment'))
         return qs
 
 
@@ -192,6 +190,14 @@ class Booking(TrackingMixin, models.Model):
     @property
     def agreement(self):
         return self.agreements.latest()
+
+    @property
+    def payment(self):
+        return self.payments.aggregate(Sum('amount'))['amount__sum']
+
+    @property
+    def balance(self):
+        return self.amount - self.payment
 
 
 class BookingItemManager(models.Manager):
