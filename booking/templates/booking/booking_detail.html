@@ -100,7 +100,7 @@
         <tr>
             <th>Solde</th>
             <td></td>
-            <td class="text-right">{% if booking.balance %}{{ booking.balance|floatformat:2 }} €{%  endif %}</td>
+            <td class="text-right">{% if booking.balance is not None %}{{ booking.balance|floatformat:2 }} €{%  endif %}</td>
         </tr>
         {% for agreement in booking.agreements.all %}
             <tr>

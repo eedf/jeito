@@ -2,7 +2,7 @@ from cuser.middleware import CuserMiddleware
 from decimal import Decimal
 from django.db import models
 from django.db.models import Case, ExpressionWrapper, F, Min, Max, Sum, Value, When
-from django.db.models.functions import Coalesce, ExtractDay
+from django.db.models.functions import Cast, Coalesce, ExtractDay
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -140,8 +140,8 @@ class BookingManager(models.Manager):
                                            output_field=models.DecimalField())
         amount_cot = Case(When(items__cotisation=True, then=sub_amount_cot))
         qs = qs.annotate(amount_cot=ExpressionWrapper(Coalesce(Sum(amount_cot), 0), output_field=models.DecimalField()))
-        qs = qs.annotate(amount=F('price') + F('amount_pppn') + F('amount_pp') + F('amount_pn') + F('amount_cot'))
-        qs = qs.annotate(deposit=F('amount') * .3)
+        qs = qs.annotate(amount=Cast(F('price') + F('amount_pppn') + F('amount_pp') + F('amount_pn') + F('amount_cot'), output_field=models.DecimalField(max_digits=8, decimal_places=2)))
+        qs = qs.annotate(deposit=Cast(F('amount') * .3, output_field=models.DecimalField(max_digits=8, decimal_places=2)))
         return qs
 
 
@@ -197,6 +197,8 @@ class Booking(TrackingMixin, models.Model):
 
     @property
     def balance(self):
+        if self.amount is None and self.payment is None:
+            return None
         return self.amount - self.payment
 
 
