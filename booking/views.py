@@ -13,7 +13,7 @@ from templated_docs import fill_template
 from .models import Booking, BookingItem, Agreement
 
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'booking/home.html'
 
     def get_context_data(self, **kwargs):
@@ -34,11 +34,11 @@ class HomeView(TemplateView):
         return context
 
 
-class BookingListView(ListView):
+class BookingListView(LoginRequiredMixin, ListView):
     queryset = Booking.objects.order_by('begin')
 
 
-class BookingDetailView(DetailView):
+class BookingDetailView(LoginRequiredMixin, DetailView):
     model = Booking
 
 
@@ -64,7 +64,7 @@ class CreateAgreementView(LoginRequiredMixin, DetailView):
         return HttpResponseRedirect(reverse('booking:booking_detail', kwargs={'pk': self.object.pk}))
 
 
-class OccupancyView(TemplateView):
+class OccupancyView(LoginRequiredMixin, TemplateView):
     template_name = 'booking/occupancy.html'
 
     def occupancy_for(self, day, product):
@@ -85,7 +85,7 @@ class OccupancyView(TemplateView):
         return context
 
 
-class StatsView(TemplateView):
+class StatsView(LoginRequiredMixin, TemplateView):
     template_name = 'booking/stats.html'
 
     def get_context_data(self, **kwargs):
