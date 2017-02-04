@@ -1,6 +1,8 @@
 import_members.sh
 /data/
 .idea/
+/env/
+/static/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
