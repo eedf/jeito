@@ -14,9 +14,9 @@ Sur une distribution GNU/Linux Ubuntu, dans un shell, exécute les commandes sui
 
 ```bash
 $ sudo apt-get install git docker.io python3 python-virtualenv python3-dev libpq-dev libxml2-dev libxslt1-dev
-$ sudo docker run --name jeito-postgres -e POSTGRES_USER=jeito -p 5432:5432 -d postgres
-$ sudo docker run --name jeito-elasticsearch -p 9200:9200 -d elasticsearch
-$ sudo docker run --name jeito-tika -p 9998:9998 -d logicalspark/docker-tikaserver
+$ docker run --name jeito-postgres -e POSTGRES_USER=jeito -p 5432:5432 -d postgres
+$ docker run --name jeito-elasticsearch -p 9200:9200 -d elasticsearch
+$ docker run --name jeito-tika -p 9998:9998 -d logicalspark/docker-tikaserver
 $ git clone https://github.com/eedf/jeito.git
 $ cd jeito
 $ virtualenv -p python3 env
@@ -42,7 +42,7 @@ $ ./manage.py migrate
 Dans un shell, exécute les commandes suivantes :
 
 ```bash
-$ sudo docker start jeito-postgres jeito-elasticsearch jeito-tika
+$ docker start jeito-postgres jeito-elasticsearch jeito-tika
 $ ./manage.py runserver
 ```
 
