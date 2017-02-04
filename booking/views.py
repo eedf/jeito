@@ -7,6 +7,7 @@ from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.timezone import now
 from django.views.generic import ListView, TemplateView, DetailView
+from members.utils import current_season
 from os import unlink
 from templated_docs import fill_template
 from .models import Booking, BookingItem, Agreement
@@ -85,38 +86,40 @@ class StatsView(TemplateView):
     template_name = 'booking/stats.html'
 
     def get_context_data(self, **kwargs):
-        items = BookingItem.objects.all()
+        season = self.request.GET.get('season', current_season())
+        kwargs['season'] = season
+        items = BookingItem.objects.filter(begin__year=season)
         kwargs['stats'] = {
             'headcount': sum([item.headcount for item in items if item.headcount]),
             'overnights': sum([item.overnights for item in items if item.overnights]),
             'amount_hosting': sum([item.amount - item.amount_cot for item in items if item.product in (1, 2, 5)]),
-            'amount_cot': sum([item.overnights for item in items if item.overnights]),
+            'amount_cot': sum([item.overnights for item in items if item.overnights if item.cotisation]),
             'amount_other': sum([item.amount for item in items if item.product in (3, 4)]),
             'amount': sum([item.amount for item in items]),
         }
         kwargs['stats']['overnight_cost'] = kwargs['stats']['amount_hosting'] / kwargs['stats']['overnights']
 
         STATS = (
-            ('stats_eedf', BookingItem.objects.filter(booking__org_type=1)),
-            ('stats_ext', BookingItem.objects.exclude(booking__org_type=1)),
-            ('stats_village', BookingItem.objects.filter(product__in=(2, 5))),
-            ('stats_terrain', BookingItem.objects.filter(product=1)),
-            ('stats_village_eedf', BookingItem.objects.filter(booking__org_type=1, product__in=(2, 5))),
-            ('stats_village_ext', BookingItem.objects.exclude(booking__org_type=1).filter(product__in=(2, 5))),
-            ('stats_terrain_eedf', BookingItem.objects.filter(booking__org_type=1, product=1)),
-            ('stats_terrain_ext', BookingItem.objects.exclude(booking__org_type=1).filter(product=1)),
-            ('stats_ete', BookingItem.objects.filter(end__gte='2017-07-01', begin__lte='2017-08-31')),
-            ('stats_avr', BookingItem.objects.filter(end__gte='2017-04-16', begin__lte='2017-05-01')),
-            ('stats_oct', BookingItem.objects.filter(end__gte='2017-10-20', begin__lte='2017-11-02')),
+            ('stats_eedf', items.filter(booking__org_type=1)),
+            ('stats_ext', items.exclude(booking__org_type=1)),
+            ('stats_village', items.filter(product__in=(2, 5))),
+            ('stats_terrain', items.filter(product=1)),
+            ('stats_village_eedf', items.filter(booking__org_type=1, product__in=(2, 5))),
+            ('stats_village_ext', items.exclude(booking__org_type=1).filter(product__in=(2, 5))),
+            ('stats_terrain_eedf', items.filter(booking__org_type=1, product=1)),
+            ('stats_terrain_ext', items.exclude(booking__org_type=1).filter(product=1)),
+            ('stats_ete', items.filter(end__gte='2017-07-01', begin__lte='2017-08-31')),
+            ('stats_avr', items.filter(end__gte='2017-04-16', begin__lte='2017-05-01')),
+            ('stats_oct', items.filter(end__gte='2017-10-20', begin__lte='2017-11-02')),
         )
-        for (name, items) in STATS:
+        for (name, subitems) in STATS:
             kwargs[name] = {
-                'headcount': sum([item.headcount for item in items if item.headcount]),
-                'overnights': sum([item.overnights for item in items if item.overnights]),
-                'amount_hosting': sum([item.amount - item.amount_cot for item in items if item.product in (1, 2, 5)]),
-                'amount_cot': sum([item.overnights for item in items if item.overnights]),
-                'amount_other': sum([item.amount for item in items if item.product in (3, 4)]),
-                'amount': sum([item.amount for item in items]),
+                'headcount': sum([item.headcount for item in subitems if item.headcount]),
+                'overnights': sum([item.overnights for item in subitems if item.overnights]),
+                'amount_hosting': sum([item.amount - item.amount_cot for item in subitems if item.product in (1, 2, 5)]),
+                'amount_cot': sum([item.overnights for item in subitems if item.overnights]),
+                'amount_other': sum([item.amount for item in subitems if item.product in (3, 4)]),
+                'amount': sum([item.amount for item in subitems]),
             }
             kwargs[name]['overnights_rate'] = (100 * kwargs[name]['overnights'] / kwargs['stats']['overnights'])
             kwargs[name]['amount_hosting_rate'] = (100 * kwargs[name]['amount_hosting'] / kwargs['stats']['amount_hosting'])
