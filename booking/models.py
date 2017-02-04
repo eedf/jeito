@@ -167,6 +167,8 @@ class Booking(TrackingMixin, models.Model):
                                             related_name='signedx_booking')
     signed_agreement_scan = models.FileField(verbose_name="Scan convention signée", upload_to='conventions_signees',
                                              blank=True)
+    invoice = models.FileField(verbose_name="Facture", upload_to='factures', blank=True)
+    invoice_number = models.CharField(max_length=10, blank=True)
 
     objects = BookingManager()
 
