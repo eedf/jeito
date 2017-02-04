@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'core',
     'members',
     'docs',
+    'booking',
     'becours',
 ]
 

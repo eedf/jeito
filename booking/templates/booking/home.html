@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container income">
+        <div class="row">
+            <div class="col-md-2">CA potential</div>
+            <div class="col-md-2 text-right"><span class="label label-warning">{{ potential_income|floatformat:2 }} €</span></div>
+            <div class="col-md-2 text-right"><span class="label label-warning">{{ potential_overnights|floatformat }} nuitées</span></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">CA confirmé/facturé</div>
+            <div class="col-md-2 text-right"><span class="label label-primary">{{ confirmed_income|floatformat:2 }} €</span></div>
+            <div class="col-md-2 text-right"><span class="label label-primary">{{ confirmed_overnights|floatformat }} nuitées</span></div>
+        </div>
+        <div class="row">
+            <div class="col-md-2">CA total</div>
+            <div class="col-md-2 text-right"><span class="label label-default">{{ total_income|floatformat:2 }} €</span></div>
+            <div class="col-md-2 text-right"><span class="label label-default">{{ total_overnights|floatformat }} nuitées</span></div>
+        </div>
+    </div>
+
+{% endblock content %}

@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h1>Occupation du terrain</h1>
+
+    <table class="table table-striped table-hover table-condensed">
+        <tr>
+            <th>Jour</th>
+            <th></th>
+            <th>Mois</th>
+            <th>Hameau</th>
+            <th></th>
+            <th>Terrain</th>
+            <th></th>
+        </tr>
+        {% for day, headcount1, items1, headcount2, items2 in occupancy %}
+            {% if headcount1 or headcount2 %}
+                <tr>
+                    <td>{{ day|date:'l' }}</td>
+                    <td>{{ day|date:'d' }}</td>
+                    <td>{{ day|date:'F' }}</td>
+                    <td><span class="badge">{{ headcount1|default:"" }}</span></td>
+                    <td>
+                        {% for item in items1 %}
+                            <span class="label label-{{ item.booking__state__color }}">{{ item.headcount }}</span>
+                            {{ item.booking__title }}
+                            {% if not forloop.last %} + {%endif %}
+                        {% endfor %}
+                    </td>
+                    <td><span class="badge">{{ headcount2|default:"" }}</span></td>
+                    <td>
+                        {% for item in items2 %}
+                            <span class="label label-{{ item.booking__state__color }}">{{ item.headcount }}</span>
+                            {{ item.booking__title }}
+                            {% if not forloop.last %} + {%endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+    </table>
+
+</div>
+
+{% endblock content %}
