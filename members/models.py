@@ -89,12 +89,13 @@ class Function(models.Model):
 
 class Rate(models.Model):
     CATEGORY_CHOICES = (
-        (1, 'Enfants'),
-        (2, 'Cadres'),
-        (3, 'Amis'),
-        (4, 'Stagiaires'),
-        (5, 'Services Vacances'),
+        (1, 'Enfant'),
+        (2, 'Responsable'),
+        (3, 'Soutien'),
+        (4, 'Stagiaire'),
+        (5, 'Import SV/CP'),
         (6, 'Découverte'),
+        (7, 'Salarié'),
     )
 
     name = models.CharField("Nom", max_length=256)
