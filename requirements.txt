@@ -2,6 +2,7 @@ cffi==1.9.1
 Django==1.10.5
 django-crispy-forms==1.6.0
 django-cuser==2016.5.29
+django-filter==1.0.1
 django-haystack==2.5.0
 django-mptt==0.8.6
 git+https://github.com/eedf/django-tagulous#egg=django-tagulous

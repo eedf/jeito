@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'haystack',
     'tagulous',
+    'django_filters',
     'core',
     'members',
     'docs',
@@ -153,3 +154,4 @@ TAGULOUS_AUTOCOMPLETE_CSS = {}
 TRACK_ANONYMOUS_USERS = False
 
 NOW = now
+USE_THOUSAND_SEPARATOR = True

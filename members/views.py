@@ -2,86 +2,68 @@ from collections import OrderedDict
 from datetime import date, timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
-from django.db import connection
-from django.db.models import Count, Sum, Q
+from django.db.models import Count, F, ExpressionWrapper, DecimalField
 from django.http import JsonResponse
 from django.utils.formats import date_format
 from django.views.generic import View, TemplateView
+import json
+from .filters import AdhesionFilter
 from .forms import AdhesionsForm
-from .models import Adhesion, Structure
+from .models import Adhesion, Structure, Function, Rate
 from .utils import current_season
 
 
+# TODO: use AdhesionFilter
 class AdhesionsJsonView(LoginRequiredMixin, View):
+    SVN_NUMBERS = ('0300000200', '0500000100', '1900140100')
+    CPN_NUMBERS = tuple(a + b for a, b in zip(('18000002', '14005719', '27000006', '17000003', '27000005'),
+                                              ('00', '01', '02', '03', '04')))
+
     def serie(self, season, GET):
         self.today = (settings.NOW() - timedelta(days=1)).date()
         start = date(season - 1, 9, 1)
         end = min(date(season, 8, 31), self.today)
-        sql = '''
-            SELECT date, COUNT(members_adhesion.id)
-            FROM members_adhesion
-            LEFT JOIN members_structure ON (members_structure.id = structure_id)
-            LEFT JOIN members_function ON (members_function.id = function_id)
-            LEFT JOIN members_rate ON (members_rate.id = rate_id)
-            WHERE members_adhesion.season=%s
-        '''
+        qs = Adhesion.objects.filter(season=season)
         if GET['sector'] == '1':
-            sql += '''AND SUBSTR(members_structure.number, 1, 8) NOT IN (\'03000002\', \'05000001\', \'19001401\',
-                      \'18000002\', \'14005719\', \'27000006\', \'17000003\', \'27000005\')\n'''
+            qs = qs.exclude(structure__number__in=self.SVN_NUMBERS + self.CPN_NUMBERS)
         elif GET['sector'] == '2':
-            sql += 'AND members_structure.number IN (\'0300000200\', \'0500000100\', \'1900140100\')\n'
+            qs = qs.filter(structure__number__in=self.SVN_NUMBERS)
         elif GET['sector'] == '3':
-            sql += '''AND SUBSTR(members_structure.number, 1, 8) IN (\'18000002\', \'14005719\', \'27000006\',
-                      \'17000003\', \'27000005\')\n'''
-
+            qs = qs.filter(structure__number__in=self.CPN_NUMBERS)
         if GET['units'] == '99':
-            sql += '''AND type NOT IN (1, 2, 7, 13)\n'''
+            qs = qs.exclude(structure__type__in=(1, 2, 7, 13))
         elif GET['units']:
-            sql += '''AND type=%s\n'''
-
+            qs = qs.filter(structure__type=GET['units'])
         if GET['function']:
-            sql += '''AND members_function.category=%s\n'''
-
+            qs = qs.filter(function__category=GET['function'])
         if GET['rate']:
-            sql += '''AND members_rate.category=%s\n'''
-
-        sql += '''
-            GROUP BY date
-            ORDER BY date
-        '''
-        params = [season]
-        if GET['units'] and GET['units'] != '99':
-            params.append(GET['units'])
-        if GET['function']:
-            params.append(GET['function'])
-        if GET['rate']:
-            params.append(GET['rate'])
-
-        cursor = connection.cursor()
-        cursor.execute(sql, params)
-        res = dict(cursor.fetchall())
-        res2 = OrderedDict()
+            qs = qs.filter(rate__category=GET['rate'])
+        qs = qs.order_by('-date').values('date').annotate(headcount=Count('id'))
+        qs = list(qs)
+        data = OrderedDict()
         dates = [start + timedelta(days=n) for n in
                  range((end - start).days + 1)]
         acc = 0
         for d in dates:
-            acc += res.get(d, 0)
-            if d.month != 2 or d.day != 29:
-                res2[d] = acc
-        return res2
+            if qs and qs[-1]['date'] == d:
+                acc += qs.pop()['headcount']
+            if d.month == 2 and d.day == 29:
+                continue
+            data[d] = acc
+        return data
 
     def get(self, request):
         season = int(self.request.GET['season'])
         reference = season - 1
-        result = self.serie(season, self.request.GET)
-        ref_result = self.serie(reference, self.request.GET)
-        date_max = max(result.keys())
+        data = self.serie(season, self.request.GET)
+        ref_data = self.serie(reference, self.request.GET)
+        date_max = max(data.keys())
         ref_date_max = date_max.replace(year=reference if date_max.month <= 8 else reference - 1,
                                         month=date_max.month, day=date_max.day)
         date1 = ref_date_max.strftime('%d/%m/%Y')
         date2 = date_max.strftime('%d/%m/%Y')
-        nb1 = ref_result[ref_date_max]
-        nb2 = result[date_max]
+        nb1 = ref_data[ref_date_max]
+        nb2 = data[date_max]
         diff = nb2 - nb1
         if nb1:
             percent = 100 * diff / nb1
@@ -94,10 +76,10 @@ class AdhesionsJsonView(LoginRequiredMixin, View):
             comment = """Au <strong>{}</strong> : <strong>{}</strong> adhérents
                       """.format(date2, nb2)
         data = {
-            'labels': [date_format(x, 'b') if x.day == 1 else '' for x in ref_result.keys()],
+            'labels': [date_format(x, 'b') if x.day == 1 else '' for x in ref_data.keys()],
             'series': [
-                list(ref_result.values()),
-                list(result.values()),
+                list(ref_data.values()),
+                list(data.values()),
             ],
             'comment': comment,
         }
@@ -128,267 +110,156 @@ class AdhesionsView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class TranchesJsonView(LoginRequiredMixin, View):
-
-    def get(self, request):
-        season = self.request.GET.get('season', current_season())
-        season = 2016
-        qs = Adhesion.objects.filter(season=season, structure__subtype=2)
-        qs = qs.exclude(rate__bracket="")
-        qs = qs.exclude(function__name_m="Stagiaire")
-        qs1 = qs.order_by('rate__bracket')
-        qs1 = qs1.values('rate__bracket')
-        qs1 = qs1.annotate(n=Count('id'))
-        qs2 = qs.values('rate__name', 'rate__rate', 'rate__rate_after_tax_ex')
-        qs2 = qs2.annotate(n=Count('id'))
-        total1 = sum(x['n'] for x in qs1)
-        total2 = sum(x['n'] for x in qs2)
-        assert total1 == total2
-        if qs.filter(rate__rate=None).exists():
-            comment = "Données manquantes pour calculer la cotisation moyenne"
-        else:
-            average_price = sum([x['n'] * x['rate__rate'] for x in qs2]) / total2
-            comment = "Cotisation moyenne : <strong>{:0.02f} €</strong>".format(float(average_price))
-        if qs.filter(rate__rate_after_tax_ex=None).exists():
-            comment += " (données manquantes pour calculer la cotisation moyenne après défiscalisation)"
-        else:
-            average_price_after_tax_ex = sum([x['n'] * x['rate__rate_after_tax_ex'] for x in qs2]) / total2
-            comment += " ({:0.02f} € après défiscalisation)".format(float(average_price_after_tax_ex))
-        data = {
-            'labels': [x['rate__bracket'] + ' (%0.1f %%)' % (100 * x['n'] / total1) for x in qs1],
-            'series': [x['n'] for x in qs1],
-            'comment': comment,
-        }
-        return JsonResponse(data)
-
-
-class TranchesView(LoginRequiredMixin, TemplateView):
-    def get_template_names(self):
-        if 'print' in self.request.GET:
-            return 'members/tranches_print.html'
-        else:
-            return 'members/tranches.html'
-
-
-class TableauRegionsView(LoginRequiredMixin, TemplateView):
-    template_name = 'members/tableau_regions.html'
-
-    def set_data(self, season, end):
-        for region in self.regions:
-            structures = region.get_descendants(include_self=True)
-            adhesions = Adhesion.objects.filter(structure__in=structures, season=season, date__lte=end)
-            adhesions = adhesions.exclude(structure__subtype__in=(4, 1))
-            count = adhesions.count()
-            self.data.setdefault(region.name, OrderedDict())[season] = count
-        total_regions = sum([self.data[region.name][season] for region in self.regions])
-        self.data.setdefault('<b>REGIONS</b>', OrderedDict())[season] = total_regions
-        structures = Structure.objects.filter(number__in=('0000100000', '0000200000'))
-        structures = structures.get_descendants(include_self=True)
-        count = Adhesion.objects.filter(structure__in=structures, season=season, date__lte=end).count()
-        self.data.setdefault('<b>SIEGE NATIONAL</b>', OrderedDict())[season] = count
-        services = Structure.objects.filter(subtype__in=(4, 1)).order_by('name')
-        for service in services:
-            adhesions = Adhesion.objects.filter(structure=service, season=season, date__lte=end)
-            count = adhesions.count()
-            self.data.setdefault(service.name, OrderedDict())[season] = count
-        count = Adhesion.objects.filter(structure__subtype__in=(4, 1), season=season, date__lte=end).count()
-        self.data.setdefault('<b>SERVICES VACANCES</b>', OrderedDict())[season] = count
-        total = Adhesion.objects.filter(season=season, date__lte=end).count()
-        self.data.setdefault('<b>TOTAL</b>', OrderedDict())[season] = total
-        count = self.data['<b>REGIONS</b>'][season]
-        count += self.data['<b>SIEGE NATIONAL</b>'][season]
-        count += self.data['<b>SERVICES VACANCES</b>'][season]
-        assert count == total
-
-    def get_context_data(self, **kwargs):
-        season = int(self.request.GET.get('season', current_season()))
-        reference = int(self.request.GET.get('reference', '0')) or season - 1
-        end = min(date(season, 8, 31), settings.NOW().date())
-        if end.month == 2 and end.day == 29:
-            end = end.replace(day=28)
-        self.regions = Structure.objects.filter(type=6).order_by('name')
-        self.data = OrderedDict()
-        self.set_data(reference, end.replace(year=reference))
-        self.set_data(season, end)
-        for key, val in self.data.items():
-            diff = val[season] - val[reference]
-            if diff > 0:
-                val['diff'] = "+ {}".format(diff)
-            elif diff == 0:
-                val['diff'] = "="
-            else:
-                val['diff'] = "- {}".format(-diff)
-            if diff == 0:
-                val['percent'] = "="
-            elif not val[reference]:
-                val['percent'] = "∞"
-            elif diff > 0:
-                val['percent'] = "+ {:0.1f} %".format(100 * diff / val[reference])
-            else:
-                val['percent'] = "- {:0.1f} %".format(-100 * diff / val[reference])
-        context = {
-            'seasons': [
-                "{}/{}".format(reference - 1, reference),
-                "{}/{}".format(season - 1, season),
-                "Variation",
-                "Variation %",
-            ],
-            'data': self.data,
-        }
-        return context
-
-
-class TableauFunctionsView(LoginRequiredMixin, TemplateView):
-    template_name = 'members/tableau_functions.html'
-
-    def set_data(self, season, end):
-        all_adhesions = Adhesion.objects.filter(season=season)
-        all_adhesions = all_adhesions.filter(date__lte=end)
-        all_adhesions = all_adhesions.filter(Q(structure__subtype=2))
-        for function in self.functions:
-            count_func = all_adhesions.filter(function__name_m=function).count()
-            self.data.setdefault(function, OrderedDict())[season] = count_func
-        count_all = all_adhesions.count()
-        count_others = count_all - sum([self.data[function][season] for function in self.functions])
-        self.data.setdefault('Autre', OrderedDict())[season] = count_others
-        self.data.setdefault('<b>TOTAL</b>', OrderedDict())[season] = count_all
-
-    def get_context_data(self, **kwargs):
-        self.functions = (
-            "Stagiaire",
-            "Lutin",
-            "Louveteau",
-            "Eclaireur",
-            "Ainé",
-            "Participant activité",
-            "Ami",
-            "Parent",
-            "Nomade",
-            "Service civique",
-        )
-        season = int(self.request.GET.get('season', current_season()))
-        reference = int(self.request.GET.get('reference', '0')) or season - 1
-        end = min(date(season, 8, 31), settings.NOW().date())
-        if end.month == 2 and end.day == 29:
-            end = end.replace(day=28)
-        self.data = OrderedDict()
-        self.set_data(reference, end.replace(year=reference))
-        self.set_data(season, end)
-        for key, val in self.data.items():
-            diff = val[season] - val[reference]
-            if diff > 0:
-                val['diff'] = "+ {}".format(diff)
-            elif diff == 0:
-                val['diff'] = "="
-            else:
-                val['diff'] = "- {}".format(-diff)
-            if diff == 0:
-                val['percent'] = "="
-            elif not val[reference]:
-                val['percent'] = "∞"
-            elif diff > 0:
-                val['percent'] = "+ {:0.1f} %".format(100 * diff / val[reference])
-            else:
-                val['percent'] = "- {:0.1f} %".format(-100 * diff / val[reference])
-        context = {
-            'seasons': [
-                "{}/{}".format(reference - 1, reference),
-                "{}/{}".format(season - 1, season),
-                "Variation",
-                "Variation %",
-            ],
-            'data': self.data,
-        }
-        return context
-
-
 class TableauAmountView(LoginRequiredMixin, TemplateView):
     template_name = 'members/tableau_amount.html'
 
     def get_context_data(self, **kwargs):
-        season = int(self.request.GET.get('season', current_season()))
-        reference = int(self.request.GET.get('reference', '0')) or season - 1
-        end = min(date(season, 8, 31), settings.NOW().date())
-        if end.month == 2 and end.day == 29:
-            end = end.replace(day=28)
-        self.data = OrderedDict()
-        qs1 = Adhesion.objects.filter(season=reference, date__lte=end.replace(year=reference))
-        qs1 = qs1.exclude(rate__name="Service Vacance import")
-        qs1 = qs1.filter(structure__subtype=2)
-        qs1 = qs1.values('rate__name').annotate(nb=Count('id'), amount=Sum('rate__rate'))
-        qs2 = Adhesion.objects.filter(season=season, date__lte=end)
-        qs2 = qs2.exclude(rate__name="Service Vacance import")
-        qs2 = qs2.filter(structure__subtype=2)
-        qs2 = qs2.values('rate__name').annotate(nb=Count('id'), amount=Sum('rate__rate'))
+        filter = AdhesionFilter(self.request.GET)
+        qs = filter.qs.values('rate__name', 'rate__rate')
+        qs = qs.annotate(headcount=Count('id'))
+        qs = qs.annotate(amount=ExpressionWrapper(Count('id') * F('rate__rate'), output_field=DecimalField()))
+        qs = qs.order_by('-amount')
         context = {
-            'seasons': [
-                "{}/{}".format(reference - 1, reference),
-                "{}/{}".format(season - 1, season),
-            ],
-            'data1': qs1,
-            'data2': qs2,
+            'filter': filter,
+            'date': filter.date.strftime('%d/%m/%Y'),
+            'data': qs,
+            'total_headcount': sum([obj['headcount'] or 0 for obj in qs]),
+            'total_amount': sum([obj['amount'] or 0 for obj in qs]),
         }
         return context
 
 
-class TableauStructureTypeView(LoginRequiredMixin, TemplateView):
-    template_name = 'members/tableau_structure_types.html'
+class TableauView(LoginRequiredMixin, TemplateView):
+    template_name = 'members/tableau.html'
 
-    def get_context_data(self, **kwargs):
-        season = int(self.request.GET.get('season', current_season()))
-        reference = int(self.request.GET.get('reference', '0')) or season - 1
-        end = min(date(season, 8, 31), settings.NOW().date())
-        if end.month == 2 and end.day == 29:
-            end = end.replace(day=28)
-        qs = Adhesion.objects.values('structure__type', 'structure__subtype').annotate(headcount=Count('id'))
+    def format_diff(self, row):
+        diff = row[1] - row[0]
+        if diff > 0:
+            return "+ {}".format(diff)
+        elif diff == 0:
+            return "="
+        else:
+            return "- {}".format(-diff)
+
+    def format_percent(self, row):
+        diff = row[1] - row[0]
+        if diff == 0:
+            return "="
+        elif not row[0]:
+            return "∞"
+        elif diff > 0:
+            return "+ {:0.1f} %".format(100 * diff / row[0])
+        else:
+            return "- {:0.1f} %".format(-100 * diff / row[0])
+
+    def aggregate(self, qs):
+        qs = qs.values(*self.values).annotate(headcount=Count('id'))
         qs = qs.order_by('-headcount')
-        qs0 = qs.filter(season=reference, date__lte=end.replace(year=reference))
-        qs1 = qs.filter(season=season, date__lte=end)
-        data = {}
-        for i, qsi in enumerate((qs0, qs1)):
-            for obj in qsi:
-                type = dict(Structure.TYPE_CHOICES)[obj['structure__type']]
-                if obj['structure__subtype']:
-                    type += " (" + dict(Structure.SUBTYPE_CHOICES)[obj['structure__subtype']] + ")"
-                data.setdefault(type, [0, 0])[i] = obj['headcount']
-        for headcounts in data.values():
-            headcounts.append(headcounts[1] - headcounts[0])
-        context = {
-            'seasons': [
-                "{}/{}".format(reference - 1, reference),
-                "{}/{}".format(season - 1, season),
-            ],
-            'data': data,
-        }
-        return context
+        return qs
 
-
-class TableauStructureView(LoginRequiredMixin, TemplateView):
-    template_name = 'members/tableau_structures.html'
+    def graph_label(self, key, values, total):
+        if values[1] * 50 < total[1]:
+            return None
+        if not total[1]:
+            return key
+        return "{} ({:0.1f}%)".format(key, 100 * values[1] / total[1])
 
     def get_context_data(self, **kwargs):
-        season = int(self.request.GET.get('season', current_season()))
-        reference = int(self.request.GET.get('reference', '0')) or season - 1
-        end = min(date(season, 8, 31), settings.NOW().date())
-        if end.month == 2 and end.day == 29:
-            end = end.replace(day=28)
-        qs0 = Structure.objects.filter(adherents__season=reference, adherents__date__lte=end.replace(year=reference))
-        qs0 = qs0.annotate(headcount=Count('adherents'))
-        qs1 = Structure.objects.filter(adherents__season=season, adherents__date__lte=end)
-        qs1 = qs1.annotate(headcount=Count('adherents'))
-        data = {}
-        for i, qsi in enumerate((qs0, qs1)):
-            for structure in qsi:
-                data.setdefault(structure, [0, 0])[i] = structure.headcount
-        for headcounts in data.values():
-            headcounts.append(headcounts[1] - headcounts[0])
-        data = list(data.items())
-        data.sort(key=lambda x: x[1][2])
+        filter = AdhesionFilter(self.request.GET)
+        ref_filter = AdhesionFilter(self.request.GET, ref=True)
+        data = OrderedDict()
+        total = [0, 0]
+        for i, qs in ((1, filter.qs), (0, ref_filter.qs)):
+            qs = self.aggregate(qs)
+            for obj in qs:
+                data.setdefault(self.row_key(obj), [0, 0])[i] = obj['headcount']
+                total[i] += obj['headcount']
+        graph = {
+            'labels': [self.graph_label(key, values, total) for key, values in data.items()],
+            'series': [values[1] for values in data.values()]
+        }
+        data['TOTAL'] = total
+        for row in data.values():
+            row.append(self.format_diff(row))
+            row.append(self.format_percent(row))
         context = {
-            'seasons': [
-                "{}/{}".format(reference - 1, reference),
-                "{}/{}".format(season - 1, season),
-            ],
+            'title': self.title,
+            'filter': filter,
+            'header': (
+                "Au {}".format(ref_filter.date.strftime('%d/%m/%Y')),
+                "Au {}".format(filter.date.strftime('%d/%m/%Y')),
+                "Variation",
+                "Variation %",
+            ),
             'data': data,
+            'graph': json.dumps(graph),
         }
         return context
+
+
+class TableauStructureTypeView(TableauView):
+    values = ('structure__type', 'structure__subtype')
+    title = "type de structure"
+
+    def row_key(self, obj):
+        type = dict(Structure.TYPE_CHOICES)[obj['structure__type']]
+        if obj['structure__subtype']:
+            type += " (" + dict(Structure.SUBTYPE_CHOICES)[obj['structure__subtype']] + ")"
+        return type
+
+
+class TableauStructureView(TableauView):
+    values = ('structure__name', )
+    title = "structure"
+
+    def row_key(self, obj):
+        return obj['structure__name']
+
+
+class TableauFunctionsView(TableauView):
+    values = ('function__category', )
+    title = "fonction"
+
+    def row_key(self, obj):
+        return dict(Function.CATEGORY_CHOICES)[obj['function__category']]
+
+
+class TableauRateView(TableauView):
+    values = ('rate__category', )
+    title = "tarif"
+
+    def row_key(self, obj):
+        if obj['rate__category'] is None:
+            return "Autre"
+        return dict(Rate.CATEGORY_CHOICES)[obj['rate__category']]
+
+
+class TableauRegionsView(TableauView):
+    values = ('region', )
+    title = "région"
+
+    def aggregate(self, qs):
+        regions = Structure.objects.filter(type=6).order_by('name')
+        res = []
+        for region in regions:
+            headcount = qs.filter(structure__in=region.get_descendants(include_self=True)).count()
+            res.append({'region': region, 'headcount': headcount})
+        res.sort(key=lambda obj: obj['headcount'], reverse=True)
+        return res
+
+    def row_key(self, obj):
+        return obj['region'].name.replace('EEDF ', '')
+
+
+# TODO: calcule le prix moyen de la cotisation (avant et après déduction)
+class TranchesView(TableauView):
+    values = ('rate__bracket', )
+    title = "tranche d'imposition"
+
+    def aggregate(self, qs):
+        qs = super().aggregate(qs)
+        qs = qs.filter(rate__category=1)
+        return qs
+
+    def row_key(self, obj):
+        return obj['rate__bracket']
