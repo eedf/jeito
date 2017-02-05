@@ -132,7 +132,16 @@
                 </td>
                 <td></td>
             </tr>
-    {%  endif %}
+        {%  endif %}
+        {% if booking.invoice or booking.invoice_number %}
+            <tr>
+                <th>Facture</th>
+                <td>
+                    {% if booking.invoice %}<a href="{{ booking.invoice.url }}">{% endif %}{{ booking.invoice_number|default:"télécharger" }}{% if booking.invoice %}</a>{% endif %}
+                </td>
+                <td></td>
+            </tr>
+        {% endif %}
     </table>
 
 </div>
