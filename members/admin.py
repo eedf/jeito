@@ -17,6 +17,20 @@ class FunctionAdmin(admin.ModelAdmin):
     search_fields = ('code', 'name_m', 'name_f')
     list_filter = ('season', 'category')
 
+    def get_actions(self, request):
+        def make_func(index):
+            def func(modeladmin, request, queryset):
+                queryset.update(category=index)
+
+            return func
+
+        actions = super(FunctionAdmin, self).get_actions(request)
+        for index, name in Function.CATEGORY_CHOICES:
+            key = "set_category_{}".format(index)
+            short_description = "Placer dans {}".format(name)
+            actions[key] = (make_func(index), key, short_description)
+        return actions
+
 
 @admin.register(Rate)
 class RateAdmin(admin.ModelAdmin):

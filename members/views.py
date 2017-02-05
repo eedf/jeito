@@ -13,7 +13,7 @@ from .utils import current_season
 
 
 class AdhesionsJsonView(LoginRequiredMixin, View):
-    def serie(self, season, sector, branch):
+    def serie(self, season, GET):
         self.today = (settings.NOW() - timedelta(days=1)).date()
         start = date(season - 1, 9, 1)
         end = min(date(season, 8, 31), self.today)
@@ -21,29 +21,42 @@ class AdhesionsJsonView(LoginRequiredMixin, View):
             SELECT date, COUNT(members_adhesion.id)
             FROM members_adhesion
             LEFT JOIN members_structure ON (members_structure.id = structure_id)
-            WHERE season=%s
+            LEFT JOIN members_function ON (members_function.id = function_id)
+            LEFT JOIN members_rate ON (members_rate.id = rate_id)
+            WHERE members_adhesion.season=%s
         '''
-        if sector == 1:
+        if GET['sector'] == '1':
             sql += '''AND SUBSTR(members_structure.number, 1, 8) NOT IN (\'03000002\', \'05000001\', \'19001401\',
                       \'18000002\', \'14005719\', \'27000006\', \'17000003\', \'27000005\')\n'''
-        elif sector == 2:
+        elif GET['sector'] == '2':
             sql += 'AND members_structure.number IN (\'0300000200\', \'0500000100\', \'1900140100\')\n'
-        elif sector == 3:
+        elif GET['sector'] == '3':
             sql += '''AND SUBSTR(members_structure.number, 1, 8) IN (\'18000002\', \'14005719\', \'27000006\',
                       \'17000003\', \'27000005\')\n'''
 
-        if branch == 99:
+        if GET['units'] == '99':
             sql += '''AND type NOT IN (1, 2, 7, 13)\n'''
-        elif branch:
+        elif GET['units']:
             sql += '''AND type=%s\n'''
+
+        if GET['function']:
+            sql += '''AND members_function.category=%s\n'''
+
+        if GET['rate']:
+            sql += '''AND members_rate.category=%s\n'''
 
         sql += '''
             GROUP BY date
             ORDER BY date
         '''
         params = [season]
-        if branch and branch !=99:
-            params.append(branch)
+        if GET['units'] and GET['units'] != '99':
+            params.append(GET['units'])
+        if GET['function']:
+            params.append(GET['function'])
+        if GET['rate']:
+            params.append(GET['rate'])
+
         cursor = connection.cursor()
         cursor.execute(sql, params)
         res = dict(cursor.fetchall())
@@ -60,10 +73,8 @@ class AdhesionsJsonView(LoginRequiredMixin, View):
     def get(self, request):
         season = int(self.request.GET['season'])
         reference = season - 1
-        sector = int(self.request.GET['sector'])
-        branch = int(self.request.GET['branch'])
-        result = self.serie(season, sector, branch)
-        ref_result = self.serie(reference, sector, branch)
+        result = self.serie(season, self.request.GET)
+        ref_result = self.serie(reference, self.request.GET)
         date_max = max(result.keys())
         ref_date_max = date_max.replace(year=reference if date_max.month <= 8 else reference - 1,
                                         month=date_max.month, day=date_max.day)
@@ -103,12 +114,12 @@ class AdhesionsView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         season = self.request.GET.get('season', current_season())
         sector = self.request.GET.get('sector', 0)
-        branch = self.request.GET.get('branch', 0)
+        branch = self.request.GET.get('units', 0)
         initial = self.request.GET.dict()
         initial.update({
             'season': season,
             'sector': sector,
-            'branch': branch,
+            'units': branch,
         })
         form = AdhesionsForm(initial=initial)
         context = super().get_context_data(**kwargs)
