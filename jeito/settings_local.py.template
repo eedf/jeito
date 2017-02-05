@@ -6,7 +6,7 @@ from .settings import *  # NOQA
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'HOST': 'postgres',
+        'HOST': 'localhost',
         'NAME': 'jeito',
         'USER': 'jeito',
         'PASSWORD': '',
