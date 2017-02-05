@@ -1,4 +1,5 @@
-import_members.sh
+/import_members.sh
+/sync_from_prod.sh
 /data/
 .idea/
 /env/
