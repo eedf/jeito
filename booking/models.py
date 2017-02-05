@@ -201,7 +201,7 @@ class Booking(TrackingMixin, models.Model):
     def balance(self):
         if self.amount is None and self.payment is None:
             return None
-        return self.amount or 0 - self.payment or 0
+        return (self.amount or 0) - (self.payment or 0)
 
 
 class BookingItemManager(models.Manager):
