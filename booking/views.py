@@ -6,10 +6,12 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.text import slugify
 from django.utils.timezone import now
-from django.views.generic import ListView, TemplateView, DetailView
+from django.views.generic import TemplateView, DetailView
+from django_filters.views import FilterView
 from members.utils import current_season
 from os import unlink
 from templated_docs import fill_template
+from .filters import BookingFilter
 from .models import Booking, BookingItem, Agreement
 
 
@@ -34,8 +36,9 @@ class HomeView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class BookingListView(LoginRequiredMixin, ListView):
-    queryset = Booking.objects.order_by('begin')
+class BookingListView(LoginRequiredMixin, FilterView):
+    template_name = 'booking/booking_list.html'
+    filterset_class = BookingFilter
 
 
 class BookingDetailView(LoginRequiredMixin, DetailView):
