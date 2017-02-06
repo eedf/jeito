@@ -207,6 +207,10 @@ class Booking(TrackingMixin, models.Model):
             return None
         return (self.amount or 0) - (self.payment or 0)
 
+    @property
+    def gone(self):
+        return bool(self.end) and self.end < settings.NOW().date();
+
 
 class BookingItemManager(models.Manager):
     def get_queryset(self):

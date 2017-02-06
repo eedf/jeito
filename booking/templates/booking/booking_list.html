@@ -23,7 +23,7 @@
             <th>Convention</th>
         </tr>
         {% for booking in booking_list %}
-            <tr>
+            <tr {% ifchanged booking.gone %}class="separator"{% endifchanged %}>
                 <td><a href="{{ booking.get_absolute_url }}">{{ booking.title }}</a></td>
                 <td><span class="label label-{{ booking.state.color }}">{{ booking.state.title }}</span></td>
                 <td align="right">{{ booking.begin|date:'D d/m/y' }}</td>
