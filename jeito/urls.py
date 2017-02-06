@@ -12,3 +12,9 @@ urlpatterns = [
     url(r'^becours/', include('booking.urls', namespace='booking')),
     url(r'^tracking/', include('tracking.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns += [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ]
