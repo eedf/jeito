@@ -111,9 +111,10 @@ class StatsView(LoginRequiredMixin, TemplateView):
             ('stats_village_ext', items.exclude(booking__org_type=1).filter(product__in=(2, 5))),
             ('stats_terrain_eedf', items.filter(booking__org_type=1, product=1)),
             ('stats_terrain_ext', items.exclude(booking__org_type=1).filter(product=1)),
-            ('stats_ete', items.filter(end__gte='2017-07-01', begin__lte='2017-08-31')),
-            ('stats_avr', items.filter(end__gte='2017-04-16', begin__lte='2017-05-01')),
-            ('stats_oct', items.filter(end__gte='2017-10-20', begin__lte='2017-11-02')),
+            ('stats_q1', items.filter(begin__month__lte=3)),
+            ('stats_q2', items.filter(begin__month__gte=4, begin__month__lte=6)),
+            ('stats_q3', items.filter(begin__month__gte=7, begin__month__lte=9)),
+            ('stats_q4', items.filter(begin__month__gte=10)),
         )
         for (name, subitems) in stats:
             kwargs[name] = {
