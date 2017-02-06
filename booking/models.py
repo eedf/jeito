@@ -191,11 +191,15 @@ class Booking(TrackingMixin, models.Model):
 
     @property
     def agreement(self):
-        return self.agreements.latest()
+        agreements = self.agreements.all()
+        if not agreements:
+            return None
+        agreements.sort(key=lambda agreement: agreement.date, reversed=True)
+        return agreements[0]
 
     @property
     def payment(self):
-        return self.payments.aggregate(Sum('amount'))['amount__sum']
+        return sum([payment.amount for payment in self.payments.all()])
 
     @property
     def balance(self):
