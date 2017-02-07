@@ -28,7 +28,8 @@ class Entry(models.Model):
     date = models.DateField(verbose_name="Date")
     account = models.ForeignKey(Account, verbose_name="Compte")
     title = models.CharField(verbose_name="Intitulé", max_length=100)
-    amount = models.DecimalField(verbose_name="Montant", max_digits=8, decimal_places=2)
+    revenue = models.DecimalField(verbose_name="Recette", max_digits=8, decimal_places=2)
+    expense = models.DecimalField(verbose_name="Dépense", max_digits=8, decimal_places=2)
     analytic = models.ForeignKey(Analytic, verbose_name="Analytique", blank=True, null=True)
 
     class Meta:
@@ -41,9 +42,11 @@ class Entry(models.Model):
 class Budget(models.Model):
     analytic = models.OneToOneField(Analytic, verbose_name="Analytique")
     amount = models.DecimalField(verbose_name="Montant", max_digits=8, decimal_places=2)
+    comment = models.CharField(verbose_name="Commentaire", max_length=1000, blank=True)
 
     def done(self):
-        return self.analytic.entry_set.aggregate(models.Sum('amount'))['amount__sum']
+        qs = self.analytic.entry_set.aggregate(amount=models.Sum(models.F('expense') - models.F('revenue')))
+        return qs['amount']
 
     def diff(self):
         return self.amount - self.done()
