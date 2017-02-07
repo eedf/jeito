@@ -191,10 +191,10 @@ class Booking(TrackingMixin, models.Model):
 
     @property
     def agreement(self):
-        agreements = self.agreements.all()
+        agreements = list(self.agreements.all())
         if not agreements:
             return None
-        agreements.sort(key=lambda agreement: agreement.date, reversed=True)
+        agreements.sort(key=lambda agreement: agreement.date, reverse=True)
         return agreements[0]
 
     @property
