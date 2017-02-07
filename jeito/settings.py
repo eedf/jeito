@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'members',
     'docs',
     'booking',
+    'accounting',
 ]
 
 MIDDLEWARE_CLASSES = [
