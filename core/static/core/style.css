@@ -89,3 +89,7 @@ table.docs .label {
 tr.separator:not(:nth-child(2)) {
     border-top: solid red 2px;
 }
+
+.booking-stats td {
+    text-align: right;
+}

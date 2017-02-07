@@ -8,7 +8,6 @@ from django.utils.text import slugify
 from django.utils.timezone import now
 from django.views.generic import TemplateView, DetailView
 from django_filters.views import FilterView
-from members.utils import current_season
 from os import unlink
 from templated_docs import fill_template
 from .filters import BookingFilter
@@ -92,9 +91,9 @@ class StatsView(LoginRequiredMixin, TemplateView):
     template_name = 'booking/stats.html'
 
     def get_context_data(self, **kwargs):
-        season = self.request.GET.get('season', current_season())
-        kwargs['season'] = season
-        items = BookingItem.objects.filter(begin__year=season)
+        filter = BookingFilter(self.request.GET)
+        items = BookingItem.objects.filter(booking__in=filter.qs)
+        kwargs['filter'] = filter
         kwargs['stats'] = {
             'headcount': sum([item.headcount for item in items if item.headcount]),
             'overnights': sum([item.overnights for item in items if item.overnights]),
