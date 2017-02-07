@@ -7,6 +7,7 @@ class Account(models.Model):
 
     class Meta:
         verbose_name = "Compte"
+        ordering = ('number', )
 
     def __str__(self):
         return "{} {}".format(self.number, self.title)
@@ -17,6 +18,7 @@ class Analytic(models.Model):
 
     class Meta:
         verbose_name = "Analytique"
+        ordering = ('title', )
 
     def __str__(self):
         return self.title
