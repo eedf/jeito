@@ -144,6 +144,13 @@
         {% endif %}
     </table>
 
+    {% if perms.booking.change_booking %}
+        <a href="{% url 'admin:booking_booking_change' booking.pk %}" class="btn btn-primary">
+            <span class="glyphicon glyphicon-edit"></span>
+            Modifier
+        </a>
+    {% endif %}
+
 </div>
 
 {% endblock content %}
