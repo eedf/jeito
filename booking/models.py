@@ -209,7 +209,7 @@ class Booking(TrackingMixin, models.Model):
 
     @property
     def gone(self):
-        return bool(self.end) and self.end < settings.NOW().date();
+        return bool(self.end) and self.end < settings.NOW().date()
 
 
 class BookingItemManager(models.Manager):
