@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Analytic, Entry
+from .models import Account, Analytic, Entry, Budget
 
 
 @admin.register(Account)
@@ -19,3 +19,9 @@ class EntryAdmin(admin.ModelAdmin):
     list_editable = ('analytic', )
     date_hierarchy = 'date'
     list_filter = ('account', 'analytic', )
+
+
+@admin.register(Budget)
+class BudgetAdmin(admin.ModelAdmin):
+    list_display = ('analytic', 'amount', 'done', 'diff')
+    list_editable = ('amount', )

@@ -34,3 +34,14 @@ class Entry(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Budget(models.Model):
+    analytic = models.OneToOneField(Analytic, verbose_name="Analytique")
+    amount = models.DecimalField(verbose_name="Montant", max_digits=8, decimal_places=2)
+
+    def done(self):
+        return self.analytic.entry_set.aggregate(models.Sum('amount'))['amount__sum']
+
+    def diff(self):
+        return self.amount - self.done()

@@ -12,17 +12,23 @@
     <table class="table table-striped table-hover">
         <tr>
             <th>Intitulé</th>
-            <th>Montant</th>
+            <th>Réalisé 2016</th>
+            <th>Budget 2017</th>
+            <th>Variation</th>
         </tr>
         {% for row in data %}
             <tr>
-                <td>{{ row.analytic__title }}</td>
+                <td>{{ row.title }}</td>
                 <td align="right">{{ row.amount|floatformat:2 }} €</td>
+                <td align="right">{{ row.budget.amount|floatformat:2 }} €</td>
+                <td align="right">{{ row.diff|floatformat:2 }} €</td>
             </tr>
         {% endfor %}
         <tr>
             <td><strong>Solde</strong></td>
             <td align="right"><strong>{{ balance|floatformat:2 }} €</strong></td>
+            <td align="right"><strong>{{ budget_balance|floatformat:2 }} €</strong></td>
+            <td align="right"><strong>{{ diff_balance|floatformat:2 }} €</strong></td>
         </tr>
     </table>
 
