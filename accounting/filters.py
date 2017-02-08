@@ -19,7 +19,7 @@ class AnalyticFilterForm(forms.Form):
             HTML("""<button type="submit" class=\"btn btn-success\">
                     <span class="glyphicon glyphicon-ok-sign"></span> Appliquer
                     </button>"""),
-       )
+        )
 
 
 class AnalyticFilter(django_filters.FilterSet):
