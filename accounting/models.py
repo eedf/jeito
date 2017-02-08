@@ -50,3 +50,14 @@ class Budget(models.Model):
 
     def diff(self):
         return self.amount - self.done()
+
+
+class BankStatement(models.Model):
+    date = models.DateField()
+    scan = models.FileField()
+    balance = models.DecimalField(verbose_name="Solde", max_digits=8, decimal_places=2)
+
+    class Meta:
+        verbose_name = "Relevé de compte"
+        verbose_name_plural = "Relevés de compte"
+        ordering = ('-date', )

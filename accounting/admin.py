@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Analytic, Entry, Budget
+from .models import Account, Analytic, Entry, Budget, BankStatement
 
 
 @admin.register(Account)
@@ -29,3 +29,9 @@ class BudgetAdmin(admin.ModelAdmin):
     list_display = ('analytic', 'amount', 'done', 'diff')
     list_editable = ('amount', )
     search_fields = ('analytic__title', )
+
+
+@admin.register(BankStatement)
+class BankStatementAdmin(admin.ModelAdmin):
+    list_display = ('date', 'scan', 'balance')
+    date_hierarchy = 'date'

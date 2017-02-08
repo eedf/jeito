@@ -11,27 +11,30 @@
 
     <table class="table table-striped table-hover">
         <tr>
-            <th>Numéro</th>
             <th>Intitulé</th>
             <th>Recettes 2016</th>
             <th>Dépenses 2016</th>
             <th>Solde 2016</th>
+            <th>Budget 2017</th>
+            <th>Variation</th>
         </tr>
         {% for row in data %}
             <tr>
-                <td>{{ row.number }}</td>
                 <td>{{ row.title }}</td>
                 <td align="right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
                 <td align="right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
                 <td align="right">{{ row.solde|floatformat:2 }} €</td>
+                <td align="right">{% if row.budget %}{{ row.budget.amount|floatformat:2 }} €{% endif %}</td>
+                <td align="right">{% if row.diff %}{{ row.diff|floatformat:2 }} €{% endif %}</td>
             </tr>
         {% endfor %}
         <tr>
-            <td></td>
             <td><strong>Solde</strong></td>
             <td align="right"><strong>{{ revenues|floatformat:2 }} €</strong></td>
             <td align="right"><strong>{{ expenses|floatformat:2 }} €</strong></td>
             <td align="right"><strong>{{ solde|floatformat:2 }} €</strong></td>
+            <td align="right"><strong>{{ budget_balance|floatformat:2 }} €</strong></td>
+            <td align="right"><strong>{{ diff_balance|floatformat:2 }} €</strong></td>
         </tr>
     </table>
 
