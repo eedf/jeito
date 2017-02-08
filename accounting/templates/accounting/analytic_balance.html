@@ -7,7 +7,7 @@
 
     <h1>Compte de résultat</h1>
 
-    {% comment %}{% crispy filter.form %}{% endcomment %}
+    {% crispy filter.form %}
 
     <table class="table table-striped table-hover">
         <tr>
@@ -18,14 +18,14 @@
             <th>Budget 2017</th>
             <th>Variation</th>
         </tr>
-        {% for row in data %}
+        {% for analytic in analytic_list %}
             <tr>
-                <td>{{ row.title }}</td>
-                <td align="right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
-                <td align="right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
-                <td align="right">{{ row.solde|floatformat:2 }} €</td>
-                <td align="right">{% if row.budget %}{{ row.budget.amount|floatformat:2 }} €{% endif %}</td>
-                <td align="right">{% if row.diff %}{{ row.diff|floatformat:2 }} €{% endif %}</td>
+                <td>{{ analytic.title }}</td>
+                <td align="right">{% if analytic.revenue %}{{ analytic.revenue|floatformat:2 }} €{% endif %}</td>
+                <td align="right">{% if analytic.expense %}{{ analytic.expense|floatformat:2 }} €{% endif %}</td>
+                <td align="right">{{ analytic.solde|floatformat:2 }} €</td>
+                <td align="right">{% if analytic.budget %}{{ analytic.budget.amount|floatformat:2 }} €{% endif %}</td>
+                <td align="right">{% if analytic.diff %}{{ analytic.diff|floatformat:2 }} €{% endif %}</td>
             </tr>
         {% endfor %}
         <tr>
@@ -41,14 +41,3 @@
 </div>
 
 {% endblock content %}
-
-
-{% block js %}
-
-    {{ block.super }}
-
-    <script>
-        $('select, :checkbox').change(function() {$('form').submit()});
-    </script>
-
-{% endblock js %}
