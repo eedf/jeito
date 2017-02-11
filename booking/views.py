@@ -102,7 +102,8 @@ class StatsView(LoginRequiredMixin, TemplateView):
             'amount_other': sum([item.amount for item in items if item.product in (3, 4)]),
             'amount': sum([item.amount for item in items]),
         }
-        kwargs['stats']['overnight_cost'] = kwargs['stats']['amount_hosting'] / kwargs['stats']['overnights']
+        if kwargs['stats']['overnights']:
+	        kwargs['stats']['overnight_cost'] = kwargs['stats']['amount_hosting'] / kwargs['stats']['overnights']
 
         stats = (
             ('stats_eedf', items.filter(booking__org_type=1)),
@@ -128,10 +129,12 @@ class StatsView(LoginRequiredMixin, TemplateView):
                 'amount_other': sum([item.amount for item in subitems if item.product in (3, 4)]),
                 'amount': sum([item.amount for item in subitems]),
             }
-            kwargs[name]['overnights_rate'] = (100 * kwargs[name]['overnights'] / kwargs['stats']['overnights'])
-            kwargs[name]['amount_hosting_rate'] = (100 * kwargs[name]['amount_hosting'] /
-                                                   kwargs['stats']['amount_hosting'])
-            kwargs[name]['overnight_cost'] = kwargs[name]['overnights'] and (kwargs[name]['amount_hosting'] /
-                                                                             kwargs[name]['overnights'])
+            if kwargs['stats']['overnights']:
+                kwargs[name]['overnights_rate'] = (100 * kwargs[name]['overnights'] / kwargs['stats']['overnights'])
+            if kwargs['stats']['amount_hosting']:
+                kwargs[name]['amount_hosting_rate'] = (100 * kwargs[name]['amount_hosting'] /
+                                                       kwargs['stats']['amount_hosting'])
+            if kwargs[name]['overnights']:
+                kwargs[name]['overnight_cost'] = (kwargs[name]['amount_hosting'] / kwargs[name]['overnights'])
 
         return kwargs
