@@ -26,9 +26,9 @@ class EntryAdmin(admin.ModelAdmin):
 
 @admin.register(Budget)
 class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('analytic', 'amount', 'done', 'diff')
-    list_editable = ('amount', )
-    search_fields = ('analytic__title', )
+    list_display = ('analytic', 'amount', 'done', 'diff', 'comment')
+    list_editable = ('amount', 'comment')
+    search_fields = ('analytic__title', 'comment')
 
 
 @admin.register(BankStatement)
