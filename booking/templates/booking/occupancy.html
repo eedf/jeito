@@ -8,34 +8,34 @@
 
     <table class="table table-striped table-hover table-condensed">
         <tr>
-            <th>Jour</th>
+            <th>Nuit</th>
             <th></th>
-            <th>Mois</th>
+            <th></th>
             <th>Hameau</th>
             <th></th>
             <th>Terrain</th>
             <th></th>
         </tr>
-        {% for day, headcount1, items1, headcount2, items2 in occupancy %}
+        {% for day, number1, headcount1, items1, number2, headcount2, items2 in occupancy %}
             {% if headcount1 or headcount2 %}
                 <tr>
                     <td>{{ day|date:'l' }}</td>
                     <td>{{ day|date:'d' }}</td>
                     <td>{{ day|date:'F' }}</td>
-                    <td><span class="badge">{{ headcount1|default:"" }}</span></td>
+                    <td><span class="badge">{{ number1|default:"" }}</span> <span class="badge">{{ headcount1|default:"" }}</span></td>
                     <td>
                         {% for item in items1 %}
                             <span class="label label-{{ item.booking__state__color }}">{{ item.headcount }}</span>
                             {{ item.booking__title }}
-                            {% if not forloop.last %} + {%endif %}
+                            {% if not forloop.last %}<br>{%endif %}
                         {% endfor %}
                     </td>
-                    <td><span class="badge">{{ headcount2|default:"" }}</span></td>
+                    <td><span class="badge">{{ number2|default:"" }}</span> <span class="badge">{{ headcount2|default:"" }}</span></td>
                     <td>
                         {% for item in items2 %}
                             <span class="label label-{{ item.booking__state__color }}">{{ item.headcount }}</span>
                             {{ item.booking__title }}
-                            {% if not forloop.last %} + {%endif %}
+                            {% if not forloop.last %}<br>{%endif %}
                         {% endfor %}
                     </td>
                 </tr>

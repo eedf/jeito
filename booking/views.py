@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files import File
-from django.db.models import Sum
+from django.db.models import Count, Sum
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.text import slugify
@@ -74,8 +74,8 @@ class OccupancyView(LoginRequiredMixin, TemplateView):
         items = items.filter(booking__state__income__in=(1, 2, 3), headcount__isnull=False)
         items = items.order_by('booking__title')
         items = items.values('booking__title', 'booking__state__color')
-        items = items.annotate(headcount=Sum('headcount'))
-        return sum([item['headcount'] for item in items]), items
+        items = items.annotate(number=Count('id'), headcount=Sum('headcount'))
+        return sum([item['number'] for item in items]), sum([item['headcount'] for item in items]), items
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
