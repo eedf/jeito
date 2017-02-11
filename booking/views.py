@@ -103,7 +103,7 @@ class StatsView(LoginRequiredMixin, TemplateView):
             'amount': sum([item.amount for item in items]),
         }
         if kwargs['stats']['overnights']:
-	        kwargs['stats']['overnight_cost'] = kwargs['stats']['amount_hosting'] / kwargs['stats']['overnights']
+            kwargs['stats']['overnight_cost'] = kwargs['stats']['amount_hosting'] / kwargs['stats']['overnights']
 
         stats = (
             ('stats_eedf', items.filter(booking__org_type=1)),
