@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <h1>Procès verbaux d'APL</h1>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>SLA</th>
+            <th>Date</th>
+            <th>Représentant</th>
+        </tr>
+        {% for report in report_list %}
+            <tr>
+                <td><a href="{{ report.get_absolute_url }}">{{ report.structure }}</a></td>
+                <td>{{ report.date|date:'D d/m/y' }}</td>
+                <td>{{ report.representative }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+{% endblock content %}
