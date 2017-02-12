@@ -61,7 +61,7 @@ class Command(BaseCommand):
         except Structure.DoesNotExist:
             structure = self.get_structure(cols[4], parent=None, recursive=False)
         try:
-            function, created = Function.objects.update_or_create(
+            function, created = Function.objects.get_or_create(
                 code=cols[6],
                 season=SEASON,
                 defaults={
