@@ -39,6 +39,14 @@ class BookingListView(LoginRequiredMixin, FilterView):
     template_name = 'booking/booking_list.html'
     filterset_class = BookingFilter
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['overnights'] = sum([booking.overnights for booking in self.object_list if booking.overnights])
+        context['headcount'] = sum([booking.headcount for booking in self.object_list if booking.headcount])
+        context['amount'] = sum([booking.amount for booking in self.object_list if booking.amount])
+        context['balance'] = sum([booking.balance for booking in self.object_list if booking.balance])
+        return context
+
 
 class BookingDetailView(LoginRequiredMixin, DetailView):
     model = Booking
