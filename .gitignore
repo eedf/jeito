@@ -5,6 +5,8 @@
 /env/
 /static/
 /var/
+/.cache/
+/.pythonhist
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
