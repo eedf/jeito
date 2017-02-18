@@ -1,0 +1,11 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h1 class="panel-title"><strong>Adhérents</strong></h1>
+    </div>
+    <div class="panel-body text-center">
+        <span class="number">{{ headcount }}</span>
+        <span class="percent {% if headcount_diff < 0 %}negative{% endif %}">
+            {% if headcount_diff > 0 %}+{% endif %}{{ headcount_diff|floatformat:"1" }}%
+        </span>
+    </div>
+</div>

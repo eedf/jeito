@@ -5,6 +5,11 @@
 #BD1220 rouge
 */
 
+@font-face {
+    font-family: "digital";
+    src: url("fonts/DS-DIGIB.TTF");
+}
+
 html {
     position: relative;
     min-height: 100%;
@@ -92,4 +97,20 @@ tr.separator:not(:nth-child(2)) {
 
 .booking-stats td {
     text-align: right;
+}
+
+.dashboard .number {
+    font-family: "digital";
+    font-size: 400%;
+}
+
+.dashboard .percent {
+    font-family: "digital";
+    font-size: 250%;
+    color: green;
+    margin-left: .25em;
+}
+
+.dashboard .percent.negative {
+    color: red;
 }

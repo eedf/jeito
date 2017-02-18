@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container dashboard">
+        <div class="row">
+            {% for template in widget_templates %}
+                <div class="col-md-3">
+                    {% include template %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock content %}

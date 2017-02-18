@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'tagulous',
     'django_filters',
     'core',
+    'dashboard',
     'members',
     'docs',
     'booking',
@@ -158,4 +159,3 @@ TAGULOUS_AUTOCOMPLETE_CSS = {}
 TRACK_ANONYMOUS_USERS = False
 
 NOW = now
-USE_THOUSAND_SEPARATOR = True

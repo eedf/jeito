@@ -7,29 +7,31 @@ from django.http import JsonResponse
 from django.utils.formats import date_format
 from django.views.generic import View, TemplateView
 import json
+from dashboard import widget
 from .filters import AdhesionFilter
 from .forms import AdhesionsForm
 from .models import Adhesion, Structure, Function, Rate
 from .utils import current_season
 
 
+SVN_NUMBERS = ('0300000200', '0500000100', '1900140100')
+CPN_NUMBERS = tuple(a + b for a, b in zip(('18000002', '14005719', '27000006', '17000003', '27000005'),
+                                          ('00', '01', '02', '03', '04')))
+
+
 # TODO: use AdhesionFilter
 class AdhesionsJsonView(LoginRequiredMixin, View):
-    SVN_NUMBERS = ('0300000200', '0500000100', '1900140100')
-    CPN_NUMBERS = tuple(a + b for a, b in zip(('18000002', '14005719', '27000006', '17000003', '27000005'),
-                                              ('00', '01', '02', '03', '04')))
-
     def serie(self, season, GET):
         self.today = (settings.NOW() - timedelta(days=1)).date()
         start = date(season - 1, 9, 1)
         end = min(date(season, 8, 31), self.today)
         qs = Adhesion.objects.filter(season=season)
         if GET['sector'] == '1':
-            qs = qs.exclude(structure__number__in=self.SVN_NUMBERS + self.CPN_NUMBERS)
+            qs = qs.exclude(structure__number__in=SVN_NUMBERS + CPN_NUMBERS)
         elif GET['sector'] == '2':
-            qs = qs.filter(structure__number__in=self.SVN_NUMBERS)
+            qs = qs.filter(structure__number__in=SVN_NUMBERS)
         elif GET['sector'] == '3':
-            qs = qs.filter(structure__number__in=self.CPN_NUMBERS)
+            qs = qs.filter(structure__number__in=CPN_NUMBERS)
         if GET['units'] == '99':
             qs = qs.exclude(structure__type__in=(1, 2, 7, 13))
         elif GET['units']:
@@ -263,3 +265,91 @@ class TranchesView(TableauView):
 
     def row_key(self, obj):
         return obj['rate__bracket']
+
+
+@widget.register
+class HeadcountWidget(widget.Widget):
+    template_name = 'members/headcount_widget.html'
+
+    def get_context_data(self):
+        season = current_season()
+        date = (settings.NOW() - timedelta(days=1)).date()
+        leap_year = date.month == 2 and date.day == 29
+        ref_date = date.replace(year=date.year - 1, day=28 if leap_year else date.day)
+        qs = Adhesion.objects.filter(season=season, date__lte=date)
+        qs = qs.aggregate(headcount=Count('id'))
+        ref_qs = Adhesion.objects.filter(season=season - 1, date__lte=ref_date)
+        ref_qs = ref_qs.aggregate(headcount=Count('id'))
+        return {
+            'headcount': qs['headcount'],
+            'headcount_diff': 100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'],
+        }
+
+
+@widget.register
+class YoungsHeadcountWidget(widget.Widget):
+    template_name = 'members/youngs_headcount_widget.html'
+
+    def get_context_data(self):
+        season = current_season()
+        date = (settings.NOW() - timedelta(days=1)).date()
+        leap_year = date.month == 2 and date.day == 29
+        ref_date = date.replace(year=date.year - 1, day=28 if leap_year else date.day)
+        qs = Adhesion.objects.filter(season=season, date__lte=date)
+        qs = qs.filter(function__category=0)
+        qs = qs.exclude(structure__number__in=SVN_NUMBERS + CPN_NUMBERS)
+        qs = qs.aggregate(headcount=Count('id'))
+        ref_qs = Adhesion.objects.filter(season=season - 1, date__lte=ref_date)
+        ref_qs = ref_qs.filter(function__category=0)
+        ref_qs = ref_qs.exclude(structure__number__in=SVN_NUMBERS + CPN_NUMBERS)
+        ref_qs = ref_qs.aggregate(headcount=Count('id'))
+        return {
+            'youngs_headcount': qs['headcount'],
+            'youngs_headcount_diff': 100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'],
+        }
+
+
+@widget.register
+class SVHeadcountWidget(widget.Widget):
+    template_name = 'members/sv_headcount_widget.html'
+
+    def get_context_data(self):
+        season = current_season()
+        date = (settings.NOW() - timedelta(days=1)).date()
+        leap_year = date.month == 2 and date.day == 29
+        ref_date = date.replace(year=date.year - 1, day=28 if leap_year else date.day)
+        qs = Adhesion.objects.filter(season=season, date__lte=date)
+        qs = qs.filter(function__category=0)
+        qs = qs.filter(structure__number__in=SVN_NUMBERS)
+        qs = qs.aggregate(headcount=Count('id'))
+        ref_qs = Adhesion.objects.filter(season=season - 1, date__lte=ref_date)
+        ref_qs = ref_qs.filter(function__category=0)
+        ref_qs = ref_qs.filter(structure__number__in=SVN_NUMBERS)
+        ref_qs = ref_qs.aggregate(headcount=Count('id'))
+        return {
+            'sv_headcount': qs['headcount'],
+            'sv_headcount_diff': 100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'],
+        }
+
+
+@widget.register
+class CPHeadcountWidget(widget.Widget):
+    template_name = 'members/cp_headcount_widget.html'
+
+    def get_context_data(self):
+        season = current_season()
+        date = (settings.NOW() - timedelta(days=1)).date()
+        leap_year = date.month == 2 and date.day == 29
+        ref_date = date.replace(year=date.year - 1, day=28 if leap_year else date.day)
+        qs = Adhesion.objects.filter(season=season, date__lte=date)
+        qs = qs.filter(function__category=0)
+        qs = qs.filter(structure__number__in=CPN_NUMBERS)
+        qs = qs.aggregate(headcount=Count('id'))
+        ref_qs = Adhesion.objects.filter(season=season - 1, date__lte=ref_date)
+        ref_qs = ref_qs.filter(function__category=0)
+        ref_qs = ref_qs.filter(structure__number__in=CPN_NUMBERS)
+        ref_qs = ref_qs.aggregate(headcount=Count('id'))
+        return {
+            'cp_headcount': qs['headcount'],
+            'cp_headcount_diff': 100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'],
+        }

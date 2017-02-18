@@ -1,0 +1,11 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h1 class="panel-title"><strong>Participants CP</strong></h1>
+    </div>
+    <div class="panel-body text-center">
+        <span class="number">{{ cp_headcount }}</span>
+        <span class="percent {% if cp_headcount_diff < 0 %}negative{% endif %}">
+            {% if cp_headcount_diff > 0 %}+{% endif %}{{ cp_headcount_diff|floatformat:"1" }}%
+        </span>
+    </div>
+</div>
