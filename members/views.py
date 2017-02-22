@@ -353,3 +353,24 @@ class CPHeadcountWidget(widget.Widget):
             'cp_headcount': qs['headcount'],
             'cp_headcount_diff': 100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'],
         }
+
+
+@widget.register
+class StagiaireHeadcountWidget(widget.Widget):
+    template_name = 'members/stagiaire_headcount_widget.html'
+
+    def get_context_data(self):
+        season = current_season()
+        date = (settings.NOW() - timedelta(days=1)).date()
+        leap_year = date.month == 2 and date.day == 29
+        ref_date = date.replace(year=date.year - 1, day=28 if leap_year else date.day)
+        qs = Adhesion.objects.filter(season=season, date__lte=date)
+        qs = qs.filter(function__category=3)
+        qs = qs.aggregate(headcount=Count('id'))
+        ref_qs = Adhesion.objects.filter(season=season - 1, date__lte=ref_date)
+        ref_qs = ref_qs.filter(function__category=3)
+        ref_qs = ref_qs.aggregate(headcount=Count('id'))
+        return {
+            'stagiaire_headcount': qs['headcount'],
+            'stagiaire_headcount_diff': 100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'],
+        }

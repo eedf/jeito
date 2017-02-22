@@ -1,0 +1,11 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h1 class="panel-title"><strong>Stagiaires</strong></h1>
+    </div>
+    <div class="panel-body text-center">
+        <span class="number">{{ stagiaire_headcount }}</span>
+        <span class="percent {% if stagiaire_headcount_diff < 0 %}negative{% endif %}">
+            {% if stagiaire_headcount_diff > 0 %}+{% endif %}{{ stagiaire_headcount_diff|floatformat:"1" }}%
+        </span>
+    </div>
+</div>
