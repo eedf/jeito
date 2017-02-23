@@ -129,7 +129,7 @@ AUTHENTICATION_BACKENDS = [
     'members.auth_backends.PersonBackend',
 ]
 LOGIN_URL = 'core:login'
-LOGIN_REDIRECT_URL = 'core:index'
+LOGIN_REDIRECT_URL = 'dashboard:dashboard'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 

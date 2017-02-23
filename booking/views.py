@@ -1,5 +1,5 @@
 from datetime import date, timedelta
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.files import File
 from django.db.models import Count, Sum
 from django.http import HttpResponseRedirect
@@ -14,8 +14,9 @@ from .filters import BookingFilter
 from .models import Booking, BookingItem, Agreement
 
 
-class HomeView(LoginRequiredMixin, TemplateView):
+class HomeView(PermissionRequiredMixin, TemplateView):
     template_name = 'booking/home.html'
+    permission_required = 'booking.show_booking'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -35,8 +36,9 @@ class HomeView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class BookingListView(LoginRequiredMixin, FilterView):
+class BookingListView(PermissionRequiredMixin, FilterView):
     template_name = 'booking/booking_list.html'
+    permission_required = 'booking.show_booking'
     filterset_class = BookingFilter
 
     def get_context_data(self, **kwargs):
@@ -48,11 +50,13 @@ class BookingListView(LoginRequiredMixin, FilterView):
         return context
 
 
-class BookingDetailView(LoginRequiredMixin, DetailView):
+class BookingDetailView(PermissionRequiredMixin, DetailView):
+    permission_required = 'booking.show_booking'
     model = Booking
 
 
-class CreateAgreementView(LoginRequiredMixin, DetailView):
+class CreateAgreementView(PermissionRequiredMixin, DetailView):
+    permission_required = 'booking.change_booking'
     model = Booking
 
     def render_to_response(self, context, **response_kwargs):
@@ -74,8 +78,9 @@ class CreateAgreementView(LoginRequiredMixin, DetailView):
         return HttpResponseRedirect(reverse('booking:booking_detail', kwargs={'pk': self.object.pk}))
 
 
-class OccupancyView(LoginRequiredMixin, TemplateView):
+class OccupancyView(PermissionRequiredMixin, TemplateView):
     template_name = 'booking/occupancy.html'
+    permission_required = 'booking.show_booking'
 
     def occupancy_for(self, day, product):
         items = BookingItem.objects.filter(begin__lte=day, end__gt=day, product=product)
@@ -95,8 +100,9 @@ class OccupancyView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class StatsView(LoginRequiredMixin, TemplateView):
+class StatsView(PermissionRequiredMixin, TemplateView):
     template_name = 'booking/stats.html'
+    permission_required = 'booking.show_booking'
 
     def get_context_data(self, **kwargs):
         filter = BookingFilter(self.request.GET)

@@ -174,6 +174,7 @@ class Booking(TrackingMixin, models.Model):
 
     class Meta:
         verbose_name = "Réservation"
+        permissions = (('show_booking', 'Can show booking'), )
 
     def __str__(self):
         return self.title
