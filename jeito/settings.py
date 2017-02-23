@@ -137,6 +137,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'var/media/')
 MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 HAYSTACK_CONNECTIONS = {
     'default': {
