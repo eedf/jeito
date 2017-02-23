@@ -114,3 +114,7 @@ tr.separator:not(:nth-child(2)) {
 .dashboard .percent.negative {
     color: red;
 }
+
+.form-inline .form-group + .form-group {
+    margin-left: 16px;
+}
