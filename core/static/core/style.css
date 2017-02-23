@@ -104,6 +104,10 @@ tr.separator:not(:nth-child(2)) {
     font-size: 400%;
 }
 
+.dashboard .unit {
+    font-size: 150%;
+}
+
 .dashboard .percent {
     font-family: "digital";
     font-size: 250%;

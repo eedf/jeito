@@ -3,7 +3,8 @@
         <h1 class="panel-title"><strong>Cotisations</strong></h1>
     </div>
     <div class="panel-body text-center">
-        <span class="number">{{ revenue|floatformat:"0" }}</span> k€
+        <span class="number">{{ revenue|floatformat:"0" }}</span>
+        <span class="unit">k€</span>
         <span class="percent {% if revenue_diff < 0 %}negative{% endif %}">
             {% if revenue_diff > 0 %}+{% endif %}{{ revenue_diff|floatformat:"1" }}%
         </span>
