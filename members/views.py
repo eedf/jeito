@@ -399,23 +399,22 @@ class RevenueWidget(widget.Widget):
 class GroupsWidget(widget.Widget):
     template_name = 'members/groups_widget.html'
 
-    def get_context_data(self):
-        season = current_season()
-        date = (settings.NOW() - timedelta(days=1)).date()
-        leap_year = date.month == 2 and date.day == 29
-        ref_date = date.replace(year=date.year - 1, day=28 if leap_year else date.day)
+    def get_nb_groups(self, season, date):
         qs = Adhesion.objects.filter(season=season, date__lte=date)
         qs1 = qs.filter(structure__parent__type__in=(10, 11), structure__parent__subtype=2)
         qs1 = qs1.values_list('structure__parent__id').annotate(nb_adherents=Count('id'))
         qs2 = qs.filter(structure__type__in=(10, 11), structure__subtype=2)
         qs2 = qs2.values_list('structure__id').annotate(nb_adherents=Count('id'))
-        ref_qs = Adhesion.objects.filter(season=season - 1, date__lte=ref_date)
-        ref_qs1 = ref_qs.filter(structure__parent__type__in=(10, 11), structure__parent__subtype=2)
-        ref_qs1 = ref_qs1.values_list('structure__parent__id').annotate(nb_adherents=Count('id'))
-        ref_qs2 = ref_qs.filter(structure__type__in=(10, 11), structure__subtype=2)
-        ref_qs2 = ref_qs2.values_list('structure__id').annotate(nb_adherents=Count('id'))
-        nb_groups = sum([1 for group, nb in (Counter(dict(qs1)) + Counter(dict(qs2))).items() if nb >= 3])
-        ref_nb_groups = sum([1 for group, nb in (Counter(dict(ref_qs1)) + Counter(dict(ref_qs2))).items() if nb >= 3])
+        sum_by_group = Counter(dict(qs1)) + Counter(dict(qs2))
+        return sum([1 for group, nb in sum_by_group.items() if nb >= 3])
+
+    def get_context_data(self):
+        season = current_season()
+        date = (settings.NOW() - timedelta(days=1)).date()
+        leap_year = date.month == 2 and date.day == 29
+        ref_date = date.replace(year=date.year - 1, day=28 if leap_year else date.day)
+        nb_groups = self.get_nb_groups(season, date)
+        ref_nb_groups = self.get_nb_groups(season - 1, ref_date)
         return {
             'nb_groups': nb_groups,
             'nb_groups_diff': 100 * (nb_groups - ref_nb_groups) / ref_nb_groups,
