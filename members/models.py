@@ -65,12 +65,12 @@ class Structure(MPTTModel):
 
 class Function(models.Model):
     CATEGORY_CHOICES = (
-        (0, "Jeune"),
+        (0, "Jeune/Participant"),
         (1, "Responsable"),
         (2, "Cadre bénévole"),
         (3, "Stagiaire"),
         (4, "Parent/Ami"),
-        (5, "Salarié"),
+        (5, "Salarié/SC"),
     )
 
     code = models.CharField("Code", max_length=5)
