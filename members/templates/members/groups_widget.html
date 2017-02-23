@@ -1,0 +1,11 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h1 class="panel-title"><strong>Groupes</strong> (≥ 3 adhérents)</h1>
+    </div>
+    <div class="panel-body text-center">
+        <span class="number">{{ nb_groups }}</span>
+        <span class="percent {% if nb_groups_diff < 0 %}negative{% endif %}">
+            {% if nb_groups_diff > 0 %}+{% endif %}{{ nb_groups_diff|floatformat:"1" }}%
+        </span>
+    </div>
+</div>
