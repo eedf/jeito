@@ -31,6 +31,7 @@ class Entry(models.Model):
     revenue = models.DecimalField(verbose_name="Recette", max_digits=8, decimal_places=2)
     expense = models.DecimalField(verbose_name="Dépense", max_digits=8, decimal_places=2)
     analytic = models.ForeignKey(Analytic, verbose_name="Analytique", blank=True, null=True)
+    scan = models.FileField(upload_to='justificatif', blank=True)
 
     class Meta:
         verbose_name = "Écriture"
@@ -54,7 +55,7 @@ class Budget(models.Model):
 
 class BankStatement(models.Model):
     date = models.DateField()
-    scan = models.FileField()
+    scan = models.FileField(upload_to='releves')
     balance = models.DecimalField(verbose_name="Solde", max_digits=8, decimal_places=2)
 
     class Meta:
