@@ -92,11 +92,13 @@
             <td></td>
             <td class="text-right">{% if booking.deposit %}{{ booking.deposit|floatformat:2 }} €{%  endif %}</td>
         </tr>
+        {% for payment in booking.payments.all %}
         <tr>
             <th>Paiement</th>
-            <td></td>
-            <td class="text-right">{% if booking.payment %}{{ booking.payment|floatformat:2 }} €{%  endif %}</td>
+            <td>{{ payment.get_mean_display }} le {{ payment.date|date:'d/m/y' }}{% if payment.scan %} (<a href="{{ payment.scan.url }}">télécharger</a>){% endif %}</td>
+            <td class="text-right">{{ payment.amount|floatformat:2 }} €</td>
         </tr>
+        {% endfor %}
         <tr>
             <th>Solde</th>
             <td></td>
