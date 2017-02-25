@@ -28,6 +28,7 @@ class BookingAdmin(admin.ModelAdmin):
     inlines = (BookingItemInline, PaymentInline)
     list_display = ('title', 'state', 'contact', 'email', 'tel', 'agreement')
     list_filter = ('state', )
+    search_fields = ('title', 'contact', 'email')
 
 
 class TrackingValueInline(admin.TabularInline):
