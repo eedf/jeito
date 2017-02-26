@@ -5,7 +5,7 @@ from django import forms
 from django.conf import settings
 from django.http import QueryDict
 import django_filters
-from .models import Booking, BookingState
+from .models import Booking, BookingState, BookingItem
 
 
 # TODO: add a reinit button
@@ -45,4 +45,36 @@ class BookingFilter(django_filters.FilterSet):
         qs = super().qs.order_by('begin')
         qs = qs.select_related('state')
         qs = qs.prefetch_related('agreements', 'payments')
+        return qs
+
+
+class BookingItemFilterForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-inline'
+        self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
+        self.helper.form_method = 'get'
+        self.helper.layout = Layout(
+            InlineCheckboxes('state'),
+        )
+
+
+class BookingItemFilter(django_filters.FilterSet):
+    state = django_filters.ModelMultipleChoiceFilter(label="Statut", queryset=BookingState.objects.all(),
+                                                     widget=forms.CheckboxSelectMultiple, name='booking__state')
+
+    class Meta:
+        model = BookingItem
+        fields = ('state', )
+        form = BookingItemFilterForm
+
+    def __init__(self, data, *args, **kwargs):
+        if data is None:
+            data = QueryDict('state=3&state=4&state=5&state=6&state=7&state=9')
+        super().__init__(data, *args, **kwargs)
+
+    @property
+    def qs(self):
+        qs = super().qs.filter(begin__gte=settings.NOW().date()).select_related('booking', 'booking__state')
         return qs

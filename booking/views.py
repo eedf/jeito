@@ -1,16 +1,16 @@
-from datetime import date, timedelta
+from datetime import timedelta
+from django.conf import settings
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.core.files import File
-from django.db.models import Count, Sum
+from django.db.models import Count, Sum, Min, Max
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils.text import slugify
-from django.utils.timezone import now
 from django.views.generic import TemplateView, DetailView
 from django_filters.views import FilterView
 from os import unlink
 from templated_docs import fill_template
-from .filters import BookingFilter
+from .filters import BookingFilter, BookingItemFilter
 from .models import Booking, BookingItem, Agreement
 
 
@@ -65,7 +65,7 @@ class CreateAgreementView(PermissionRequiredMixin, DetailView):
             order = Agreement.objects.filter(date__year=year).latest('order').order + 1
         except Agreement.DoesNotExist:
             order = 1
-        agreement = Agreement.objects.create(date=now().date(), order=order, booking=self.object)
+        agreement = Agreement.objects.create(date=settings.NOW().date(), order=order, booking=self.object)
         context['agreement'] = agreement
         for ext in ('odt', 'pdf'):
             filename = fill_template('booking/agreement.odt', context, output_format=ext)
@@ -78,13 +78,14 @@ class CreateAgreementView(PermissionRequiredMixin, DetailView):
         return HttpResponseRedirect(reverse('booking:booking_detail', kwargs={'pk': self.object.pk}))
 
 
-class OccupancyView(PermissionRequiredMixin, TemplateView):
+class OccupancyView(PermissionRequiredMixin, FilterView):
     template_name = 'booking/occupancy.html'
     permission_required = 'booking.show_booking'
+    filterset_class = BookingItemFilter
 
     def occupancy_for(self, day, product):
-        items = BookingItem.objects.filter(begin__lte=day, end__gt=day, product=product)
-        items = items.filter(booking__state__income__in=(1, 2, 3), headcount__isnull=False)
+        items = self.object_list.filter(begin__lte=day, end__gt=day, product=product)
+        items = items.filter(headcount__isnull=False)
         items = items.order_by('booking__title')
         items = items.values('booking__title', 'booking__state__color')
         items = items.annotate(number=Count('id'), headcount=Sum('headcount'))
@@ -93,8 +94,9 @@ class OccupancyView(PermissionRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         occupancy = []
-        for i in range(365):
-            day = date(2017, 1, 1) + timedelta(days=i)
+        range_qs = self.object_list.aggregate(begin=Min('begin'), end=Max('end'))
+        for i in range((range_qs['end'] - range_qs['begin']).days + 1):
+            day = range_qs['begin'] + timedelta(days=i)
             occupancy.append((day, ) + self.occupancy_for(day, 2) + self.occupancy_for(day, 1))
         context['occupancy'] = occupancy
         return context
