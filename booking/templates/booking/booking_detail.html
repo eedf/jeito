@@ -121,6 +121,7 @@
                         <span class="glyphicon glyphicon-file"></span>
                         Créer
                     </a>
+                </td>
                 <td></td>
             </tr>
         {% endfor %}
@@ -135,6 +136,13 @@
                 <td></td>
             </tr>
         {%  endif %}
+        {% if booking.insurance_scan %}
+            <tr>
+                <th>Attestation d'assurance</th>
+                <td><a href="{{ booking.insurance_scan.url }}">télécharger</a></td>
+                <td></td>
+            </tr>
+        {% endif %}
         {% if booking.invoice or booking.invoice_number %}
             <tr>
                 <th>Facture</th>
