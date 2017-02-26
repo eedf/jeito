@@ -82,11 +82,13 @@ class Agreement(TrackingMixin, models.Model):
     class Meta:
         verbose_name = "Convention"
         get_latest_by = 'date'
+        ordering = ('order', )
 
     def number(self):
         return "{year}-{order:03}".format(year=self.date.year, order=self.order)
 
     number.short_description = "Numéro"
+    number.admin_order_field = 'order'
 
     def __str__(self):
         return self.number()
