@@ -1,7 +1,8 @@
 /import_members.sh
 /sync_from_prod.sh
+/deploy.sh
 /data/
-.idea/
+/.idea/
 /env/
 /static/
 /var/
