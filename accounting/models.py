@@ -1,4 +1,7 @@
 from django.db import models
+from django.utils.safestring import mark_safe
+
+from mptt.models import MPTTModel, TreeForeignKey
 
 
 class Account(models.Model):
@@ -13,8 +16,9 @@ class Account(models.Model):
         return "{} {}".format(self.number, self.title)
 
 
-class Analytic(models.Model):
+class Analytic(MPTTModel):
     title = models.CharField(verbose_name="Intitulé", max_length=100)
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
 
     class Meta:
         verbose_name = "Analytique"
@@ -22,6 +26,9 @@ class Analytic(models.Model):
 
     def __str__(self):
         return self.title
+
+    def indented_title(self):
+        return mark_safe("&nbsp;" * 4 * self.level + self.title)
 
 
 class Entry(models.Model):

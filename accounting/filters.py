@@ -1,7 +1,6 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import HTML, Layout
 from django import forms
-from django.db.models import F, Sum
 import django_filters
 from .models import Analytic
 
@@ -32,10 +31,25 @@ class AnalyticFilter(django_filters.FilterSet):
 
     @property
     def qs(self):
-        qs = super().qs.order_by('title')
-#        qs = qs.prefetch_related('entry_set')
-        qs = qs.annotate(revenue=Sum('entry__revenue'),
-                         expense=Sum('entry__expense'),
-                         solde=Sum(F('entry__revenue') - F('entry__expense')),
-                         diff=F('budget__amount') - Sum(F('entry__revenue') - F('entry__expense')))
-        return qs
+        return Analytic.objects.raw('''
+            SELECT a1.*,
+                   SUM(revenue) AS revenue,
+                   SUM(expense) AS expense,
+                   SUM(revenue) - SUM(expense) AS solde,
+                   SUM(amount)  - SUM(revenue) + SUM(expense) AS diff
+            FROM accounting_analytic AS a1
+            LEFT JOIN accounting_analytic AS a2
+            ON (a2.lft >= a1.lft and a2.rght <= a1.rght and a1.tree_id = a2.tree_id)
+            LEFT JOIN accounting_entry
+            ON (accounting_entry.analytic_id=a2.id)
+            LEFT JOIN accounting_budget
+            ON (accounting_budget.analytic_id=a2.id)
+            GROUP BY a1.id
+            ORDER BY a1.tree_id, a1.lft
+            WHERE ;''')
+        # qs = super().qs.order_by('title')
+        # qs = qs.annotate(revenue=Sum('entry__revenue'),
+        #                  expense=Sum('entry__expense'),
+        #                  solde=Sum(F('entry__revenue') - F('entry__expense')),
+        #                  diff=F('budget__amount') - Sum(F('entry__revenue') - F('entry__expense')))
+        # return qs

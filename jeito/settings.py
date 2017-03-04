@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'haystack',
     'tagulous',
     'django_filters',
+    'mptt',
     'core',
     'dashboard',
     'members',

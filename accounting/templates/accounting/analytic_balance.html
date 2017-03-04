@@ -20,7 +20,7 @@
         </tr>
         {% for analytic in analytic_list %}
             <tr>
-                <td>{{ analytic.title }}</td>
+                <td>{{ analytic.indented_title }}</td>
                 <td align="right">{% if analytic.revenue %}{{ analytic.revenue|floatformat:2 }} €{% endif %}</td>
                 <td align="right">{% if analytic.expense %}{{ analytic.expense|floatformat:2 }} €{% endif %}</td>
                 <td align="right">{{ analytic.solde|floatformat:2 }} €</td>

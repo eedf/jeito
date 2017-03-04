@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Account, Analytic, Entry, Budget, BankStatement
+from mptt.admin import MPTTModelAdmin
 
 
 @admin.register(Account)
@@ -10,7 +11,7 @@ class AccountAdmin(admin.ModelAdmin):
 
 
 @admin.register(Analytic)
-class AnalyticAdmin(admin.ModelAdmin):
+class AnalyticAdmin(MPTTModelAdmin):
     list_display = ('title', )
     search_fields = ('title', )
 

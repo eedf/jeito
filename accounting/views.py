@@ -11,9 +11,9 @@ class AnalyticBalanceView(FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['revenues'] = sum([analytic.revenue for analytic in self.object_list])
-        context['expenses'] = sum([analytic.expense for analytic in self.object_list])
-        context['solde'] = sum([analytic.solde for analytic in self.object_list])
+        context['revenues'] = sum([analytic.revenue for analytic in self.object_list if analytic.revenue])
+        context['expenses'] = sum([analytic.expense for analytic in self.object_list if analytic.expense])
+        context['solde'] = sum([analytic.solde for analytic in self.object_list if analytic.solde])
         context['budget_balance'] = sum([analytic.budget.amount for analytic in self.object_list
                                          if hasattr(analytic, 'budget')])
         context['diff_balance'] = sum([analytic.diff for analytic in self.object_list if analytic.diff])
