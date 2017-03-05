@@ -8,6 +8,7 @@
 /var/
 /.cache/
 /.pythonhist
+/client_id.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

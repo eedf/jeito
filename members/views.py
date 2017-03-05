@@ -1,10 +1,15 @@
 from collections import Counter, OrderedDict
 from datetime import date, timedelta
+import jsonpickle
+from oauth2client.client import flow_from_clientsecrets
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.db.models import Count, Sum, F, ExpressionWrapper, DecimalField
 from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
+from django.urls import reverse
 from django.utils.formats import date_format
+from django.views.generic import RedirectView
 from django.views.generic import View, TemplateView
 import json
 from dashboard import widget
@@ -421,3 +426,29 @@ class GroupsWidget(widget.Widget):
             'nb_groups': nb_groups,
             'nb_groups_diff': 100 * (nb_groups - ref_nb_groups) / ref_nb_groups,
         }
+
+
+class OAuthAuthorizeView(RedirectView):
+    def get_redirect_url(self, pk):
+        structure = get_object_or_404(Structure, pk=pk)
+        state = json.dumps({
+            'pk': structure.pk,
+        })
+        flow = flow_from_clientsecrets(
+            filename=settings.GOOGLE_OAUTH2_CLIENT_SECRETS_JSON,
+            scope=settings.GOOGLE_OAUTH2_SCOPES,
+            redirect_uri=self.request.build_absolute_uri(reverse("members:oauth_callback"))
+        )
+        self.request.session['oauth_flow'] = jsonpickle.encode(flow)
+        return flow.step1_get_authorize_url(state=state)
+
+
+class OAuthCallbackView(RedirectView):
+    def get_redirect_url(self, *args, **kwargs):
+        state = json.loads(self.request.GET['state'])
+        structure = Structure.objects.get(pk=state['pk'])
+        code = self.request.GET['code']
+        flow = jsonpickle.decode(self.request.session['oauth_flow'])
+        structure.google = flow.step2_exchange(code)
+        structure.save()
+        return '/'

@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import RegexValidator
 
+from oauth2client.contrib.django_util.models import CredentialsField
 from mptt.models import MPTTModel, TreeForeignKey
 
 
@@ -52,6 +53,7 @@ class Structure(MPTTModel):
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
     type = models.IntegerField("Type", choices=TYPE_CHOICES)
     subtype = models.IntegerField("Sous-type", choices=SUBTYPE_CHOICES, null=True, blank=True)
+    google = CredentialsField()
 
     def __str__(self):
         return self.name

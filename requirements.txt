@@ -14,7 +14,9 @@ elasticsearch==2.4.0
 factory-boy==2.7.0
 fake-factory==0.7.2
 flake8==3.0.4
+google-api-python-client==1.6.2
 gunicorn==19.6.0
+jsonpickle==0.9.4
 lxml==3.6.4
 mccabe==0.5.2
 mock==2.0.0
