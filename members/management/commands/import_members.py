@@ -346,6 +346,14 @@ class Command(BaseCommand):
         if recursive:
             children = self.get_children()
 
+        if name.startswith('EEDF') and name != 'EEDF':
+            name = name[4:].lstrip()
+        if type == 15 or type in (10, 11) and subtype == 1:
+            if name.startswith('CENTRE') and not name.startswith('CENTRE AERE'):
+                name = name[6:].lstrip()
+        if name.startswith('-'):
+            name = name[1:].lstrip()
+
         defaults = {
             'name': name,
             'type': type,
