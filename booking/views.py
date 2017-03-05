@@ -1,9 +1,9 @@
 from datetime import timedelta
 from django.conf import settings
-from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files import File
 from django.db.models import Count, Sum, Min, Max
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
 from django.utils.text import slugify
 from django.views.generic import TemplateView, DetailView
@@ -14,21 +14,20 @@ from .filters import BookingFilter, BookingItemFilter
 from .models import Booking, BookingItem, Agreement
 
 
-class HomeView(PermissionRequiredMixin, TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):
     template_name = 'booking/home.html'
-    permission_required = 'booking.show_booking'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        potential_incomes = [item.amount - item.amount_cot
-                             for item in BookingItem.objects.filter(booking__state__income=1)]
-        potential_overnights = [item.overnights for item in BookingItem.objects.filter(booking__state__income=1)]
+        items = BookingItem.objects.for_user(self.request.user)
+        potential_items = items.filter(booking__state__income=1)
+        potential_incomes = [item.amount - item.amount_cot for item in potential_items]
+        potential_overnights = [item.overnights for item in potential_items]
         context['potential_income'] = sum(filter(bool, potential_incomes))
         context['potential_overnights'] = sum(filter(bool, potential_overnights))
-        confirmed_incomes = [item.amount - item.amount_cot
-                             for item in BookingItem.objects.filter(booking__state__income__in=(2, 3))]
-        confirmed_overnights = [item.overnights
-                                for item in BookingItem.objects.filter(booking__state__income__in=(2, 3))]
+        confirmed_items = items.filter(booking__state__income__in=(2, 3))
+        confirmed_incomes = [item.amount - item.amount_cot for item in confirmed_items]
+        confirmed_overnights = [item.overnights for item in confirmed_items]
         context['confirmed_income'] = sum(filter(bool, confirmed_incomes))
         context['confirmed_overnights'] = sum(filter(bool, confirmed_overnights))
         context['total_income'] = context['potential_income'] + context['confirmed_income']
@@ -36,10 +35,12 @@ class HomeView(PermissionRequiredMixin, TemplateView):
         return context
 
 
-class BookingListView(PermissionRequiredMixin, FilterView):
+class BookingListView(LoginRequiredMixin, FilterView):
     template_name = 'booking/booking_list.html'
-    permission_required = 'booking.show_booking'
     filterset_class = BookingFilter
+
+    def get_queryset(self):
+        return Booking.objects.for_user(self.request.user)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -50,16 +51,21 @@ class BookingListView(PermissionRequiredMixin, FilterView):
         return context
 
 
-class BookingDetailView(PermissionRequiredMixin, DetailView):
-    permission_required = 'booking.show_booking'
+class BookingDetailView(LoginRequiredMixin, DetailView):
     model = Booking
 
+    def render_to_response(self, context):
+        if not self.object.structure.nominated(self.request.user):
+            return HttpResponseForbidden()
+        return super().render_to_response(context)
 
-class CreateAgreementView(PermissionRequiredMixin, DetailView):
-    permission_required = 'booking.change_booking'
+
+class CreateAgreementView(LoginRequiredMixin, DetailView):
     model = Booking
 
-    def render_to_response(self, context, **response_kwargs):
+    def render_to_response(self, context):
+        if not self.object.structure.nominated(self.request.user):
+            return HttpResponseForbidden()
         year = self.object.items.earliest('begin').begin.year
         try:
             order = Agreement.objects.filter(date__year=year).latest('order').order + 1
@@ -78,9 +84,8 @@ class CreateAgreementView(PermissionRequiredMixin, DetailView):
         return HttpResponseRedirect(reverse('booking:booking_detail', kwargs={'pk': self.object.pk}))
 
 
-class OccupancyView(PermissionRequiredMixin, FilterView):
+class OccupancyView(LoginRequiredMixin, FilterView):
     template_name = 'booking/occupancy.html'
-    permission_required = 'booking.show_booking'
     filterset_class = BookingItemFilter
 
     def occupancy_for(self, day, product):
@@ -95,19 +100,20 @@ class OccupancyView(PermissionRequiredMixin, FilterView):
         context = super().get_context_data(**kwargs)
         occupancy = []
         range_qs = self.object_list.aggregate(begin=Min('begin'), end=Max('end'))
-        for i in range((range_qs['end'] - range_qs['begin']).days + 1):
-            day = range_qs['begin'] + timedelta(days=i)
-            occupancy.append((day, ) + self.occupancy_for(day, 2) + self.occupancy_for(day, 1))
+        if range_qs['begin'] and range_qs['end']:
+            for i in range((range_qs['end'] - range_qs['begin']).days + 1):
+                day = range_qs['begin'] + timedelta(days=i)
+                occupancy.append((day, ) + self.occupancy_for(day, 2) + self.occupancy_for(day, 1))
         context['occupancy'] = occupancy
         return context
 
 
-class StatsView(PermissionRequiredMixin, TemplateView):
+class StatsView(LoginRequiredMixin, TemplateView):
     template_name = 'booking/stats.html'
-    permission_required = 'booking.show_booking'
 
     def get_context_data(self, **kwargs):
-        filter = BookingFilter(self.request.GET)
+        filter = BookingFilter(self.request.GET or None, request=self.request,
+                               queryset=Booking.objects.for_user(self.request.user))
         items = BookingItem.objects.filter(booking__in=filter.qs)
         kwargs['filter'] = filter
         kwargs['stats'] = {

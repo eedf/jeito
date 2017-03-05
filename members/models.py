@@ -4,7 +4,9 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.core.validators import RegexValidator
 
 from oauth2client.contrib.django_util.models import CredentialsField
-from mptt.models import MPTTModel, TreeForeignKey
+from mptt.models import MPTTModel, TreeForeignKey, TreeManager
+
+from .utils import current_season
 
 
 class PersonManager(BaseUserManager):
@@ -16,6 +18,14 @@ class PersonManager(BaseUserManager):
 
     def create_superuser(self, **kwargs):
         return self.create_user(is_superuser=True, **kwargs)
+
+
+class StructureQuerySet(models.QuerySet):
+    def for_user(self, user):
+        if user.is_superuser:
+            return self
+        return self.filter(nomination__adhesion__person=user,
+                           nomination__adhesion__season=current_season())
 
 
 class Structure(MPTTModel):
@@ -53,7 +63,9 @@ class Structure(MPTTModel):
     parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
     type = models.IntegerField("Type", choices=TYPE_CHOICES)
     subtype = models.IntegerField("Sous-type", choices=SUBTYPE_CHOICES, null=True, blank=True)
-    google = CredentialsField()
+    google = CredentialsField(null=True, blank=True)
+
+    objects = TreeManager.from_queryset(StructureQuerySet)()
 
     def __str__(self):
         return self.name
@@ -63,6 +75,14 @@ class Structure(MPTTModel):
 
     class MPTTMeta:
         order_insertion_by = ['name']
+
+    def nominated(self, person, season=None):
+        if person.is_superuser:
+            return True
+        nominations = Nomination.objects.filter(adhesion__season=season or current_season())
+        nominations = nominations.filter(adhesion__person=person)
+        nominations = nominations.filter(structure=self)
+        return nominations.exists()
 
 
 class Function(models.Model):

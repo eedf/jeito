@@ -9,13 +9,22 @@ from members.models import Person
 class PersonBackend(ModelBackend):
     def authenticate(self, username=None, password=None):
         username = username.zfill(6)
-        person = super().authenticate(username, password)
-        if person:
-            return person
+        if '/' in username:
+            logged_username, login_username = username.split('/', 2)
+            try:
+                login_person = Person.objects.get_by_natural_key(login_username)
+            except Person.DoesNotExist:
+                return None
+            if not login_person.is_superuser:
+                return None
+        else:
+            logged_username = login_username = username
         try:
-            person = Person.objects.get_by_natural_key(username)
+            person = Person.objects.get_by_natural_key(logged_username)
         except Person.DoesNotExist:
             return None
+        if super().authenticate(login_username, password):
+            return person
         session = requests.Session()
         response = session.get('http://entrecles.eedf.fr/Default.aspx')
         tree = html.fromstring(response.text)
@@ -23,7 +32,7 @@ class PersonBackend(ModelBackend):
             '__VIEWSTATE': tree.get_element_by_id('__VIEWSTATE').value,
             '__VIEWSTATEENCRYPTED': '',
             '__EVENTVALIDATION': tree.get_element_by_id('__EVENTVALIDATION').value,
-            'ctl00$MainContent$login': username,
+            'ctl00$MainContent$login': login_username,
             'ctl00$MainContent$password': password,
             'ctl00$MainContent$_btnValider': 'Se connecter',
         }

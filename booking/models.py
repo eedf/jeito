@@ -7,6 +7,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.timezone import now
+from members.models import Structure
+from members.utils import current_season
 
 
 class TrackingEvent(models.Model):
@@ -78,6 +80,7 @@ class Agreement(TrackingMixin, models.Model):
     odt = models.FileField(upload_to='conventions', blank=True)
     pdf = models.FileField(upload_to='conventions', blank=True)
     booking = models.ForeignKey('Booking', verbose_name="Réservation", related_name='agreements', null=True)
+    structure = models.ForeignKey(Structure, verbose_name="Structure")
 
     class Meta:
         verbose_name = "Convention"
@@ -149,6 +152,14 @@ class BookingManager(models.Manager):
         return qs
 
 
+class BookingQuerySet(models.QuerySet):
+    def for_user(self, user):
+        if user.is_superuser:
+            return self
+        return self.filter(structure__nomination__adhesion__person=user,
+                           structure__nomination__adhesion__season=current_season())
+
+
 class Booking(TrackingMixin, models.Model):
     ORG_TYPE_CHOICES = (
         (1, "EEDF"),
@@ -172,8 +183,9 @@ class Booking(TrackingMixin, models.Model):
     insurance_scan = models.FileField(verbose_name="Attestation d'assurance", upload_to='assurance', blank=True)
     invoice = models.FileField(verbose_name="Facture", upload_to='factures', blank=True)
     invoice_number = models.CharField(max_length=10, blank=True)
+    structure = models.ForeignKey(Structure, verbose_name="Structure")
 
-    objects = BookingManager()
+    objects = BookingManager.from_queryset(BookingQuerySet)()
 
     class Meta:
         verbose_name = "Réservation"
@@ -234,6 +246,14 @@ class BookingItemManager(models.Manager):
         return qs
 
 
+class BookingItemQuerySet(models.QuerySet):
+    def for_user(self, user):
+        if user.is_superuser:
+            return self
+        return self.filter(booking__structure__nomination__adhesion__person=user,
+                           booking__structure__nomination__adhesion__season=current_season())
+
+
 class BookingItem(TrackingMixin, models.Model):
     PRODUCT_CHOICES = (
         (1, "Hébergement Terrain"),
@@ -254,7 +274,7 @@ class BookingItem(TrackingMixin, models.Model):
     price = models.DecimalField(verbose_name="Prix forfait", max_digits=8, decimal_places=2, null=True, blank=True)
     cotisation = models.BooleanField(verbose_name="Cotis° associé", default=True)
 
-    objects = BookingItemManager()
+    objects = BookingItemManager.from_queryset(BookingItemQuerySet)()
 
     def __str__(self):
         return self.title or self.get_product_display()

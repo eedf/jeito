@@ -3,8 +3,10 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from django import forms
 from django.conf import settings
+from django.db.models import Q
 from django.http import QueryDict
 import django_filters
+from members.models import Structure
 from .models import Booking, BookingState, BookingItem
 
 
@@ -19,12 +21,20 @@ class BookingFilterForm(forms.Form):
         self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
         self.helper.form_method = 'get'
         self.helper.layout = Layout(
+            'structure',
             'year',
             InlineCheckboxes('state'),
         )
 
 
+def structures_queryset(request):
+    structures = Structure.objects.for_user(request.user)
+    structures = structures.filter(Q(type=15) | Q(type__in=(10, 11), subtype=1))
+    return structures.order_by('name')
+
+
 class BookingFilter(django_filters.FilterSet):
+    structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset, name='structure')
     year_choices = [(year, str(year)) for year in range(settings.NOW().year, 2015, -1)]
     year = django_filters.ChoiceFilter(label="Année", choices=year_choices, name='begin__year')
     state = django_filters.ModelMultipleChoiceFilter(label="Statut", queryset=BookingState.objects.all(),
@@ -32,7 +42,7 @@ class BookingFilter(django_filters.FilterSet):
 
     class Meta:
         model = Booking
-        fields = ('year', 'state')
+        fields = ('structure', 'year', 'state')
         form = BookingFilterForm
 
     def __init__(self, data, *args, **kwargs):
@@ -56,17 +66,20 @@ class BookingItemFilterForm(forms.Form):
         self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
         self.helper.form_method = 'get'
         self.helper.layout = Layout(
+            'structure',
             InlineCheckboxes('state'),
         )
 
 
 class BookingItemFilter(django_filters.FilterSet):
+    structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset,
+                                                 name='booking__structure')
     state = django_filters.ModelMultipleChoiceFilter(label="Statut", queryset=BookingState.objects.all(),
                                                      widget=forms.CheckboxSelectMultiple, name='booking__state')
 
     class Meta:
         model = BookingItem
-        fields = ('state', )
+        fields = ('structure', 'state')
         form = BookingItemFilterForm
 
     def __init__(self, data, *args, **kwargs):

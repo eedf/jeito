@@ -66,10 +66,9 @@
                 <li>
                     <a href="{% url 'docs:index' %}">Documents</a>
                 </li>
-                {% if perms.booking %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-                        Bécours
+                        Centres
                         <span class="caret"></span>
                     </a>
                     <ul class="dropdown-menu">
@@ -82,6 +81,14 @@
                         <li>
                             <a href="{% url 'booking:stats' %}">Statistiques</a>
                         </li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        Comptabilités
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
                         <li>
                             <a href="{% url 'accounting:balance' %}">Balance</a>
                         </li>
@@ -93,7 +100,6 @@
                         </li>
                     </ul>
                 </li>
-                {% endif %}
             </ul>
             {% if request.user.is_authenticated %}
                 <ul class="nav navbar-nav navbar-right">

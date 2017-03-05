@@ -10,7 +10,7 @@ urlpatterns = [
     url(r'^', include('core.urls')),
     url(r'^docs/', include('docs.urls', namespace='docs')),
     url(r'^members/', include('members.urls', namespace='members')),
-    url(r'^becours/', include('booking.urls', namespace='booking')),
+    url(r'^booking/', include('booking.urls', namespace='booking')),
     url(r'^accounting/', include('accounting.urls', namespace='accounting')),
     url(r'^tracking/', include('tracking.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
