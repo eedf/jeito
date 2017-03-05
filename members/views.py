@@ -5,11 +5,10 @@ from oauth2client.client import flow_from_clientsecrets
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.db.models import Count, Sum, F, ExpressionWrapper, DecimalField
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.formats import date_format
-from django.views.generic import RedirectView
 from django.views.generic import View, TemplateView
 import json
 from dashboard import widget
@@ -428,9 +427,11 @@ class GroupsWidget(widget.Widget):
         }
 
 
-class OAuthAuthorizeView(RedirectView):
-    def get_redirect_url(self, pk):
+class OAuthAuthorizeView(LoginRequiredMixin, View):
+    def get(self, request, pk):
         structure = get_object_or_404(Structure, pk=pk)
+        if not structure.nominated(self.request.user):
+            return HttpResponseForbidden()
         state = json.dumps({
             'pk': structure.pk,
         })
@@ -440,15 +441,17 @@ class OAuthAuthorizeView(RedirectView):
             redirect_uri=self.request.build_absolute_uri(reverse("members:oauth_callback"))
         )
         self.request.session['oauth_flow'] = jsonpickle.encode(flow)
-        return flow.step1_get_authorize_url(state=state)
+        return HttpResponseRedirect(flow.step1_get_authorize_url(state=state))
 
 
-class OAuthCallbackView(RedirectView):
-    def get_redirect_url(self, *args, **kwargs):
+class OAuthCallbackView(LoginRequiredMixin, View):
+    def get(self, request):
         state = json.loads(self.request.GET['state'])
         structure = Structure.objects.get(pk=state['pk'])
+        if not structure.nominated(self.request.user):
+            return HttpResponseForbidden()
         code = self.request.GET['code']
         flow = jsonpickle.decode(self.request.session['oauth_flow'])
         structure.google = flow.step2_exchange(code)
         structure.save()
-        return '/'
+        return HttpResponseRedirect('/')
