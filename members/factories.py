@@ -53,4 +53,3 @@ class AdhesionFactory(factory.django.DjangoModelFactory):
     date = date(2014, 10, 15)
     rate = factory.SubFactory(RateFactory)
     structure = factory.SubFactory(StructureFactory)
-    function = factory.SubFactory(FunctionFactory)

@@ -37,7 +37,7 @@ class AdhesionsJsonView(LoginRequiredMixin, View):
         elif GET['units']:
             qs = qs.filter(structure__type=GET['units'])
         if GET['function']:
-            qs = qs.filter(function__category=GET['function'])
+            qs = qs.filter(nomination__function__category=GET['function'], nomination__main=True)
         if GET['rate']:
             qs = qs.filter(rate__category=GET['rate'])
         qs = qs.order_by('-date').values('date').annotate(headcount=Count('id'))
@@ -219,11 +219,13 @@ class TableauStructureView(TableauView):
 
 
 class TableauFunctionsView(TableauView):
-    values = ('function__category', )
+    values = ('nomination__function__category', )
     title = "fonction"
 
     def row_key(self, obj):
-        return dict(Function.CATEGORY_CHOICES)[obj['function__category']]
+        if obj['nomination__function__category'] is None:
+            return "Autre"
+        return dict(Function.CATEGORY_CHOICES)[obj['nomination__function__category']]
 
 
 class TableauRateView(TableauView):
@@ -296,11 +298,11 @@ class YoungsHeadcountWidget(widget.Widget):
         leap_year = date.month == 2 and date.day == 29
         ref_date = date.replace(year=date.year - 1, day=28 if leap_year else date.day)
         qs = Adhesion.objects.filter(season=season, date__lte=date)
-        qs = qs.filter(function__category=0)
+        qs = qs.filter(nomination__function__category=0, nomination__main=True)
         qs = qs.exclude(structure__number__in=SVN_NUMBERS + CPN_NUMBERS)
         qs = qs.aggregate(headcount=Count('id'))
         ref_qs = Adhesion.objects.filter(season=season - 1, date__lte=ref_date)
-        ref_qs = ref_qs.filter(function__category=0)
+        ref_qs = ref_qs.filter(nomination__function__category=0, nomination__main=True)
         ref_qs = ref_qs.exclude(structure__number__in=SVN_NUMBERS + CPN_NUMBERS)
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
@@ -319,11 +321,11 @@ class SVHeadcountWidget(widget.Widget):
         leap_year = date.month == 2 and date.day == 29
         ref_date = date.replace(year=date.year - 1, day=28 if leap_year else date.day)
         qs = Adhesion.objects.filter(season=season, date__lte=date)
-        qs = qs.filter(function__category=0)
+        qs = qs.filter(nomination__function__category=0, nomination__main=True)
         qs = qs.filter(structure__number__in=SVN_NUMBERS)
         qs = qs.aggregate(headcount=Count('id'))
         ref_qs = Adhesion.objects.filter(season=season - 1, date__lte=ref_date)
-        ref_qs = ref_qs.filter(function__category=0)
+        ref_qs = ref_qs.filter(nomination__function__category=0, nomination__main=True)
         ref_qs = ref_qs.filter(structure__number__in=SVN_NUMBERS)
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
@@ -342,11 +344,11 @@ class CPHeadcountWidget(widget.Widget):
         leap_year = date.month == 2 and date.day == 29
         ref_date = date.replace(year=date.year - 1, day=28 if leap_year else date.day)
         qs = Adhesion.objects.filter(season=season, date__lte=date)
-        qs = qs.filter(function__category=0)
+        qs = qs.filter(nomination__function__category=0, nomination__main=True)
         qs = qs.filter(structure__number__in=CPN_NUMBERS)
         qs = qs.aggregate(headcount=Count('id'))
         ref_qs = Adhesion.objects.filter(season=season - 1, date__lte=ref_date)
-        ref_qs = ref_qs.filter(function__category=0)
+        ref_qs = ref_qs.filter(nomination__function__category=0, nomination__main=True)
         ref_qs = ref_qs.filter(structure__number__in=CPN_NUMBERS)
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
@@ -365,10 +367,10 @@ class StagiaireHeadcountWidget(widget.Widget):
         leap_year = date.month == 2 and date.day == 29
         ref_date = date.replace(year=date.year - 1, day=28 if leap_year else date.day)
         qs = Adhesion.objects.filter(season=season, date__lte=date)
-        qs = qs.filter(function__category=3)
+        qs = qs.filter(nomination__function__category=3, nomination__main=True)
         qs = qs.aggregate(headcount=Count('id'))
         ref_qs = Adhesion.objects.filter(season=season - 1, date__lte=ref_date)
-        ref_qs = ref_qs.filter(function__category=3)
+        ref_qs = ref_qs.filter(nomination__function__category=3, nomination__main=True)
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
             'stagiaire_headcount': qs['headcount'],

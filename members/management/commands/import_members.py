@@ -9,7 +9,7 @@ from html import unescape
 
 from django.core.management.base import BaseCommand, CommandError
 
-from members.models import Structure, Function, Rate, Person, Adhesion
+from members.models import Structure, Function, Rate, Person, Adhesion, Nomination
 
 
 HOST = os.getenv('ENTRECLES_HOST')
@@ -83,17 +83,48 @@ class Command(BaseCommand):
                     'email': cols[24],
                 }
             )
-            if cols[39] == "0":
-                date = min(datetime.date(int(cols[37][6:10]), int(cols[37][3:5]), int(cols[37][0:2])),
-                           datetime.date(SEASON, 8, 31))
-                adhesion, created = Adhesion.objects.update_or_create(
-                    person=person,
-                    season=SEASON,
+            if cols[39] != "0":
+                return
+            date = min(datetime.date(int(cols[37][6:10]), int(cols[37][3:5]), int(cols[37][0:2])),
+                       datetime.date(SEASON, 8, 31))
+            adhesion, created = Adhesion.objects.update_or_create(
+                person=person,
+                season=SEASON,
+                defaults={
+                    'structure': structure,
+                    'date': date,
+                    'rate': rate,
+                }
+            )
+            main_nomination, created = Nomination.objects.update_or_create(
+                adhesion=adhesion,
+                structure=structure,
+                function=function,
+                defaults={
+                    'main': True,
+                }
+            )
+            delegations = cols[41]
+            if not delegations:
+                return
+            for delegation in delegations.split(','):
+                code, number = delegation[:-1].split('(')
+                function, created = Function.objects.get_or_create(
+                    code=code,
+                    season=SEASON
+                )
+                try:
+                    structure = Structure.objects.get(number=number)
+                except Structure.DoesNotExist:
+                    structure = self.get_structure(number, parent=None, recursive=False)
+                if structure == main_nomination.structure and function == main_nomination.function:
+                    continue
+                Nomination.objects.update_or_create(
+                    adhesion=adhesion,
+                    structure=structure,
+                    function=function,
                     defaults={
-                        'structure': structure,
-                        'function': function,
-                        'date': date,
-                        'rate': rate,
+                        'main': False,
                     }
                 )
         except:

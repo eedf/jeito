@@ -52,7 +52,7 @@ class AdhesionFilter(django_filters.FilterSet):
                                          method='filter_sector')
     units = django_filters.ChoiceFilter(label="Unités", choices=units_choices, empty_label="Toutes",
                                         method='filter_units')
-    function = django_filters.ChoiceFilter(name='function__category', label="Fonction",
+    function = django_filters.ChoiceFilter(name='nomination__function__category', label="Fonction",
                                            choices=Function.CATEGORY_CHOICES, empty_label="Toutes")
     rate = django_filters.ChoiceFilter(name='rate__category', label="Tarif",
                                        choices=Rate.CATEGORY_CHOICES, empty_label="Tous")
@@ -71,6 +71,11 @@ class AdhesionFilter(django_filters.FilterSet):
         super(AdhesionFilter, self).__init__(data, *args, **kwargs)
         date = (settings.NOW() - datetime.timedelta(days=1)).date()
         self.filters['date2date'].label = "Au {}".format(date.strftime('%d/%m'))
+
+    @property
+    def qs(self):
+        # deduplicate multiple functions
+        return super().qs.filter(nomination__main=True)
 
     def filter_sector(self, qs, name, value):
         if value == '1':

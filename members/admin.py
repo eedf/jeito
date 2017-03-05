@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 
 from django.contrib import admin
-from .models import Structure, Function, Rate, Person, Adhesion
+from .models import Structure, Function, Rate, Person, Adhesion, Nomination
 
 
 @admin.register(Structure)
@@ -45,9 +45,15 @@ class PersonAdmin(admin.ModelAdmin):
     search_fields = ('number', 'first_name', 'last_name')
 
 
+class NominationInline(admin.TabularInline):
+    model = Nomination
+
+
 @admin.register(Adhesion)
 class AdhesionAdmin(admin.ModelAdmin):
-    list_display = ('person', 'season', 'date', 'rate', 'structure', 'function')
+    list_display = ('person', 'season', 'date', 'rate', 'structure')
     search_fields = ('person__number', 'person__first_name', 'person__last_name')
     list_filter = ('season', 'rate')
+    inlines = (NominationInline, )
+    raw_id_fields = ('person', )
     date_hierarchy = 'date'

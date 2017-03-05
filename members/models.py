@@ -173,7 +173,19 @@ class Adhesion(models.Model):
     date = models.DateField()
     rate = models.ForeignKey(Rate, verbose_name="Tarif")
     structure = models.ForeignKey(Structure, verbose_name="Structure", related_name='adherents')
-    function = models.ForeignKey(Function, verbose_name="Fonction")
 
     def __str__(self):
         return "{self.season}-{self.person}".format(self=self)
+
+
+class Nomination(models.Model):
+    adhesion = models.ForeignKey(Adhesion, verbose_name="Adhésion")
+    structure = models.ForeignKey(Structure, verbose_name="Structure")
+    function = models.ForeignKey(Function, verbose_name="Fonction")
+    main = models.BooleanField(verbose_name="Principale", default=False)
+
+    class Meta:
+        unique_together = ('adhesion', 'structure', 'function')
+
+    def __str__(self):
+        return "{self.adhesion}:{self.function}@{self.structure}".format(self=self)
