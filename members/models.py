@@ -155,6 +155,7 @@ class Person(PermissionsMixin, AbstractBaseUser):
     last_name = models.CharField(u'Nom', max_length=100, blank=True)
     email = models.EmailField(u'Email', blank=True)
     gender = models.IntegerField("Genre", blank=True, null=True, choices=GENDER_CHOICES)
+    birthdate = models.DateField("Date de naissance", blank=True, null=True)
 
     USERNAME_FIELD = 'number'
     objects = PersonManager()

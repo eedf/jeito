@@ -81,6 +81,7 @@ class Command(BaseCommand):
                     'last_name': cols[2],
                     'first_name': cols[3],
                     'email': cols[24],
+                    'birthdate': datetime.date(int(cols[26][6:10]), int(cols[26][3:5]), int(cols[26][0:2])),
                 }
             )
             if cols[39] != "0":
