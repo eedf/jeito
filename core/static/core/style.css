@@ -95,6 +95,10 @@ tr.separator:not(:nth-child(2)) {
     border-top: solid red 2px;
 }
 
+tr.total td {
+    font-weight: bold;
+}
+
 .booking-stats td {
     text-align: right;
 }
