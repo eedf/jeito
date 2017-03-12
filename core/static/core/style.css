@@ -126,3 +126,7 @@ tr.total td {
 .form-inline .form-group + .form-group {
     margin-left: 16px;
 }
+
+.title-action {
+    float: right;
+}
