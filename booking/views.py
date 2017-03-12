@@ -6,11 +6,12 @@ from django.db.models import Count, Sum, Min, Max
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
 from django.utils.text import slugify
-from django.views.generic import TemplateView, DetailView
+from django.views.generic import TemplateView, DetailView, CreateView
 from django_filters.views import FilterView
 from os import unlink
 from templated_docs import fill_template
 from .filters import BookingFilter, BookingItemFilter
+from .forms import BookingForm
 from .models import Booking, BookingItem, Agreement
 
 
@@ -58,6 +59,16 @@ class BookingDetailView(LoginRequiredMixin, DetailView):
         if not self.object.structure.nominated(self.request.user):
             return HttpResponseForbidden()
         return super().render_to_response(context)
+
+
+class BookingCreateView(LoginRequiredMixin, CreateView):
+    model = Booking
+    form_class = BookingForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 
 class CreateAgreementView(LoginRequiredMixin, DetailView):

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import RegexValidator
@@ -26,6 +27,9 @@ class StructureQuerySet(models.QuerySet):
             return self
         return self.filter(nomination__adhesion__person=user,
                            nomination__adhesion__season=current_season())
+
+    def centers(self):
+        return self.filter(Q(type=15) | Q(type__in=(10, 11), subtype=1))
 
 
 class Structure(MPTTModel):

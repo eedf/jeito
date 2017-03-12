@@ -5,6 +5,7 @@
 
 <div class="container-fluid">
 
+    <a href="{% url 'booking:create' %}" class="btn btn-primary title-action">Ajouter</a>
     <h1>Réservations</h1>
 
     {% crispy filter.form %}
