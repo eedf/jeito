@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 from .models import Structure, Function, Rate, Person, Adhesion, Nomination
 
 
@@ -40,9 +41,17 @@ class RateAdmin(admin.ModelAdmin):
 
 
 @admin.register(Person)
-class PersonAdmin(admin.ModelAdmin):
+class PersonAdmin(UserAdmin):
     list_display = ('number', 'first_name', 'last_name')
     search_fields = ('number', 'first_name', 'last_name')
+    ordering = ('last_name', 'first_name')
+    list_filter = ('is_superuser', )
+    fieldsets = (
+        (None, {'fields': ('number', 'password')}),
+        ('Personal info', {'fields': ('first_name', 'last_name', 'gender', 'birthdate', 'email')}),
+        ('Permissions', {'fields': ('is_superuser', 'groups', 'user_permissions')}),
+        ('Important dates', {'fields': ('last_login', )}),
+    )
 
 
 class NominationInline(admin.TabularInline):
