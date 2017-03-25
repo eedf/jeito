@@ -1,6 +1,6 @@
 from datetime import timedelta
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.files import File
 from django.db.models import Count, Sum, Min, Max
 from django.http import HttpResponseRedirect, HttpResponseForbidden
@@ -61,9 +61,10 @@ class BookingDetailView(LoginRequiredMixin, DetailView):
         return super().render_to_response(context)
 
 
-class BookingCreateView(LoginRequiredMixin, CreateView):
+class BookingCreateView(PermissionRequiredMixin, CreateView):
     model = Booking
     form_class = BookingForm
+    permission_required = 'booking.create'
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

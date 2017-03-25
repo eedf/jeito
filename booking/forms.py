@@ -45,11 +45,13 @@ class BookingForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         structures = Structure.objects.centers().for_user(user).order_by('name')
-        if len(structures) == 1:
-            kwargs['initial']['structure'] = structures[0]
-        kwargs['initial']['state'] = BookingState.objects.get(title='Prospect')
+        user_structure = user.adhesion and user.adhesion.structure
+        if user_structure in structures:
+            kwargs['initial']['structure'] = user_structure
+        kwargs['initial']['state'] = BookingState.objects.get(title='Contact')
         super().__init__(*args, **kwargs)
         self.fields['structure'].queryset = structures
+        self.fields['structure'].label = "Centre"
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.layout = Layout(

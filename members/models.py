@@ -181,17 +181,22 @@ class Person(PermissionsMixin, AbstractBaseUser):
         return self.is_superuser
 
     @property
+    def adhesion(self):
+        today = settings.NOW()
+        if today.month < 9:
+            season = today.year
+        else:
+            season = today.year + 1
+        try:
+            return self.adhesions.get(season=season)
+        except Adhesion.DoesNotExist:
+            return None
+
+    @property
     def is_active(self):
         if self.is_superuser:
             return True
-        today = settings.NOW()
-        if today.month < 9:
-            seasons = [today.year]
-        elif today.month == 9:
-            seasons = [today.year, today.year + 1]
-        else:
-            seasons = [today.year + 1]
-        return self.adhesions.filter(season__in=seasons).exists()
+        return self.adhesion is not None
 
 
 class Adhesion(models.Model):

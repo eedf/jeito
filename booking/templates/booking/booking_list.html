@@ -5,7 +5,9 @@
 
 <div class="container-fluid">
 
-    <a href="{% url 'booking:create' %}" class="btn btn-primary title-action">Ajouter</a>
+    {% if perms.booking.create %}
+        <a href="{% url 'booking:create' %}" class="btn btn-primary title-action">Ajouter</a>
+    {% endif %}
     <h1>Réservations</h1>
 
     {% crispy filter.form %}
