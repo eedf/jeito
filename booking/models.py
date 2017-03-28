@@ -1,5 +1,7 @@
+from datetime import timedelta
 import httplib2
 import googleapiclient.discovery
+from googleapiclient.http import HttpError
 from cuser.middleware import CuserMiddleware
 from django.db import models
 from django.db.models import Case, ExpressionWrapper, F, Min, Max, Sum, When
@@ -243,13 +245,16 @@ class Booking(TrackingMixin, models.Model):
                 'date': self.begin.isoformat(),
             },
             'end': {
-                'date': (self.end + self(days=1)).isoformat(),
+                'date': (self.end + timedelta(days=1)).isoformat(),
             },
         }
-        # if id in existing_ids:
-        service.events().update(calendarId=calendarId, eventId=id, body=event).execute()
-        # else:
-        #     service.events().insert(calendarId=calendarId, body=event).execute()
+        try:
+            service.events().update(calendarId=calendarId, eventId=id, body=event).execute()
+        except HttpError as exception:
+            if exception.resp.status == 404:
+                service.events().insert(calendarId=calendarId, body=event).execute()
+            else:
+                raise
 
 
 class BookingItemManager(models.Manager):
