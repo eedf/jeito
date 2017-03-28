@@ -1,5 +1,4 @@
-import httplib2
-import googleapiclient.discovery
+from datetime import timedelta
 from cuser.middleware import CuserMiddleware
 from django.db import models
 from django.db.models import Case, ExpressionWrapper, F, Min, Max, Sum, When
@@ -229,27 +228,26 @@ class Booking(TrackingMixin, models.Model):
     def gone(self):
         return bool(self.end) and self.end < settings.NOW().date()
 
-    def sync_calendar(self):
-        if not self.structure.google:
-            return
-        http_auth = self.structure.google.authorize(httplib2.Http())
-        service = googleapiclient.discovery.build(serviceName='calendar', version='v3', http=http_auth)
-        calendarId = 'adn3tuv3dfpd9h0r8g5sfme6i4@group.calendar.google.com'
-        id = 'jeito{}'.format(self.id)
-        event = {
-            'id': id,
-            'summary': self.title,
+    @property
+    def google_id(self):
+        return 'jeito{}'.format(self.id)
+
+    @property
+    def google_repr(self):
+        begin = min([date for date in self.items.values_list('begin', flat=True) if date], default=None)
+        end = max([date for date in self.items.values_list('end', flat=True) if date], default=None)
+        if not begin or not end:
+            return None
+        return {
+            'id': self.google_id,
+            'summary': self.title + (' ?' if self.state.income == 1 else ''),
             'start': {
-                'date': self.begin.isoformat(),
+                'date': begin.isoformat(),
             },
             'end': {
-                'date': (self.end + self(days=1)).isoformat(),
+                'date': (end + timedelta(days=1)).isoformat(),
             },
         }
-        # if id in existing_ids:
-        service.events().update(calendarId=calendarId, eventId=id, body=event).execute()
-        # else:
-        #     service.events().insert(calendarId=calendarId, body=event).execute()
 
 
 class BookingItemManager(models.Manager):

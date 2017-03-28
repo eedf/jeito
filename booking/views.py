@@ -174,3 +174,11 @@ class StatsView(LoginRequiredMixin, TemplateView):
                 kwargs[name]['overnight_cost'] = (kwargs[name]['amount_hosting'] / kwargs[name]['overnights'])
 
         return kwargs
+
+
+class BookingGoogleSyncView(LoginRequiredMixin, DetailView):
+    model = Booking
+
+    def render_to_response(self, context, **response_kwargs):
+        self.object.sync_calendar()
+        return HttpResponseRedirect(reverse('booking:booking_list'))

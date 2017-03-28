@@ -440,6 +440,7 @@ class OAuthAuthorizeView(LoginRequiredMixin, View):
             scope=settings.GOOGLE_OAUTH2_SCOPES,
             redirect_uri=self.request.build_absolute_uri(reverse("members:oauth_callback"))
         )
+        flow.params['access_type'] = 'offline'
         self.request.session['oauth_flow'] = jsonpickle.encode(flow)
         return HttpResponseRedirect(flow.step1_get_authorize_url(state=state))
 
