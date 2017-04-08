@@ -130,7 +130,7 @@
                 <th>Convention signée</th>
                 <td>
                     {% if booking.signed_agreement_scan %}<a href="{{ booking.signed_agreement_scan.url }}">{% endif %}
-                    {{ booking.signed_agreement.number }}
+                    {{ booking.signed_agreement.number|default:"Télécharger" }}
                     {% if booking.signed_agreement_scan %}</a>{% endif %}
                 </td>
                 <td></td>
