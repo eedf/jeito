@@ -40,3 +40,11 @@ class TrackingValueInline(admin.TabularInline):
 class TrackingEventAdmin(admin.ModelAdmin):
     list_display = ('user', 'date', 'obj')
     inlines = (TrackingValueInline, )
+
+
+@admin.register(Payment)
+class PaymentAdmin(admin.ModelAdmin):
+    list_display = ('mean', 'date', 'amount', 'booking')
+    search_fields = ('booking__title', )
+    list_filter = ('mean', )
+    date_hierarchy = 'date'
