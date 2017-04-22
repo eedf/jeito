@@ -47,7 +47,7 @@ class Budget(models.Model):
 
     def done(self):
         qs = self.analytic.entry_set.aggregate(amount=models.Sum(models.F('revenue') - models.F('expense')))
-        return qs['amount']
+        return qs['amount'] or 0
 
     def diff(self):
         return self.amount - self.done()
