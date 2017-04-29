@@ -132,6 +132,7 @@ class StatsView(LoginRequiredMixin, TemplateView):
             'headcount': sum([item.headcount for item in items if item.headcount]),
             'headcount_cot': sum([item.headcount for item in items if item.headcount and item.cotisation]),
             'overnights': sum([item.overnights for item in items if item.overnights]),
+            'overnights_cot': sum([item.overnights for item in items if item.overnights and item.cotisation]),
             'amount_hosting': sum([item.amount - item.amount_cot for item in items if item.product in (1, 2, 5)]),
             'amount_cot': sum([item.overnights for item in items if item.overnights and item.cotisation]),
             'amount_other': sum([item.amount for item in items if item.product in (3, 4)]),
