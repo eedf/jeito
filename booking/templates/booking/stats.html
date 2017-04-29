@@ -17,6 +17,7 @@
             <th>Nuitées</th>
             <th>%</th>
             <th>prix</th>
+            <th>Effectifs</th>
         </tr>
         <tr>
             <th>Terrain EEDF</th>
@@ -25,6 +26,7 @@
             <td>{{ stats_terrain_eedf.overnights }}</td>
             <td>{{ stats_terrain_eedf.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_terrain_eedf.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_terrain_eedf.headcount }}</td>
         </tr>
         <tr>
             <th>Terrain ext</th>
@@ -33,6 +35,7 @@
             <td>{{ stats_terrain_ext.overnights }}</td>
             <td>{{ stats_terrain_ext.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_terrain_ext.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_terrain_ext.headcount }}</td>
         </tr>
         <tr>
             <th>Village EEDF</th>
@@ -41,6 +44,7 @@
             <td>{{ stats_village_eedf.overnights }}</td>
             <td>{{ stats_village_eedf.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_village_eedf.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_village_eedf.headcount }}</td>
         </tr>
         <tr>
             <th>Village externe</th>
@@ -49,6 +53,7 @@
             <td>{{ stats_village_ext.overnights }}</td>
             <td>{{ stats_village_ext.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_village_ext.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_village_ext.headcount }}</td>
         </tr>
         <tr>
             <th>Terrain</th>
@@ -57,6 +62,7 @@
             <td>{{ stats_terrain.overnights }}</td>
             <td>{{ stats_terrain.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_terrain.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_terrain.headcount }}</td>
         </tr>
         <tr>
             <th>Village</th>
@@ -65,6 +71,7 @@
             <td>{{ stats_village.overnights }}</td>
             <td>{{ stats_village.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_village.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_village.headcount }}</td>
         </tr>
         <tr>
             <th>EEDF</th>
@@ -73,6 +80,7 @@
             <td>{{ stats_eedf.overnights }}</td>
             <td>{{ stats_eedf.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_eedf.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_eedf.headcount }}</td>
         </tr>
         <tr>
             <th>Externe</th>
@@ -81,6 +89,7 @@
             <td>{{ stats_ext.overnights }}</td>
             <td>{{ stats_ext.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_ext.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_ext.headcount }}</td>
         </tr>
         <tr>
             <th>1er trimestre</th>
@@ -89,6 +98,7 @@
             <td>{{ stats_q1.overnights }}</td>
             <td>{{ stats_q1.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_q1.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_q1.headcount }}</td>
         </tr>
         <tr>
             <th>2ème trimestre</th>
@@ -97,6 +107,7 @@
             <td>{{ stats_q2.overnights }}</td>
             <td>{{ stats_q2.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_q2.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_q2.headcount }}</td>
         </tr>
         <tr>
             <th>3ème trimestre</th>
@@ -105,6 +116,7 @@
             <td>{{ stats_q3.overnights }}</td>
             <td>{{ stats_q3.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_q3.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_q3.headcount }}</td>
         </tr>
         <tr>
             <th>4ème trimestre</th>
@@ -113,6 +125,7 @@
             <td>{{ stats_q4.overnights }}</td>
             <td>{{ stats_q4.overnights_rate|floatformat:"0" }} %</td>
             <td>{{ stats_q4.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats_q4.headcount }}</td>
         </tr>
         <tr>
             <th>Hébergement</th>
@@ -121,6 +134,7 @@
             <td>{{ stats.overnights }}</td>
             <td></td>
             <td>{{ stats.overnight_cost|floatformat:"2" }} €</td>
+            <td>{{ stats.headcount }}</td>
         </tr>
         <tr>
             <th>Contrat de coopération</th>
@@ -129,10 +143,12 @@
             <td></td>
             <td></td>
             <td></td>
+            <td>{{ stats.headcount_cot }}</td>
         </tr>
         <tr>
             <th>Matériel, consommables</th>
             <td>{{ stats.amount_other|floatformat:"0" }} €</td>
+            <td></td>
             <td></td>
             <td></td>
             <td></td>
@@ -145,6 +161,7 @@
             <td></td>
             <td></td>
             <td></td>
+            <td>{{ stats.headcount }}</td>
         </tr>
     </table>
 
