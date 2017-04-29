@@ -18,10 +18,10 @@ class AdhesionsForm(forms.Form):
     )
     units_choices = (
         (None, "Toutes"),
-        (1, "Lutins"),
-        (2, "Ainés"),
-        (7, "Louveteaux"),
+        (7, "Lutins"),
+        (1, "Louveteaux"),
         (13, "Eclés"),
+        (2, "Ainés"),
         (99, "Autres"),
     )
     function_choices = ((None, "Toutes"), ) + Function.CATEGORY_CHOICES
