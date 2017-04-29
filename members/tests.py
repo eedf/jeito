@@ -13,7 +13,20 @@ class LoggedTestMixin(object):
 
 
 class LoginTests(TestCase):
-    def test_model(self):
+    @override_settings(NOW=lambda: datetime.datetime(2014, 8, 31))
+    def test_model_before(self):
+        adhesion = factories.AdhesionFactory.create(person__password=make_password('toto'))
+        logged = self.client.login(username=adhesion.person.number, password='toto')
+        self.assertFalse(logged)
+
+    @override_settings(NOW=lambda: datetime.datetime(2014, 10, 1))
+    def test_model_q4(self):
+        adhesion = factories.AdhesionFactory.create(person__password=make_password('toto'))
+        logged = self.client.login(username=adhesion.person.number, password='toto')
+        self.assertTrue(logged)
+
+    @override_settings(NOW=lambda: datetime.datetime(2015, 1, 1))
+    def test_model_q1(self):
         adhesion = factories.AdhesionFactory.create(person__password=make_password('toto'))
         logged = self.client.login(username=adhesion.person.number, password='toto')
         self.assertTrue(logged)
