@@ -45,7 +45,7 @@
         {% for item in booking.items.all %}
             {% if item.price_pppn is not None %}
                 <tr>
-                    <th>{% if item.intitule %}{{ item.intitule }}{% else %}{{ item.get_product_display }}{% endif %}</th>
+                    <th>{% if item.title %}{{ item.title }}{% else %}{{ item.get_product_display }}{% endif %}</th>
                     <td>{{ item.price_pppn|floatformat:2 }} € x {{ item.headcount }} pers. x {{ item.nights }} nuits
                         (du {{ item.begin|date:'D d/m/y' }} au {{ item.end|date:'D d/m/y' }})</td>
                     <td class="text-right">{{ item.amount_pppn|floatformat:2 }} €</td>
@@ -53,14 +53,14 @@
             {% endif %}
             {% if item.price_pp is not None %}
                 <tr>
-                    <th>{% if item.intitule %}{{ item.intitule }}{% else %}{{ item.get_product_display }}{% endif %}</th>
+                    <th>{% if item.title %}{{ item.title }}{% else %}{{ item.get_product_display }}{% endif %}</th>
                     <td>{{ item.price_pp|floatformat:2 }} € x {{ item.headcount }} pers.</td>
                     <td class="text-right">{{ item.amount_pp|floatformat:2 }} €</td>
                 </tr>
             {% endif %}
             {% if item.price_pn is not None %}
                 <tr>
-                    <th>{% if item.intitule %}{{ item.intitule }}{% else %}{{ item.get_product_display }}{% endif %}</th>
+                    <th>{% if item.title %}{{ item.title }}{% else %}{{ item.get_product_display }}{% endif %}</th>
                     <td>{{ item.price_pn|floatformat:2 }} € x {{ item.nights }} nuits
                         (du {{ item.begin|date:'D d/m/y' }} au {{ item.end|date:'D d/m/y' }})</td>
                     <td class="text-right">{{ item.amount_pn|floatformat:2 }} €</td>
@@ -68,7 +68,7 @@
             {% endif %}
             {% if item.price is not None %}
                 <tr>
-                    <th>{% if item.intitule %}{{ item.intitule }}{% else %}{{ item.get_product_display }}{% endif %}</th>
+                    <th>{% if item.title %}{{ item.title }}{% else %}{{ item.get_product_display }}{% endif %}</th>
                     <td>forfait</td>
                     <td class="text-right">{{ item.price|floatformat:2 }} €</td>
                 </tr>
