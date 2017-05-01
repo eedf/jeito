@@ -11,7 +11,7 @@ class Command(BaseCommand):
         structure = Structure.objects.get(name='BECOURS')
         bookings = structure.booking_set.filter(state__income__in=(1, 2, 3), begin__isnull=False, end__isnull=False)
         local = {booking.google_id: booking.google_repr for booking in bookings}
-        calendarId = 'adn3tuv3dfpd9h0r8g5sfme6i4@group.calendar.google.com'
+        calendarId = 'c68f2h74mhs2jomeshirdu3ib8@group.calendar.google.com'
         http_auth = structure.google.authorize(httplib2.Http())
         service = googleapiclient.discovery.build(serviceName='calendar', version='v3', http=http_auth)
         events = service.events()
