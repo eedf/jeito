@@ -7,7 +7,7 @@ from members.models import Person
 
 
 class PersonBackend(ModelBackend):
-    def authenticate(self, username=None, password=None):
+    def authenticate(self, request=None, username=None, password=None):
         username = username.zfill(6)
         if '/' in username:
             logged_username, login_username = username.split('/', 2)
@@ -23,7 +23,7 @@ class PersonBackend(ModelBackend):
             person = Person.objects.get_by_natural_key(logged_username)
         except Person.DoesNotExist:
             return None
-        if super().authenticate(login_username, password):
+        if super().authenticate(request=request, username=login_username, password=password):
             return person
         session = requests.Session()
         response = session.get('http://entrecles.eedf.fr/Default.aspx')
