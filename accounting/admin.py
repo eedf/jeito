@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Analytic, Entry, Budget, BankStatement
+from .models import Account, Analytic, Entry, Budget, BankStatement, Transaction
 
 
 @admin.register(Account)
@@ -15,6 +15,10 @@ class AnalyticAdmin(admin.ModelAdmin):
     search_fields = ('title', )
 
 
+class TransactionAdmin(admin.TabularInline):
+    model = Transaction
+
+
 @admin.register(Entry)
 class EntryAdmin(admin.ModelAdmin):
     list_display = ('date', 'account', 'title', 'revenue', 'expense', 'analytic')
@@ -22,6 +26,7 @@ class EntryAdmin(admin.ModelAdmin):
     search_fields = ('title', 'account__title', 'analytic__title')
     date_hierarchy = 'date'
     list_filter = ('analytic', )
+    inlines = (TransactionAdmin, )
 
 
 @admin.register(Budget)

@@ -40,6 +40,14 @@ class Entry(models.Model):
         return self.title
 
 
+class Transaction(models.Model):
+    entry = models.ForeignKey(Entry)
+    account = models.ForeignKey(Account, verbose_name="Compte")
+    analytic = models.ForeignKey(Analytic, verbose_name="Analytique", blank=True, null=True)
+    revenue = models.DecimalField(verbose_name="Recette", max_digits=8, decimal_places=2)
+    expense = models.DecimalField(verbose_name="Dépense", max_digits=8, decimal_places=2)
+
+
 class Budget(models.Model):
     analytic = models.OneToOneField(Analytic, verbose_name="Analytique")
     amount = models.DecimalField(verbose_name="Montant", max_digits=8, decimal_places=2)
