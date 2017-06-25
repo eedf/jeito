@@ -26,11 +26,7 @@ class Analytic(models.Model):
 
 class Entry(models.Model):
     date = models.DateField(verbose_name="Date")
-    account = models.ForeignKey(Account, verbose_name="Compte")
     title = models.CharField(verbose_name="Intitulé", max_length=100)
-    revenue = models.DecimalField(verbose_name="Recette", max_digits=8, decimal_places=2)
-    expense = models.DecimalField(verbose_name="Dépense", max_digits=8, decimal_places=2)
-    analytic = models.ForeignKey(Analytic, verbose_name="Analytique", blank=True, null=True)
     scan = models.FileField(upload_to='justificatif', blank=True)
 
     class Meta:
