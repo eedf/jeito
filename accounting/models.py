@@ -28,12 +28,19 @@ class Entry(models.Model):
     date = models.DateField(verbose_name="Date")
     title = models.CharField(verbose_name="Intitulé", max_length=100)
     scan = models.FileField(upload_to='justificatif', blank=True)
+    forwarded = models.BooleanField(verbose_name="Envoyé à la compta", default=False)
+    entered = models.BooleanField(verbose_name="Saisi dans la compta", default=False)
 
     class Meta:
         verbose_name = "Écriture"
 
     def __str__(self):
         return self.title
+
+    def balanced(self):
+        return sum([t.revenue - t.expense for t in self.transaction_set.all()]) == 0
+    balanced.short_description = "Équilibré"
+    balanced.boolean = True
 
 
 class Transaction(models.Model):
