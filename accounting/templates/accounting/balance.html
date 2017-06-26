@@ -7,15 +7,15 @@
 
     <h1>Compte de résultat</h1>
 
-    {% comment %}{% crispy filter.form %}{% endcomment %}
+    {% crispy filter.form %}
 
     <table class="table table-striped table-hover">
         <tr>
             <th>Numéro</th>
             <th>Intitulé</th>
-            <th>Recettes 2016</th>
-            <th>Dépenses 2016</th>
-            <th>Solde 2016</th>
+            <th>Recettes</th>
+            <th>Dépenses</th>
+            <th>Solde</th>
         </tr>
         {% for row in data %}
             <tr>

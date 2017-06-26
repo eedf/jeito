@@ -12,10 +12,10 @@
     <table class="table table-striped table-hover">
         <tr>
             <th>Intitulé</th>
-            <th>Recettes 2016</th>
-            <th>Dépenses 2016</th>
-            <th>Solde 2016</th>
-            <th>Budget 2017</th>
+            <th>Recettes</th>
+            <th>Dépenses</th>
+            <th>Solde</th>
+            <th>Budget</th>
             <th>Variation</th>
         </tr>
         {% for analytic in analytic_list %}
@@ -41,3 +41,14 @@
 </div>
 
 {% endblock content %}
+
+
+{% block js %}
+
+    {{ block.super }}
+
+    <script>
+        $('select, :checkbox').change(function() {$('form').submit()});
+    </script>
+
+{% endblock js %}

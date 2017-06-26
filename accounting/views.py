@@ -1,8 +1,7 @@
-from django.db.models import F, Sum
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView
 from django_filters.views import FilterView
-from .filters import AnalyticFilter
-from .models import Account, BankStatement
+from .filters import AnalyticFilter, AccountFilter
+from .models import BankStatement
 
 
 class AnalyticBalanceView(FilterView):
@@ -20,14 +19,13 @@ class AnalyticBalanceView(FilterView):
         return context
 
 
-class BalanceView(TemplateView):
+class BalanceView(FilterView):
     template_name = "accounting/balance.html"
+    filterset_class = AccountFilter
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['data'] = Account.objects.annotate(
-            revenue=Sum('entry__revenue'), expense=Sum('entry__expense'),
-            solde=Sum(F('entry__revenue') - F('entry__expense')))
+        context['data'] = self.object_list
         context['revenues'] = sum([account.revenue for account in context['data']])
         context['expenses'] = sum([account.expense for account in context['data']])
         context['solde'] = sum([account.solde for account in context['data']])
