@@ -45,6 +45,7 @@ class Entry(models.Model):
 
 class Transaction(models.Model):
     entry = models.ForeignKey(Entry)
+    title = models.CharField(verbose_name="Intitulé", max_length=100, blank=True)
     account = models.ForeignKey(Account, verbose_name="Compte")
     analytic = models.ForeignKey(Analytic, verbose_name="Analytique", blank=True, null=True)
     revenue = models.DecimalField(verbose_name="Recette", max_digits=8, decimal_places=2, default=0)
