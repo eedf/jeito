@@ -15,7 +15,7 @@ class AnalyticAdmin(admin.ModelAdmin):
     search_fields = ('title', )
 
 
-class TransactionAdmin(admin.TabularInline):
+class TransactionInline(admin.TabularInline):
     model = Transaction
 
 
@@ -25,7 +25,7 @@ class EntryAdmin(admin.ModelAdmin):
     search_fields = ('title', 'transaction__account__title', 'transaction__analytic__title')
     date_hierarchy = 'date'
     list_filter = ('forwarded', 'entered', 'transaction__analytic', )
-    inlines = (TransactionAdmin, )
+    inlines = (TransactionInline, )
 
 
 @admin.register(Budget)
@@ -39,3 +39,11 @@ class BudgetAdmin(admin.ModelAdmin):
 class BankStatementAdmin(admin.ModelAdmin):
     list_display = ('date', 'scan', 'balance')
     date_hierarchy = 'date'
+
+
+@admin.register(Transaction)
+class TransactionAdmin(admin.ModelAdmin):
+    search_fields = ('title', '^account__number', 'account__title')
+    date_hierarchy = 'entry__date'
+    list_display = ('account', 'analytic', 'title', 'revenue', 'expense')
+    list_filter = ('analytic', )
