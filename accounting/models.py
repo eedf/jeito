@@ -51,6 +51,14 @@ class Transaction(models.Model):
     revenue = models.DecimalField(verbose_name="Recette", max_digits=8, decimal_places=2, default=0)
     expense = models.DecimalField(verbose_name="Dépense", max_digits=8, decimal_places=2, default=0)
 
+    def __str__(self):
+        return self.title or self.entry.title
+
+    def date(self):
+        return self.entry.date
+    date.short_description = "Date"
+    date.admin_order_field = "entry__date"
+
 
 class Budget(models.Model):
     analytic = models.OneToOneField(Analytic, verbose_name="Analytique")
