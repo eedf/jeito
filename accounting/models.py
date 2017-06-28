@@ -66,7 +66,7 @@ class Budget(models.Model):
     comment = models.CharField(verbose_name="Commentaire", max_length=1000, blank=True)
 
     def done(self):
-        qs = self.analytic.entry_set.aggregate(amount=models.Sum(models.F('revenue') - models.F('expense')))
+        qs = self.analytic.transaction_set.aggregate(amount=models.Sum(models.F('revenue') - models.F('expense')))
         return qs['amount'] or 0
 
     def diff(self):
