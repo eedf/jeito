@@ -10,12 +10,14 @@
     <table class="table table-striped table-hover">
         <tr>
             <th>Date</th>
+            <th>Numéro</th>
             <th>Scan</th>
             <th>Solde</th>
         </tr>
         {% for bankstatement in bankstatement_list %}
             <tr>
                 <td>{{ bankstatement.date }}</td>
+                <td align="right">{{ bankstatement.number }}</td>
                 <td><a href="{{ bankstatement.scan.url }}">télécharger</a></td>
                 <td align="right">{{ bankstatement.balance|floatformat:2 }} €</td>
             </tr>
