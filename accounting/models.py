@@ -75,6 +75,7 @@ class Budget(models.Model):
 
 class BankStatement(models.Model):
     date = models.DateField()
+    number = models.PositiveIntegerField(verbose_name="Numéro", blank=True, null=True)
     scan = models.FileField(upload_to='releves')
     balance = models.DecimalField(verbose_name="Solde", max_digits=8, decimal_places=2)
 

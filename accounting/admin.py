@@ -37,7 +37,7 @@ class BudgetAdmin(admin.ModelAdmin):
 
 @admin.register(BankStatement)
 class BankStatementAdmin(admin.ModelAdmin):
-    list_display = ('date', 'scan', 'balance')
+    list_display = ('date', 'number', 'scan', 'balance')
     date_hierarchy = 'date'
 
 
