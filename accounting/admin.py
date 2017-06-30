@@ -45,5 +45,5 @@ class BankStatementAdmin(admin.ModelAdmin):
 class TransactionAdmin(admin.ModelAdmin):
     search_fields = ('title', '^account__number', 'account__title')
     date_hierarchy = 'entry__date'
-    list_display = ('date', 'account', 'analytic', 'title', 'revenue', 'expense')
+    list_display = ('date', 'account', 'analytic', 'title', 'expense', 'revenue')
     list_filter = ('analytic', )

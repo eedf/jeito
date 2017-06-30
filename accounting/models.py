@@ -48,8 +48,8 @@ class Transaction(models.Model):
     title = models.CharField(verbose_name="Intitulé", max_length=100, blank=True)
     account = models.ForeignKey(Account, verbose_name="Compte")
     analytic = models.ForeignKey(Analytic, verbose_name="Analytique", blank=True, null=True)
-    revenue = models.DecimalField(verbose_name="Crédit", max_digits=8, decimal_places=2, default=0)
     expense = models.DecimalField(verbose_name="Débit", max_digits=8, decimal_places=2, default=0)
+    revenue = models.DecimalField(verbose_name="Crédit", max_digits=8, decimal_places=2, default=0)
 
     def __str__(self):
         return self.title or self.entry.title
