@@ -54,5 +54,5 @@ class BookingItemFilter(django_filters.FilterSet):
 
     @property
     def qs(self):
-        qs = super().qs.filter(begin__gte=settings.NOW().date()).select_related('booking', 'booking__state')
+        qs = super().qs.filter(end__gt=settings.NOW().date()).select_related('booking', 'booking__state')
         return qs
