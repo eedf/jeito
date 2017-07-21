@@ -43,7 +43,7 @@ class BankStatementAdmin(admin.ModelAdmin):
 
 @admin.register(Transaction)
 class TransactionAdmin(admin.ModelAdmin):
-    search_fields = ('title', '^account__number', 'account__title')
+    search_fields = ('title', '^account__number', 'account__title', '=expense', '=revenue')
     date_hierarchy = 'entry__date'
     list_display = ('date', 'account', 'analytic', 'title', 'expense', 'revenue')
     list_filter = ('analytic', )
