@@ -50,6 +50,7 @@ class Transaction(models.Model):
     analytic = models.ForeignKey(Analytic, verbose_name="Analytique", blank=True, null=True)
     expense = models.DecimalField(verbose_name="Débit", max_digits=8, decimal_places=2, default=0)
     revenue = models.DecimalField(verbose_name="Crédit", max_digits=8, decimal_places=2, default=0)
+    reconciliation = models.DateField(verbose_name="Rapprochement", blank=True, null=True)
 
     def __str__(self):
         return self.title or self.entry.title
