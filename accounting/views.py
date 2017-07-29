@@ -1,7 +1,7 @@
 from django.views.generic import ListView
 from django_filters.views import FilterView
 from .filters import AnalyticBalanceFilter, BalanceFilter, AccountFilter
-from .models import BankStatement
+from .models import BankStatement, Transaction
 
 
 class AnalyticBalanceView(FilterView):
@@ -54,3 +54,27 @@ class AccountView(FilterView):
 
 class BankStatementView(ListView):
     model = BankStatement
+
+
+class ReconciliationView(ListView):
+    template_name = 'accounting/reconciliation.html'
+    model = Transaction
+
+    def get_queryset(self):
+        transactions = Transaction.objects.filter(account__number=5120000).order_by('reconciliation', 'entry__date')
+        balance = 0
+        previous = None
+        for transaction in transactions:
+            balance += transaction.revenue - transaction.expense
+            transaction.balance = balance
+            try:
+                statement = BankStatement.objects.get(date=transaction.reconciliation)
+            except BankStatement.DoesNotExist:
+                pass
+            else:
+                transaction.statement = statement.balance
+            if previous and previous.reconciliation == transaction.reconciliation:
+                previous.balance = None
+                previous.statement = None
+            previous = transaction
+        return transactions
