@@ -146,8 +146,17 @@
             <td>{{ stats.headcount_cot }}</td>
         </tr>
         <tr>
-            <th>Matériel, consommables</th>
-            <td>{{ stats.amount_other|floatformat:"0" }} €</td>
+            <th>Location matériel</th>
+            <td>{{ stats.amount_renting|floatformat:"0" }} €</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <th>Refacturation</th>
+            <td>{{ stats.amount_recharge|floatformat:"0" }} €</td>
             <td></td>
             <td></td>
             <td></td>

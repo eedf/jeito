@@ -135,7 +135,8 @@ class StatsView(LoginRequiredMixin, TemplateView):
             'overnights_cot': sum([item.overnights for item in items if item.overnights and item.cotisation]),
             'amount_hosting': sum([item.amount - item.amount_cot for item in items if item.product in (1, 2, 5)]),
             'amount_cot': sum([item.overnights for item in items if item.overnights and item.cotisation]),
-            'amount_other': sum([item.amount for item in items if item.product in (3, 4)]),
+            'amount_renting': sum([item.amount for item in items if item.product == 3]),
+            'amount_recharge': sum([item.amount for item in items if item.product == 4]),
             'amount': sum([item.amount for item in items]),
         }
         if kwargs['stats']['overnights']:
@@ -162,7 +163,8 @@ class StatsView(LoginRequiredMixin, TemplateView):
                 'amount_hosting': sum([item.amount - item.amount_cot
                                        for item in subitems if item.product in (1, 2, 5)]),
                 'amount_cot': sum([item.overnights for item in subitems if item.overnights]),
-                'amount_other': sum([item.amount for item in subitems if item.product in (3, 4)]),
+                'amount_renting': sum([item.amount for item in subitems if item.product == 3]),
+                'amount_recharge': sum([item.amount for item in subitems if item.product == 4]),
                 'amount': sum([item.amount for item in subitems]),
             }
             if kwargs['stats']['overnights']:
