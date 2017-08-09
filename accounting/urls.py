@@ -6,5 +6,5 @@ urlpatterns = [
     url(r'^account/', AccountView.as_view(), name='account'),
     url(r'^analytic-balance/', AnalyticBalanceView.as_view(), name='analytic-balance'),
     url(r'^bank-statement/', BankStatementView.as_view(), name='bank-statement'),
-    url(r'^reconciliation/', ReconciliationView.as_view(), name='reconciliation'),
+    url(r'^reconciliation/(?P<pk>\d+)/', ReconciliationView.as_view(), name='reconciliation'),
 ]

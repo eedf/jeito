@@ -1,4 +1,5 @@
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
+from django.db.models import Q
 from django_filters.views import FilterView
 from .filters import AnalyticBalanceFilter, BalanceFilter, AccountFilter
 from .models import BankStatement, Transaction
@@ -56,25 +57,15 @@ class BankStatementView(ListView):
     model = BankStatement
 
 
-class ReconciliationView(ListView):
+class ReconciliationView(DetailView):
     template_name = 'accounting/reconciliation.html'
-    model = Transaction
+    model = BankStatement
 
-    def get_queryset(self):
-        transactions = Transaction.objects.filter(account__number=5120000).order_by('reconciliation', 'entry__date')
-        balance = 0
-        previous = None
-        for transaction in transactions:
-            balance += transaction.revenue - transaction.expense
-            transaction.balance = balance
-            try:
-                statement = BankStatement.objects.get(date=transaction.reconciliation)
-            except BankStatement.DoesNotExist:
-                pass
-            else:
-                transaction.statement = statement.balance
-            if previous and previous.reconciliation == transaction.reconciliation:
-                previous.balance = None
-                previous.statement = None
-            previous = transaction
-        return transactions
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        previous = BankStatement.objects.filter(number__lt=self.object.number).latest('number')
+        transactions = Transaction.objects.filter(account__number=5120000, entry__date__lte=self.object.date)
+        transactions = transactions.filter(Q(reconciliation__gt=previous.date) | Q(reconciliation=None))
+        transactions = transactions.order_by('reconciliation', 'entry__date')
+        context['transactions'] = transactions
+        return context

@@ -15,9 +15,8 @@
             <th>Débit</th>
             <th>Crédit</th>
             <th>Solde</th>
-            <th>Relevé</th>
         </tr>
-        {% for row in object_list %}
+        {% for row in transactions %}
             <tr>
                 <td>{{ row.reconciliation|date:"d/m/y" }}</td>
                 <td>{{ row.entry.date|date:"d/m/y" }}</td>
@@ -25,7 +24,6 @@
                 <td align="right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
                 <td align="right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
                 <td align="right">{% if row.balance %}{{ row.balance }} €{% endif %}</td>
-                <td align="right" {% if row.statement != row.balance %}style="color: red"{% endif %}>{% if row.statement %}{{ row.statement }} €{% endif %}</td>
             </tr>
         {% endfor %}
     </table>

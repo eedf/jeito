@@ -60,6 +60,10 @@ class Transaction(models.Model):
     date.short_description = "Date"
     date.admin_order_field = "entry__date"
 
+    @property
+    def balance(self):
+        return self.revenue - self.expense
+
 
 class Budget(models.Model):
     analytic = models.OneToOneField(Analytic, verbose_name="Analytique")
