@@ -12,7 +12,9 @@
             <th>Date</th>
             <th>Numéro</th>
             <th>Scan</th>
-            <th>Solde</th>
+            <th>Solde relevé</th>
+            <th>Solde écritures</th>
+            <th>Rapprochement</th>
         </tr>
         {% for bankstatement in bankstatement_list %}
             <tr>
@@ -20,6 +22,8 @@
                 <td align="right">{{ bankstatement.number }}</td>
                 <td><a href="{{ bankstatement.scan.url }}">télécharger</a></td>
                 <td align="right">{{ bankstatement.balance|floatformat:2 }} €</td>
+                <td align="right">{{ bankstatement.entries_balance|floatformat:2 }} €</td>
+                <td align="right">{{ bankstatement.reconciliation|floatformat:2 }} €</td>
             </tr>
         {% endfor %}
     </table>
