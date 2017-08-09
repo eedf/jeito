@@ -26,6 +26,7 @@ class EntryAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
     list_filter = ('forwarded', 'entered', 'transaction__analytic', )
     inlines = (TransactionInline, )
+    save_as = True
 
 
 @admin.register(Budget)
