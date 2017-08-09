@@ -15,12 +15,13 @@ class BookingFilter(django_filters.FilterSet):
     structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset, name='structure')
     year_choices = [(year, str(year)) for year in range(settings.NOW().year, 2015, -1)]
     year = django_filters.ChoiceFilter(label="Année", choices=year_choices, name='begin__year')
+    org_type = django_filters.ChoiceFilter(label="Type d'org°", choices=Booking.ORG_TYPE_CHOICES)
     state = django_filters.ModelMultipleChoiceFilter(label="Statut", queryset=BookingState.objects.all(),
                                                      widget=CheckboxSelectMultiple)
 
     class Meta:
         model = Booking
-        fields = ('structure', 'year', 'state')
+        fields = ('structure', 'year', 'org_type', 'state')
         form = BookingFilterForm
 
     def __init__(self, data, *args, **kwargs):

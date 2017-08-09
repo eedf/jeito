@@ -143,14 +143,8 @@ class StatsView(LoginRequiredMixin, TemplateView):
             kwargs['stats']['overnight_cost'] = kwargs['stats']['amount_hosting'] / kwargs['stats']['overnights']
 
         stats = (
-            ('stats_eedf', items.filter(booking__org_type=1)),
-            ('stats_ext', items.exclude(booking__org_type=1)),
             ('stats_village', items.filter(product__in=(2, 5))),
             ('stats_terrain', items.filter(product=1)),
-            ('stats_village_eedf', items.filter(booking__org_type=1, product__in=(2, 5))),
-            ('stats_village_ext', items.exclude(booking__org_type=1).filter(product__in=(2, 5))),
-            ('stats_terrain_eedf', items.filter(booking__org_type=1, product=1)),
-            ('stats_terrain_ext', items.exclude(booking__org_type=1).filter(product=1)),
             ('stats_q1', items.filter(begin__month__lte=3)),
             ('stats_q2', items.filter(begin__month__gte=4, begin__month__lte=6)),
             ('stats_q3', items.filter(begin__month__gte=7, begin__month__lte=9)),
