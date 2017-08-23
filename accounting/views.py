@@ -65,7 +65,8 @@ class ReconciliationView(DetailView):
         context = super().get_context_data(**kwargs)
         previous = BankStatement.objects.filter(number__lt=self.object.number).latest('number')
         transactions = Transaction.objects.filter(account__number=5120000, entry__date__lte=self.object.date)
-        transactions = transactions.filter(Q(reconciliation__gt=previous.date) | Q(reconciliation=None))
+        cond = Q(reconciliation__gt=previous.date, reconciliation__lte=self.object.date) | Q(reconciliation=None)
+        transactions = transactions.filter(cond)
         transactions = transactions.order_by('reconciliation', 'entry__date')
         context['transactions'] = transactions
         return context
