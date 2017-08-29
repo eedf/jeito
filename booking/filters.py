@@ -26,7 +26,7 @@ class BookingFilter(django_filters.FilterSet):
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
-            data = QueryDict('state=3&state=4&state=5&state=6&state=7&state=9')
+            data = QueryDict('state=3&state=4&state=5&state=6&state=7&state=9&state=11')
         super().__init__(data, *args, **kwargs)
 
     @property
@@ -50,7 +50,7 @@ class BookingItemFilter(django_filters.FilterSet):
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
-            data = QueryDict('state=3&state=4&state=5&state=6&state=7&state=9')
+            data = QueryDict('state=3&state=4&state=5&state=6&state=7&state=9&state=11')
         super().__init__(data, *args, **kwargs)
 
     @property
