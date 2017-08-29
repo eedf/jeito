@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'docs',
     'booking',
     'accounting',
+    'todo',
 ]
 
 MIDDLEWARE_CLASSES = [
