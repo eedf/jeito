@@ -288,7 +288,7 @@ class HeadcountWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
             'headcount': qs['headcount'],
-            'headcount_diff': 100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'],
+            'headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount']) if ref_qs['headcount'] else 0,
         }
 
 
@@ -311,7 +311,7 @@ class YoungsHeadcountWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
             'youngs_headcount': qs['headcount'],
-            'youngs_headcount_diff': 100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'],
+            'youngs_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount']) if ref_qs['headcount'] else 0,
         }
 
 
@@ -334,7 +334,7 @@ class SVHeadcountWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
             'sv_headcount': qs['headcount'],
-            'sv_headcount_diff': 100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'],
+            'sv_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount']) if ref_qs['headcount'] else 0,
         }
 
 
@@ -357,7 +357,7 @@ class CPHeadcountWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
             'cp_headcount': qs['headcount'],
-            'cp_headcount_diff': 100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'],
+            'cp_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount']) if ref_qs['headcount'] else 0,
         }
 
 
@@ -378,7 +378,7 @@ class StagiaireHeadcountWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
             'stagiaire_headcount': qs['headcount'],
-            'stagiaire_headcount_diff': 100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'],
+            'stagiaire_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount']) if ref_qs['headcount'] else 0,
         }
 
 
@@ -396,8 +396,8 @@ class RevenueWidget(widget.Widget):
         ref_qs = Adhesion.objects.filter(season=season - 1, date__lte=ref_date)
         ref_qs = ref_qs.aggregate(revenue=Sum('rate__rate'))
         return {
-            'revenue': qs['revenue'] / 1000,
-            'revenue_diff': 100 * (qs['revenue'] - ref_qs['revenue']) / ref_qs['revenue'],
+            'revenue': (qs['revenue'] or 0) / 1000,
+            'revenue_diff': (100 * (qs['revenue'] - ref_qs['revenue']) / ref_qs['revenue']) if ref_qs['revenue'] else 0,
         }
 
 
@@ -423,7 +423,7 @@ class GroupsWidget(widget.Widget):
         ref_nb_groups = self.get_nb_groups(season - 1, ref_date)
         return {
             'nb_groups': nb_groups,
-            'nb_groups_diff': 100 * (nb_groups - ref_nb_groups) / ref_nb_groups,
+            'nb_groups_diff': (100 * (nb_groups - ref_nb_groups) / ref_nb_groups) if ref_nb_groups else 0,
         }
 
 
