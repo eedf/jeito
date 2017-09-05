@@ -94,3 +94,24 @@ class AccountFilter(django_filters.FilterSet):
         if data is None:
             data = QueryDict('year={}'.format(settings.NOW().year))
         super().__init__(data, *args, **kwargs)
+
+
+class AnalyticFilter(django_filters.FilterSet):
+    year = django_filters.ChoiceFilter(label="Exercice", choices=[(i, i) for i in range(settings.NOW().year, 2015, -1)],
+                                       name='entry__date', lookup_expr='year')
+    analytic = django_filters.ModelChoiceFilter(label="Compte analytique", queryset=Analytic.objects)
+
+    class Meta:
+        model = Transaction
+        fields = ('year', 'analytic')
+        form = YearAccountFilterForm
+
+    @property
+    def qs(self):
+        qs = super().qs.order_by('entry__date')
+        return qs
+
+    def __init__(self, data, *args, **kwargs):
+        if data is None:
+            data = QueryDict('year={}'.format(settings.NOW().year))
+        super().__init__(data, *args, **kwargs)

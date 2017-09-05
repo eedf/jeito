@@ -5,7 +5,7 @@
 
 <div class="container">
 
-    <h1>Compte de résultat</h1>
+    <h1>Balance analytique</h1>
 
     {% crispy filter.form %}
 
@@ -20,7 +20,7 @@
         </tr>
         {% for analytic in analytic_list %}
             <tr>
-                <td>{{ analytic.title }}</td>
+                <td><a href="{% url 'accounting:analytic' %}?analytic={{ analytic.id }}&year={{ filter.form.cleaned_data.year }}">{{ analytic.title }}</a></td>
                 <td align="right">{% if analytic.expense %}{{ analytic.expense|floatformat:2 }} €{% endif %}</td>
                 <td align="right">{% if analytic.revenue %}{{ analytic.revenue|floatformat:2 }} €{% endif %}</td>
                 <td align="right">{{ analytic.solde|floatformat:2 }} €</td>

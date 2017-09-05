@@ -1,7 +1,7 @@
 from django.views.generic import ListView, DetailView
 from django.db.models import Q
 from django_filters.views import FilterView
-from .filters import AnalyticBalanceFilter, BalanceFilter, AccountFilter
+from .filters import AnalyticBalanceFilter, BalanceFilter, AccountFilter, AnalyticFilter
 from .models import BankStatement, Transaction
 
 
@@ -36,6 +36,26 @@ class BalanceView(FilterView):
 class AccountView(FilterView):
     template_name = "accounting/account.html"
     filterset_class = AccountFilter
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        solde = 0
+        revenue = 0
+        expense = 0
+        for transaction in self.object_list:
+            solde += transaction.revenue - transaction.expense
+            transaction.solde = solde
+            revenue += transaction.revenue
+            expense += transaction.expense
+        context['revenue'] = revenue
+        context['expense'] = expense
+        context['solde'] = solde
+        return context
+
+
+class AnalyticView(FilterView):
+    template_name = "accounting/analytic.html"
+    filterset_class = AnalyticFilter
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
