@@ -397,7 +397,7 @@ class RevenueWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(revenue=Sum('rate__rate'))
         return {
             'revenue': (qs['revenue'] or 0) / 1000,
-            'revenue_diff': (100 * (qs['revenue'] - ref_qs['revenue']) / ref_qs['revenue']) if ref_qs['revenue'] else 0,
+            'revenue_diff': (100 * (qs['revenue'] - ref_qs['revenue']) / ref_qs['revenue']) if (qs['revenue'] and ref_qs['revenue']) else 0,
         }
 
 
