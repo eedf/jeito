@@ -90,3 +90,10 @@ class ReconciliationView(DetailView):
         transactions = transactions.order_by('reconciliation', 'entry__date')
         context['transactions'] = transactions
         return context
+
+
+class NextReconciliationView(ListView):
+    template_name = 'accounting/next_reconciliation.html'
+
+    def get_queryset(self):
+        return Transaction.objects.filter(account__number=5120000, reconciliation=None).order_by('entry__date')

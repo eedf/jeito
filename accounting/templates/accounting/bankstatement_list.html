@@ -17,6 +17,15 @@
             <th>Rapprochement</th>
             <th></th>
         </tr>
+        <tr>
+            <td>Prochain</td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><a href="{% url 'accounting:next_reconciliation' %}">détail</a></td>
+        </tr>
         {% for bankstatement in bankstatement_list %}
             <tr>
                 <td>{{ bankstatement.date }}</td>

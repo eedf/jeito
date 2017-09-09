@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from .views import (BalanceView, AnalyticBalanceView, BankStatementView, AccountView, ReconciliationView,
-                    AnalyticView)
+                    AnalyticView, NextReconciliationView)
 
 
 urlpatterns = [
@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^analytic/', AnalyticView.as_view(), name='analytic'),
     url(r'^analytic-balance/', AnalyticBalanceView.as_view(), name='analytic-balance'),
     url(r'^bank-statement/', BankStatementView.as_view(), name='bank-statement'),
+    url(r'^reconciliation/next/', NextReconciliationView.as_view(), name='next_reconciliation'),
     url(r'^reconciliation/(?P<pk>\d+)/', ReconciliationView.as_view(), name='reconciliation'),
 ]

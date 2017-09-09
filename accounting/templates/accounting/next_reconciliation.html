@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Prochaine réconciliation</h1>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Date</th>
+            <th>Intitulé</th>
+            <th>Débit</th>
+            <th>Crédit</th>
+            <th>Solde</th>
+        </tr>
+        {% for row in object_list %}
+            <tr>
+                <td>{{ row.entry.date|date:"d/m/y" }}</td>
+                <td><a href="{% url 'admin:accounting_entry_change' row.entry.pk %}">{{ row.entry.title }}{% if row.title %} - {{ row.title }}{% endif %}</a></td>
+                <td align="right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
+                <td align="right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
+                <td align="right">{% if row.balance %}{{ row.balance }} €{% endif %}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+{% endblock content %}
