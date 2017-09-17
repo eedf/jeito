@@ -66,19 +66,6 @@ class Transaction(models.Model):
         return self.revenue - self.expense
 
 
-class Budget(models.Model):
-    analytic = models.OneToOneField(Analytic, verbose_name="Analytique")
-    amount = models.DecimalField(verbose_name="Montant", max_digits=8, decimal_places=2)
-    comment = models.CharField(verbose_name="Commentaire", max_length=1000, blank=True)
-
-    def done(self):
-        qs = self.analytic.transaction_set.aggregate(amount=models.Sum(models.F('revenue') - models.F('expense')))
-        return qs['amount'] or 0
-
-    def diff(self):
-        return self.amount - self.done()
-
-
 class BankStatement(models.Model):
     date = models.DateField()
     number = models.PositiveIntegerField(verbose_name="Numéro", blank=True, null=True)

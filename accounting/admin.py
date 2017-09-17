@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Account, Analytic, Entry, Budget, BankStatement, Transaction
+from .models import Account, Analytic, Entry, BankStatement, Transaction
 
 
 @admin.register(Account)
@@ -27,13 +27,6 @@ class EntryAdmin(admin.ModelAdmin):
     list_filter = ('forwarded', 'entered', 'projected', 'transaction__analytic')
     inlines = (TransactionInline, )
     save_as = True
-
-
-@admin.register(Budget)
-class BudgetAdmin(admin.ModelAdmin):
-    list_display = ('analytic', 'amount', 'done', 'diff', 'comment')
-    list_editable = ('amount', 'comment')
-    search_fields = ('analytic__title', 'comment')
 
 
 @admin.register(BankStatement)
