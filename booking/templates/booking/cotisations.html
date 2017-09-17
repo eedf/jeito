@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container stats">
+
+    <h1>Cotisations 2016-2017</h1>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Intitulé</th>
+            <th>Dates</th>
+            <th>Effectifs</th>
+            <th>Nuitées</th>
+            <th>Cotisation</th>
+        </tr>
+        {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.title }}</td>
+                <td>{{ booking.begin|date:'d/m/y' }} - {{ booking.end|date:'d/m/y' }}</td>
+                <td align="right">{{ booking.headcount }}</td>
+                <td align="right">{{ booking.overnights }}</td>
+                <td align="right">{{ booking.amount_cot }} €</td>
+            </tr>
+        {% endfor %}
+        <tr class="total">
+            <td>Total</td>
+            <td>01/09/16 - 31/08/17</td>
+            <td align="right">{{ headcount }}</td>
+            <td align="right">{{ overnights }}</td>
+            <td align="right">{{ amount_cot }} €</td>
+        </tr>
+    </table>
+
+{% endblock content %}

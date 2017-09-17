@@ -172,6 +172,19 @@ class StatsView(LoginRequiredMixin, TemplateView):
         return kwargs
 
 
+class CotisationsView(LoginRequiredMixin, TemplateView):
+    template_name = 'booking/cotisations.html'
+
+    def get_context_data(self, **kwargs):
+        qs = Booking.objects.filter(end__gte='2016-09-01', end__lte='2017-08-31', amount_cot__gt=0, state__income=3)
+        qs = qs.order_by('end')
+        kwargs['bookings'] = qs
+        kwargs['headcount'] = sum([booking.headcount or 0 for booking in qs])
+        kwargs['overnights'] = sum([booking.overnights or 0 for booking in qs])
+        kwargs['amount_cot'] = sum([booking.amount_cot or 0 for booking in qs])
+        return kwargs
+
+
 class BookingGoogleSyncView(LoginRequiredMixin, DetailView):
     model = Booking
 
