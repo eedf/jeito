@@ -19,10 +19,10 @@
         </tr>
         {% for row in data %}
             <tr>
-                <td><a href="{% url 'accounting:account' %}?account={{ row.id }}&year={{ filter.form.cleaned_data.year }}">{{ row.number }}</a></td>
-                <td>{{ row.title }}</td>
-                <td align="right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
-                <td align="right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
+                <td><a href="{% url 'accounting:account' %}?account={{ row.account__id }}&year={{ filter.form.cleaned_data.year }}">{{ row.account__number }}</a></td>
+                <td>{{ row.account__title }}</td>
+                <td align="right">{% if row.expenses %}{{ row.expenses|floatformat:2 }} €{% endif %}</td>
+                <td align="right">{% if row.revenues %}{{ row.revenues|floatformat:2 }} €{% endif %}</td>
                 <td align="right">{{ row.solde|floatformat:2 }} €</td>
             </tr>
         {% endfor %}

@@ -21,10 +21,10 @@ class TransactionInline(admin.TabularInline):
 
 @admin.register(Entry)
 class EntryAdmin(admin.ModelAdmin):
-    list_display = ('date', 'title', 'balanced', 'forwarded', 'entered')
+    list_display = ('date', 'title', 'balanced', 'forwarded', 'entered', 'projected')
     search_fields = ('title', 'transaction__account__title', 'transaction__analytic__title')
     date_hierarchy = 'date'
-    list_filter = ('forwarded', 'entered', 'transaction__analytic', )
+    list_filter = ('forwarded', 'entered', 'projected', 'transaction__analytic')
     inlines = (TransactionInline, )
     save_as = True
 

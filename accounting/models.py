@@ -30,6 +30,7 @@ class Entry(models.Model):
     scan = models.FileField(upload_to='justificatif', blank=True)
     forwarded = models.BooleanField(verbose_name="Envoyé à la compta", default=False)
     entered = models.BooleanField(verbose_name="Saisi dans la compta", default=False)
+    projected = models.BooleanField(verbose_name="Prévisionnel", default=False)
 
     class Meta:
         verbose_name = "Écriture"

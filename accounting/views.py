@@ -1,22 +1,50 @@
 from django.views.generic import ListView, DetailView
-from django.db.models import Q
+from django.db.models import F, Q, Sum, Case, When, Value
 from django_filters.views import FilterView
-from .filters import AnalyticBalanceFilter, BalanceFilter, AccountFilter, AnalyticFilter
+from .filters import BalanceFilter, AccountFilter, AnalyticFilter
 from .models import BankStatement, Transaction
+
+
+class BudgetView(FilterView):
+    template_name = "accounting/budget.html"
+    filterset_class = BalanceFilter
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = self.object_list
+        qs = qs.filter(account__number__regex=r'^[67]')
+        qs = qs.values('analytic__id', 'analytic__title')
+        qs = qs.annotate(solde_real=Sum(Case(When(entry__projected=False, then=F('revenue') - F('expense')),
+                                             default=Value(0))),
+                         solde_proj=Sum(Case(When(entry__projected=True, then=F('revenue') - F('expense')),
+                                             default=Value(0))))
+        qs = qs.order_by('analytic__title')
+        for row in qs:
+            row['solde_total'] = row['solde_real'] + row['solde_proj']
+        context['data'] = qs
+        context['solde_real'] = sum([account['solde_real'] for account in qs])
+        context['solde_proj'] = sum([account['solde_proj'] for account in qs])
+        context['solde_total'] = sum([account['solde_total'] for account in qs])
+        return context
 
 
 class AnalyticBalanceView(FilterView):
     template_name = "accounting/analytic_balance.html"
-    filterset_class = AnalyticBalanceFilter
+    filterset_class = BalanceFilter
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['revenues'] = sum([analytic.revenue or 0 for analytic in self.object_list])
-        context['expenses'] = sum([analytic.expense or 0 for analytic in self.object_list])
-        context['solde'] = sum([analytic.solde or 0 for analytic in self.object_list])
-        context['budget_balance'] = sum([analytic.budget.amount for analytic in self.object_list
-                                         if hasattr(analytic, 'budget')])
-        context['diff_balance'] = sum([analytic.diff for analytic in self.object_list if analytic.diff])
+        qs = self.object_list
+        qs = qs.filter(entry__projected=False, account__number__regex=r'^[67]')
+        qs = qs.values('analytic__id', 'analytic__title')
+        qs = qs.annotate(revenue=Sum('revenue'), expense=Sum('expense'))
+        qs = qs.order_by('analytic__title')
+        for analytic in qs:
+            analytic['solde'] = analytic['revenue'] - analytic['expense']
+        context['data'] = qs
+        context['revenues'] = sum([analytic['revenue'] for analytic in qs])
+        context['expenses'] = sum([analytic['expense'] for analytic in qs])
+        context['solde'] = sum([analytic['solde'] for analytic in qs])
         return context
 
 
@@ -26,10 +54,17 @@ class BalanceView(FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['data'] = self.object_list
-        context['revenues'] = sum([account.revenue for account in context['data']])
-        context['expenses'] = sum([account.expense for account in context['data']])
-        context['solde'] = sum([account.solde for account in context['data']])
+        qs = self.object_list
+        qs = qs.filter(entry__projected=False)
+        qs = qs.values('account__id', 'account__number', 'account__title')
+        qs = qs.annotate(revenues=Sum('revenue'), expenses=Sum('expense'))
+        qs = qs.order_by('account__number')
+        for account in qs:
+            account['solde'] = account['revenues'] - account['expenses']
+        context['data'] = qs
+        context['revenues'] = sum([account['revenues'] for account in qs])
+        context['expenses'] = sum([account['expenses'] for account in qs])
+        context['solde'] = sum([account['solde'] for account in qs])
         return context
 
 

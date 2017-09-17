@@ -1,9 +1,10 @@
 from django.conf.urls import url
 from .views import (BalanceView, AnalyticBalanceView, BankStatementView, AccountView, ReconciliationView,
-                    AnalyticView, NextReconciliationView)
+                    AnalyticView, NextReconciliationView, BudgetView)
 
 
 urlpatterns = [
+    url(r'^budget/', BudgetView.as_view(), name='budget'),
     url(r'^balance/', BalanceView.as_view(), name='balance'),
     url(r'^account/', AccountView.as_view(), name='account'),
     url(r'^analytic/', AnalyticView.as_view(), name='analytic'),
