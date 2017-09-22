@@ -120,6 +120,7 @@ class ReconciliationView(DetailView):
         context = super().get_context_data(**kwargs)
         previous = BankStatement.objects.filter(number__lt=self.object.number).latest('number')
         transactions = Transaction.objects.filter(account__number=5120000, entry__date__lte=self.object.date)
+        transactions = transactions.filter(entry__projected=False)
         cond = Q(reconciliation__gt=previous.date, reconciliation__lte=self.object.date) | Q(reconciliation=None)
         transactions = transactions.filter(cond)
         transactions = transactions.order_by('reconciliation', 'entry__date')
@@ -131,4 +132,6 @@ class NextReconciliationView(ListView):
     template_name = 'accounting/next_reconciliation.html'
 
     def get_queryset(self):
-        return Transaction.objects.filter(account__number=5120000, reconciliation=None).order_by('entry__date')
+        qs = Transaction.objects.filter(account__number=5120000, reconciliation=None, entry__projected=False)
+        qs = qs.order_by('entry__date')
+        return qs
