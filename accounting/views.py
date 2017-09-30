@@ -1,13 +1,13 @@
 from django.views.generic import ListView, DetailView
 from django.db.models import F, Q, Sum, Case, When, Value
 from django_filters.views import FilterView
-from .filters import BalanceFilter, AccountFilter, AnalyticFilter
+from .filters import BalanceFilter, AccountFilter, AnalyticFilter, BudgetFilter
 from .models import BankStatement, Transaction
 
 
 class BudgetView(FilterView):
     template_name = "accounting/budget.html"
-    filterset_class = BalanceFilter
+    filterset_class = BudgetFilter
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -35,7 +35,7 @@ class AnalyticBalanceView(FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = self.object_list
-        qs = qs.filter(entry__projected=False, account__number__regex=r'^[67]')
+        qs = qs.filter(account__number__regex=r'^[67]')
         qs = qs.values('analytic__id', 'analytic__title')
         qs = qs.annotate(revenue=Sum('revenue'), expense=Sum('expense'))
         qs = qs.order_by('analytic__title')
@@ -55,7 +55,6 @@ class BalanceView(FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = self.object_list
-        qs = qs.filter(entry__projected=False)
         qs = qs.values('account__id', 'account__number', 'account__title')
         qs = qs.annotate(revenues=Sum('revenue'), expenses=Sum('expense'))
         qs = qs.order_by('account__number')
