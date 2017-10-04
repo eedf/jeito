@@ -39,6 +39,22 @@ class BookingItemFilterForm(forms.Form):
         )
 
 
+class CotisationsForm(forms.Form):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['year'].initial = settings.NOW().year
+        self.helper = FormHelper()
+        self.helper.form_class = 'form-inline'
+        self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
+        self.helper.form_method = 'get'
+        self.helper.layout = Layout(
+            'structure',
+            'year',
+            'org_type',
+            InlineCheckboxes('state'),
+        )
+
+
 class BookingForm(forms.ModelForm):
     class Meta:
         model = Booking

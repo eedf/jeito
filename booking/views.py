@@ -2,7 +2,8 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.files import File
-from django.db.models import Sum, Min, Max
+from django.db.models import Sum, Min, Max, Case, When, F, ExpressionWrapper, IntegerField
+from django.db.models.functions import Coalesce, ExtractDay
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
 from django.utils.text import slugify
@@ -10,7 +11,7 @@ from django.views.generic import TemplateView, DetailView, CreateView
 from django_filters.views import FilterView
 from os import unlink
 from templated_docs import fill_template
-from .filters import BookingFilter, BookingItemFilter
+from .filters import BookingFilter, BookingItemFilter, CotisationsFilter
 from .forms import BookingForm
 from .models import Booking, BookingItem, Agreement
 
@@ -172,17 +173,17 @@ class StatsView(LoginRequiredMixin, TemplateView):
         return kwargs
 
 
-class CotisationsView(LoginRequiredMixin, TemplateView):
+class CotisationsView(LoginRequiredMixin, FilterView):
     template_name = 'booking/cotisations.html'
+    filterset_class = CotisationsFilter
 
     def get_context_data(self, **kwargs):
-        qs = Booking.objects.filter(end__gte='2016-09-01', end__lte='2017-08-31', amount_cot__gt=0, state__income=3)
-        qs = qs.order_by('end')
-        kwargs['bookings'] = qs
-        kwargs['headcount'] = sum([booking.headcount or 0 for booking in qs])
-        kwargs['overnights'] = sum([booking.overnights or 0 for booking in qs])
-        kwargs['amount_cot'] = sum([booking.amount_cot or 0 for booking in qs])
-        return kwargs
+        context = super().get_context_data(**kwargs)
+        year = int(self.filterset.data['year'])
+        context['date'] = "{}/{}".format(year, year + 1)
+        context['headcount'] = sum(item.headcount for item in self.object_list)
+        context['amount_cot'] = sum(item.amount_cot for item in self.object_list)
+        return context
 
 
 class BookingGoogleSyncView(LoginRequiredMixin, DetailView):
