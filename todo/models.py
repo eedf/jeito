@@ -7,3 +7,6 @@ class Action(models.Model):
     deadline = models.DateField(null=True, blank=True, verbose_name="Date limite")
     done = models.BooleanField(default=False, verbose_name="Fait")
     creation = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
+
+    def __str__(self):
+        return self.title
