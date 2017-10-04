@@ -20,6 +20,7 @@ class BookingFilterForm(forms.Form):
         self.helper.layout = Layout(
             'structure',
             'year',
+            'month',
             'org_type',
             InlineCheckboxes('state'),
         )
