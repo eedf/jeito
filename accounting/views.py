@@ -1,11 +1,12 @@
 from django.views.generic import ListView, DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F, Q, Sum, Case, When, Value
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, AnalyticFilter, BudgetFilter
 from .models import BankStatement, Transaction
 
 
-class BudgetView(FilterView):
+class BudgetView(LoginRequiredMixin, FilterView):
     template_name = "accounting/budget.html"
     filterset_class = BudgetFilter
 
@@ -28,7 +29,7 @@ class BudgetView(FilterView):
         return context
 
 
-class AnalyticBalanceView(FilterView):
+class AnalyticBalanceView(LoginRequiredMixin, FilterView):
     template_name = "accounting/analytic_balance.html"
     filterset_class = BalanceFilter
 
@@ -48,7 +49,7 @@ class AnalyticBalanceView(FilterView):
         return context
 
 
-class BalanceView(FilterView):
+class BalanceView(LoginRequiredMixin, FilterView):
     template_name = "accounting/balance.html"
     filterset_class = BalanceFilter
 
@@ -67,7 +68,7 @@ class BalanceView(FilterView):
         return context
 
 
-class AccountView(FilterView):
+class AccountView(LoginRequiredMixin, FilterView):
     template_name = "accounting/account.html"
     filterset_class = AccountFilter
 
@@ -87,7 +88,7 @@ class AccountView(FilterView):
         return context
 
 
-class AnalyticView(FilterView):
+class AnalyticView(LoginRequiredMixin, FilterView):
     template_name = "accounting/analytic.html"
     filterset_class = AnalyticFilter
 
@@ -107,11 +108,11 @@ class AnalyticView(FilterView):
         return context
 
 
-class BankStatementView(ListView):
+class BankStatementView(LoginRequiredMixin, ListView):
     model = BankStatement
 
 
-class ReconciliationView(DetailView):
+class ReconciliationView(LoginRequiredMixin, DetailView):
     template_name = 'accounting/reconciliation.html'
     model = BankStatement
 
@@ -132,7 +133,7 @@ class ReconciliationView(DetailView):
         return context
 
 
-class NextReconciliationView(ListView):
+class NextReconciliationView(LoginRequiredMixin, ListView):
     template_name = 'accounting/next_reconciliation.html'
 
     def get_queryset(self):
