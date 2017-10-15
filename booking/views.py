@@ -2,8 +2,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.files import File
-from django.db.models import Sum, Min, Max, Case, When, F, ExpressionWrapper, IntegerField
-from django.db.models.functions import Coalesce, ExtractDay
+from django.db.models import Sum, Min, Max
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
 from django.utils.text import slugify

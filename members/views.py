@@ -288,7 +288,8 @@ class HeadcountWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
             'headcount': qs['headcount'],
-            'headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount']) if ref_qs['headcount'] else 0,
+            'headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'])
+            if ref_qs['headcount'] else 0,
         }
 
 
@@ -311,7 +312,8 @@ class YoungsHeadcountWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
             'youngs_headcount': qs['headcount'],
-            'youngs_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount']) if ref_qs['headcount'] else 0,
+            'youngs_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'])
+            if ref_qs['headcount'] else 0,
         }
 
 
@@ -334,7 +336,8 @@ class SVHeadcountWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
             'sv_headcount': qs['headcount'],
-            'sv_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount']) if ref_qs['headcount'] else 0,
+            'sv_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'])
+            if ref_qs['headcount'] else 0,
         }
 
 
@@ -357,7 +360,8 @@ class CPHeadcountWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
             'cp_headcount': qs['headcount'],
-            'cp_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount']) if ref_qs['headcount'] else 0,
+            'cp_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'])
+            if ref_qs['headcount'] else 0,
         }
 
 
@@ -378,7 +382,8 @@ class StagiaireHeadcountWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(headcount=Count('id'))
         return {
             'stagiaire_headcount': qs['headcount'],
-            'stagiaire_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount']) if ref_qs['headcount'] else 0,
+            'stagiaire_headcount_diff': (100 * (qs['headcount'] - ref_qs['headcount']) / ref_qs['headcount'])
+            if ref_qs['headcount'] else 0,
         }
 
 
@@ -397,7 +402,8 @@ class RevenueWidget(widget.Widget):
         ref_qs = ref_qs.aggregate(revenue=Sum('rate__rate'))
         return {
             'revenue': (qs['revenue'] or 0) / 1000,
-            'revenue_diff': (100 * (qs['revenue'] - ref_qs['revenue']) / ref_qs['revenue']) if (qs['revenue'] and ref_qs['revenue']) else 0,
+            'revenue_diff': (100 * (qs['revenue'] - ref_qs['revenue']) / ref_qs['revenue'])
+            if (qs['revenue'] and ref_qs['revenue']) else 0,
         }
 
 
