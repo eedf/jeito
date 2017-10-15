@@ -106,7 +106,7 @@ class Function(models.Model):
     category = models.IntegerField("Categorie", choices=CATEGORY_CHOICES, null=True, blank=True)
 
     def __str__(self):
-        return self.name_m
+        return "{} {}".format(self.season, self.name_m)
 
     class Meta:
         verbose_name = "Fonction"
@@ -134,7 +134,7 @@ class Rate(models.Model):
     category = models.IntegerField("Catégorie", choices=CATEGORY_CHOICES, null=True, blank=True)
 
     def __str__(self):
-        return self.name
+        return "{} {}".format(self.season, self.name)
 
     class Meta:
         verbose_name = "Tarif"
