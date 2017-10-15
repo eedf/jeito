@@ -6,6 +6,7 @@ from . import factories
 
 
 class LoggedTestMixin(object):
+    @override_settings(NOW=lambda: datetime.datetime(2015, 1, 1))
     def setUp(self):
         adhesion = factories.AdhesionFactory.create(person__password=make_password('toto'))
         self.client.login(username=adhesion.person.number, password='toto')
