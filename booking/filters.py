@@ -94,5 +94,7 @@ class CotisationsFilter(django_filters.FilterSet):
 
     @property
     def qs(self):
-        qs = super().qs.filter(cotisation=True).select_related('booking', 'booking__state').order_by('begin', 'end')
+        qs = super().qs.filter(cotisation=True, headcount__isnull=False)
+        qs = qs.select_related('booking', 'booking__state')
+        qs = qs.order_by('begin', 'end')
         return qs

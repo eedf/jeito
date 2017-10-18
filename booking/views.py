@@ -178,8 +178,9 @@ class CotisationsView(LoginRequiredMixin, FilterView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        year = int(self.filterset.data['year'])
-        context['date'] = "{}/{}".format(year, year + 1)
+        if 'year' in self.filterset.data:
+            year = int(self.filterset.data['year'])
+            context['date'] = "{}/{}".format(year, year + 1)
         context['headcount'] = sum(item.headcount for item in self.object_list)
         context['amount_cot'] = sum(item.amount_cot for item in self.object_list)
         return context
