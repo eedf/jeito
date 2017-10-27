@@ -10,30 +10,30 @@
     <table class="table table-striped table-hover">
         <tr>
             <th>Date</th>
-            <th>Numéro</th>
+            <th class="text-right">Numéro</th>
             <th>Scan</th>
-            <th>Solde relevé</th>
-            <th>Solde écritures</th>
-            <th>Rapprochement</th>
+            <th class="text-right">Solde relevé</th>
+            <th class="text-right">Solde écritures</th>
+            <th class="text-right">Rapprochement</th>
             <th></th>
         </tr>
         <tr>
             <td>Prochain</td>
+            <td class="text-right"></td>
             <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
             <td><a href="{% url 'accounting:next_reconciliation' %}">détail</a></td>
         </tr>
         {% for bankstatement in bankstatement_list %}
             <tr>
                 <td>{{ bankstatement.date }}</td>
-                <td align="right">{{ bankstatement.number }}</td>
+                <td class="text-right">{{ bankstatement.number }}</td>
                 <td><a href="{{ bankstatement.scan.url }}">télécharger</a></td>
-                <td align="right">{{ bankstatement.balance|floatformat:2 }} €</td>
-                <td align="right">{{ bankstatement.entries_balance|floatformat:2 }} €</td>
-                <td align="right">{{ bankstatement.reconciliation|floatformat:2 }} €</td>
+                <td class="text-right">{{ bankstatement.balance|floatformat:2 }} €</td>
+                <td class="text-right">{{ bankstatement.entries_balance|floatformat:2 }} €</td>
+                <td class="text-right">{{ bankstatement.reconciliation|floatformat:2 }} €</td>
                 <td><a href="{% url 'accounting:reconciliation' bankstatement.pk %}">détail</a></td>
             </tr>
         {% endfor %}

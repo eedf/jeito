@@ -13,25 +13,25 @@
         <tr>
             <th>Groupe</th>
             <th>Dates</th>
-            <th>Nuits</th>
-            <th>Effectif</th>
-            <th>Montant</th>
+            <th class="text-right">Nuits</th>
+            <th class="text-right">Effectif</th>
+            <th class="text-right">Montant</th>
         </tr>
         {% for item in bookingitem_list %}
             <tr>
                 <td>{{ item.booking.title }}{% if item.title %} - {{ item.title }}{% endif %}</td>
                 <td>{{ item.begin|date:'d/m/y' }} au {{ item.end|date:'d/m/y' }}</td>
-                <td align="right">{{ item.nights }}</td>
-                <td align="right">{{ item.headcount }}</td>
-                <td align="right">{{ item.amount_cot }} €</td>
+                <td class="text-right">{{ item.nights }}</td>
+                <td class="text-right">{{ item.headcount }}</td>
+                <td class="text-right">{{ item.amount_cot }} €</td>
             </tr>
         {% endfor %}
         <tr class="total">
             <td><b>Total</b></td>
             <td>{{ date }}</td>
-            <td></td>
-            <td align="right">{{ headcount }}</td>
-            <td align="right">{{ amount_cot }} €</td>
+            <td class="text-right"></td>
+            <td class="text-right">{{ headcount }}</td>
+            <td class="text-right">{{ amount_cot }} €</td>
         </tr>
     </table>
 

@@ -17,13 +17,13 @@
             <th>Centre</th>
             <th>Intitulé</th>
             <th>Statut</th>
-            <th>Du <span class="glyphicon glyphicon-chevron-down"></span></th>
-            <th>Au</th>
-            <th>Nuits</th>
-            <th>Effectif</th>
-            <th>Nuitées</th>
-            <th>Montant</th>
-            <th>Solde</th>
+            <th class="text-right">Du <span class="glyphicon glyphicon-chevron-down"></span></th>
+            <th class="text-right">Au</th>
+            <th class="text-right">Nuits</th>
+            <th class="text-right">Effectif</th>
+            <th class="text-right">Nuitées</th>
+            <th class="text-right">Montant</th>
+            <th class="text-right">Solde</th>
             <th>Convention</th>
         </tr>
         {% for booking in booking_list %}
@@ -31,13 +31,13 @@
                 <td>{{ booking.structure }}</td>
                 <td><a href="{{ booking.get_absolute_url }}">{{ booking.title }}</a></td>
                 <td><span class="label label-{{ booking.state.color }}">{{ booking.state.title }}</span></td>
-                <td align="right">{{ booking.begin|date:'D d/m/y' }}</td>
-                <td align="right">{{ booking.end|date:'D d/m/y' }}</td>
-                <td align="right">{{ booking.nights|default_if_none:"" }}</td>
-                <td align="right">{{ booking.headcount|default_if_none:"" }}</td>
-                <td align="right">{{ booking.overnights|default_if_none:"" }}</td>
-                <td align="right">{% if booking.amount %}{{ booking.amount|floatformat:2 }} €{% endif %}</td>
-                <td align="right">{% if booking.balance %}{{ booking.balance|floatformat:2 }} €{%  endif %}</td>
+                <td class="text-right">{{ booking.begin|date:'D d/m/y' }}</td>
+                <td class="text-right">{{ booking.end|date:'D d/m/y' }}</td>
+                <td class="text-right">{{ booking.nights|default_if_none:"" }}</td>
+                <td class="text-right">{{ booking.headcount|default_if_none:"" }}</td>
+                <td class="text-right">{{ booking.overnights|default_if_none:"" }}</td>
+                <td class="text-right">{% if booking.amount %}{{ booking.amount|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right">{% if booking.balance %}{{ booking.balance|floatformat:2 }} €{%  endif %}</td>
                 <td>
                     {%  if booking.agreement and booking.agreement.pdf %}
                         <a href="{{ booking.agreement.pdf.url }}">{{ booking.agreement.number }}</a>
@@ -54,13 +54,13 @@
             <td>Total</td>
             <td></td>
             <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td align="right">{{ headcount }}</td>
-            <td align="right">{{ overnights }}</td>
-            <td align="right">{{ amount }} €</td>
-            <td align="right">{{ balance }} €</td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td class="text-right"></td>
+            <td class="text-right">{{ headcount }}</td>
+            <td class="text-right">{{ overnights }}</td>
+            <td class="text-right">{{ amount }} €</td>
+            <td class="text-right">{{ balance }} €</td>
             <td></td>
         </tr>
     </table>

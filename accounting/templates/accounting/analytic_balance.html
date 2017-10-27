@@ -12,23 +12,23 @@
     <table class="table table-striped table-hover">
         <tr>
             <th>Intitulé</th>
-            <th>Débit</th>
-            <th>Crédit</th>
-            <th>Solde</th>
+            <th class="text-right">Débit</th>
+            <th class="text-right">Crédit</th>
+            <th class="text-right">Solde</th>
         </tr>
         {% for row in data %}
             <tr>
                 <td><a href="{% url 'accounting:analytic' %}?analytic={{ row.analytic__id }}&year={{ filter.form.cleaned_data.year }}">{{ row.analytic__title }}</a></td>
-                <td align="right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
-                <td align="right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
-                <td align="right">{{ row.solde|floatformat:2 }} €</td>
+                <td class="text-right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right">{{ row.solde|floatformat:2 }} €</td>
             </tr>
         {% endfor %}
         <tr>
             <td><strong>Total</strong></td>
-            <td align="right"><strong>{{ expenses|floatformat:2 }} €</strong></td>
-            <td align="right"><strong>{{ revenues|floatformat:2 }} €</strong></td>
-            <td align="right"><strong>{{ solde|floatformat:2 }} €</strong></td>
+            <td class="text-right"><strong>{{ expenses|floatformat:2 }} €</strong></td>
+            <td class="text-right"><strong>{{ revenues|floatformat:2 }} €</strong></td>
+            <td class="text-right"><strong>{{ solde|floatformat:2 }} €</strong></td>
         </tr>
     </table>
 

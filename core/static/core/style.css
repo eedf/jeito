@@ -99,10 +99,6 @@ tr.total td {
     font-weight: bold;
 }
 
-.booking-stats td {
-    text-align: right;
-}
-
 .dashboard .number {
     font-family: "digital";
     font-size: 400%;

@@ -13,25 +13,25 @@
         <tr>
             <th>Date</th>
             <th>Intitulé</th>
-            <th>Débit</th>
-            <th>Crédit</th>
-            <th>Solde</th>
+            <th class="text-right">Débit</th>
+            <th class="text-right">Crédit</th>
+            <th class="text-right">Solde</th>
         </tr>
         {% for row in object_list %}
             <tr>
                 <td>{{ row.entry.date }}</td>
                 <td>{{ row.entry.title }}{% if row.title %} - {{ row.title }}{% endif %}</td>
-                <td align="right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
-                <td align="right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
-                <td align="right">{{ row.solde|floatformat:2 }} €</td>
+                <td class="text-right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right">{{ row.solde|floatformat:2 }} €</td>
             </tr>
         {% endfor %}
         <tr>
             <td></td>
             <td><strong>Solde</strong></td>
-            <td align="right"><strong>{{ expense|floatformat:2 }} €</strong></td>
-            <td align="right"><strong>{{ revenue|floatformat:2 }} €</strong></td>
-            <td align="right"><strong>{{ solde|floatformat:2 }} €</strong></td>
+            <td class="text-right"><strong>{{ expense|floatformat:2 }} €</strong></td>
+            <td class="text-right"><strong>{{ revenue|floatformat:2 }} €</strong></td>
+            <td class="text-right"><strong>{{ solde|floatformat:2 }} €</strong></td>
         </tr>
     </table>
 

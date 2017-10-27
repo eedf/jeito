@@ -11,17 +11,17 @@
         <tr>
             <th>Date</th>
             <th>Intitulé</th>
-            <th>Débit</th>
-            <th>Crédit</th>
-            <th>Solde</th>
+            <th class="text-right">Débit</th>
+            <th class="text-right">Crédit</th>
+            <th class="text-right">Solde</th>
         </tr>
         {% for row in object_list %}
             <tr>
                 <td>{{ row.entry.date|date:"d/m/y" }}</td>
                 <td><a href="{% url 'admin:accounting_entry_change' row.entry.pk %}">{{ row.entry.title }}{% if row.title %} - {{ row.title }}{% endif %}</a></td>
-                <td align="right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
-                <td align="right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
-                <td align="right">{% if row.balance %}{{ row.balance }} €{% endif %}</td>
+                <td class="text-right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right">{% if row.balance %}{{ row.balance }} €{% endif %}</td>
             </tr>
         {% endfor %}
     </table>
