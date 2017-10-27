@@ -10,7 +10,7 @@ from django.views.generic import TemplateView, DetailView, CreateView
 from django_filters.views import FilterView
 from os import unlink
 from templated_docs import fill_template
-from .filters import BookingFilter, BookingItemFilter, CotisationsFilter
+from .filters import BookingFilter, BookingItemFilter, StatsFilter, CotisationsFilter
 from .forms import BookingForm
 from .models import Booking, BookingItem, Agreement
 
@@ -124,8 +124,8 @@ class StatsView(LoginRequiredMixin, TemplateView):
     template_name = 'booking/stats.html'
 
     def get_context_data(self, **kwargs):
-        filter = BookingFilter(self.request.GET or None, request=self.request,
-                               queryset=Booking.objects.for_user(self.request.user))
+        filter = StatsFilter(self.request.GET or None, request=self.request,
+                             queryset=Booking.objects.for_user(self.request.user))
         items = BookingItem.objects.filter(booking__in=filter.qs)
         kwargs['filter'] = filter
         kwargs['stats'] = {

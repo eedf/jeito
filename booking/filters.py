@@ -4,6 +4,7 @@ from django.forms import CheckboxSelectMultiple
 from django.http import QueryDict
 import django_filters
 from members.models import Structure
+from members.utils import current_season
 from .forms import BookingFilterForm, CotisationsForm
 from .models import Booking, BookingState, BookingItem
 
@@ -13,6 +14,8 @@ def structures_queryset(request):
 
 
 class BookingFilter(django_filters.FilterSet):
+    initial_query = 'state=3&state=4&state=5&state=6&state=7&state=9&state=11'
+
     structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset, name='structure')
     year_choices = [(year, str(year)) for year in range(settings.NOW().year, 2015, -1)]
     year = django_filters.ChoiceFilter(label="Année", choices=year_choices, name='begin__year')
@@ -29,7 +32,7 @@ class BookingFilter(django_filters.FilterSet):
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
-            data = QueryDict('state=3&state=4&state=5&state=6&state=7&state=9&state=11')
+            data = QueryDict(self.initial_query)
         super().__init__(data, *args, **kwargs)
 
     @property
@@ -38,6 +41,10 @@ class BookingFilter(django_filters.FilterSet):
         qs = qs.select_related('state')
         qs = qs.prefetch_related('agreements', 'payments')
         return qs
+
+
+class StatsFilter(BookingFilter):
+    initial_query = "state=11&state=9&state=8&state=6&year={}".format(settings.NOW().year)
 
 
 class BookingItemFilter(django_filters.FilterSet):
@@ -71,7 +78,7 @@ class BookingItemFilter(django_filters.FilterSet):
 class CotisationsFilter(django_filters.FilterSet):
     structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset,
                                                  name='booking__structure')
-    year_choices = [(year, "{}/{}".format(year, year + 1)) for year in range(settings.NOW().year, 2015, -1)]
+    year_choices = [(year, "{}/{}".format(year - 1, year)) for year in range(current_season(), 2016, -1)]
     year = django_filters.ChoiceFilter(label="Année", choices=year_choices, method='filter_year')
     org_type = django_filters.ChoiceFilter(label="Type d'org°", choices=Booking.ORG_TYPE_CHOICES,
                                            name="booking__org_type")
@@ -85,12 +92,12 @@ class CotisationsFilter(django_filters.FilterSet):
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
-            data = QueryDict('state=8&state=9&state=11')
+            data = QueryDict('state=8&state=9&state=11&year={}'.format(current_season()))
         super().__init__(data, *args, **kwargs)
 
     def filter_year(self, qs, name, value):
         year = int(value)
-        return qs.filter(end__gt=datetime.date(year, 9, 1), begin__lte=datetime.date(year + 1, 8, 31))
+        return qs.filter(end__gt=datetime.date(year - 1, 9, 1), begin__lte=datetime.date(year, 8, 31))
 
     @property
     def qs(self):

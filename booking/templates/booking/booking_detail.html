@@ -114,16 +114,18 @@
                 <td></td>
             </tr>
         {% empty %}
-            <tr>
-                <th>Convention</th>
-                <td>
-                    <a href="{% url 'booking:create_agreement' booking.id %}" class="btn btn-xs btn-primary">
-                        <span class="glyphicon glyphicon-file"></span>
-                        Créer
-                    </a>
-                </td>
-                <td></td>
-            </tr>
+            {% if perms.booking.change_booking %}
+                <tr>
+                    <th>Convention</th>
+                    <td>
+                        <a href="{% url 'booking:create_agreement' booking.id %}" class="btn btn-xs btn-primary">
+                            <span class="glyphicon glyphicon-file"></span>
+                            Créer
+                        </a>
+                    </td>
+                    <td></td>
+                </tr>
+            {% endif %}
         {% endfor %}
         {% if booking.signed_agreement or booking.signed_agreement_scan %}
             <tr>
@@ -150,6 +152,14 @@
                     {% if booking.invoice %}<a href="{{ booking.invoice.url }}">{% endif %}{{ booking.invoice_number|default:"télécharger" }}{% if booking.invoice %}</a>{% endif %}
                 </td>
                 <td></td>
+            </tr>
+        {% endif %}
+        {% if booking.description %}
+            <tr>
+                <th>Description</th>
+                <td colspan="2">
+                    {{ booking.description|linebreaks }}
+                </td>
             </tr>
         {% endif %}
     </table>

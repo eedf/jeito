@@ -130,3 +130,7 @@ tr.total td {
 .title-action {
     float: right;
 }
+
+th {
+    white-space: nowrap;
+}
