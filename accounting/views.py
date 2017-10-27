@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F, Q, Sum, Case, When, Value
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, AnalyticFilter, BudgetFilter
-from .models import BankStatement, Transaction
+from .models import BankStatement, Transaction, Entry
 
 
 class BudgetView(LoginRequiredMixin, FilterView):
@@ -140,3 +140,7 @@ class NextReconciliationView(LoginRequiredMixin, ListView):
         qs = Transaction.objects.filter(account__number=5120000, reconciliation=None, entry__projected=False)
         qs = qs.order_by('entry__date')
         return qs
+
+
+class EntryView(DetailView):
+    model = Entry

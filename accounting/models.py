@@ -38,6 +38,12 @@ class Entry(models.Model):
     def __str__(self):
         return self.title
 
+    def revenue(self):
+        return sum([t.revenue for t in self.transaction_set.all()])
+
+    def expense(self):
+        return sum([t.expense for t in self.transaction_set.all()])
+
     def balanced(self):
         return sum([t.revenue - t.expense for t in self.transaction_set.all()]) == 0
     balanced.short_description = "Équilibré"

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container accounting">
+
+    <h1 class="{% if entry.projected %}projected{% endif %}">{{ entry.title }}</h1>
+
+    <p>
+        {% if entry.projected %}<span class="label label-info">Projeté</span>{% endif %}
+        {% if entry.forwarded %}<span class="label label-primary">Envoyé</span>{% endif %}
+        {% if entry.entered %}<span class="label label-success">Saisi</span>{% endif %}
+        {% if not entry.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
+    </p>
+
+    <p>Date: {{ entry.date }}</p>
+
+    {% if entry.scan %}<p><a href="{{ entry.scan.url }}" class="btn btn-primary"><span class="glyphicon glyphicon-file"></span> Télécharger la pièce</a></p>{% endif %}
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Intitulé</th>
+            <th>Compte</th>
+            <th>Analytique</th>
+            <th class="text-right">Débit</th>
+            <th class="text-right">Crédit</th>
+            <th class="text-right">Rapprochement</th>
+        </tr>
+        {% for transaction in entry.transaction_set.all %}
+            <tr>
+                <td>{{ transaction.title }}</td>
+                <td><a href="{% url 'accounting:account' %}?account={{ transaction.account_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
+                <td><a href="{% url 'accounting:analytic' %}?account={{ transaction.analytic_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.analytic.title }}</a></td>
+                <td class="text-right">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right">{% if transaction.reconciliation %}{{ transaction.reconciliation|date:"d/m/y" }}{% endif %}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td><strong>Total</strong></td>
+            <td></td>
+            <td></td>
+            <td class="text-right {% if not entry.balanced %}text-danger{% endif %}"><strong>{{ entry.expense|floatformat:2 }} €</strong></td>
+            <td class="text-right {% if not entry.balanced %}text-danger{% endif %}"><strong>{{ entry.revenue|floatformat:2 }} €</strong></td>
+            <td></td>
+        </tr>
+    </table>
+
+</div>
+
+{% endblock content %}

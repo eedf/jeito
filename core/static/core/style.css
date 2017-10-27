@@ -130,3 +130,7 @@ tr.total td {
 th {
     white-space: nowrap;
 }
+
+.accounting .projected {
+    text-decoration: line-through;
+}

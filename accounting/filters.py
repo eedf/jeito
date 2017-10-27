@@ -78,6 +78,7 @@ class AccountFilter(django_filters.FilterSet):
     @property
     def qs(self):
         qs = super().qs.order_by('entry__date')
+        qs = qs.select_related('entry', 'analytic')
         return qs
 
     def __init__(self, data, *args, **kwargs):
@@ -89,17 +90,18 @@ class AccountFilter(django_filters.FilterSet):
 class AnalyticFilter(django_filters.FilterSet):
     year = django_filters.ChoiceFilter(label="Exercice", choices=[(i, i) for i in range(settings.NOW().year, 2015, -1)],
                                        name='entry__date', lookup_expr='year')
-    analytic = django_filters.ModelChoiceFilter(label="Compte analytique", queryset=Analytic.objects)
+    account = django_filters.ModelChoiceFilter(label="Compte analytique", queryset=Analytic.objects, name='analytic')
     projected = django_filters.BooleanFilter(label="Projeté", name='entry__projected')
 
     class Meta:
         model = Transaction
-        fields = ('year', 'analytic', 'projected')
+        fields = ('year', 'account', 'projected')
         form = YearAccountFilterForm
 
     @property
     def qs(self):
         qs = super().qs.order_by('entry__date')
+        qs = qs.select_related('entry', 'account')
         return qs
 
     def __init__(self, data, *args, **kwargs):
