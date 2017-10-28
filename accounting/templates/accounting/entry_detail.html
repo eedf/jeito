@@ -47,6 +47,13 @@
         </tr>
     </table>
 
+    {% if perms.accounting.change_entry %}
+        <p><a href="{% url 'admin:accounting_entry_change' entry.pk %}" class="btn btn-primary">
+            <span class="glyphicon glyphicon-edit"></span>
+            Modifier
+        </a></p>
+    {% endif %}
+
 </div>
 
 {% endblock content %}

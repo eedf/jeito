@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Account(models.Model):
@@ -37,6 +38,9 @@ class Entry(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('accounting:entry', kwargs={'pk': self.pk})
 
     def revenue(self):
         return sum([t.revenue for t in self.transaction_set.all()])
