@@ -144,3 +144,8 @@ class NextReconciliationView(LoginRequiredMixin, ListView):
 
 class EntryView(DetailView):
     model = Entry
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['transactions'] = self.object.transaction_set.order_by('account__number', 'analytic__title')
+        return context

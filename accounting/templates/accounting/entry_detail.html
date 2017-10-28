@@ -27,7 +27,7 @@
             <th class="text-right">Crédit</th>
             <th class="text-right">Rapprochement</th>
         </tr>
-        {% for transaction in entry.transaction_set.all %}
+        {% for transaction in transactions %}
             <tr>
                 <td>{{ transaction.title }}</td>
                 <td><a href="{% url 'accounting:account' %}?account={{ transaction.account_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
