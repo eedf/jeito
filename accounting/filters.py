@@ -20,8 +20,8 @@ class YearFilterForm(forms.Form):
 
 
 class BudgetFilter(django_filters.FilterSet):
-    year = django_filters.ChoiceFilter(label="Exercice", choices=[(i, i) for i in range(settings.NOW().year, 2015, -1)],
-                                       name='entry__date', lookup_expr='year')
+    year = django_filters.ChoiceFilter(label="Exercice", name='entry__date', lookup_expr='year',
+                                       choices=[(i, i) for i in range(settings.NOW().year + 1, 2015, -1)])
 
     class Meta:
         model = Transaction
