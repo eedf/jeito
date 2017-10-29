@@ -2,7 +2,7 @@ from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F, Q, Sum, Case, When, Value
 from django_filters.views import FilterView
-from .filters import BalanceFilter, AccountFilter, AnalyticFilter, BudgetFilter
+from .filters import BalanceFilter, AccountFilter, BudgetFilter
 from .models import BankStatement, Transaction, Entry
 
 
@@ -71,26 +71,6 @@ class BalanceView(LoginRequiredMixin, FilterView):
 class AccountView(LoginRequiredMixin, FilterView):
     template_name = "accounting/account.html"
     filterset_class = AccountFilter
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        solde = 0
-        revenue = 0
-        expense = 0
-        for transaction in self.object_list:
-            solde += transaction.revenue - transaction.expense
-            transaction.solde = solde
-            revenue += transaction.revenue
-            expense += transaction.expense
-        context['revenue'] = revenue
-        context['expense'] = expense
-        context['solde'] = solde
-        return context
-
-
-class AnalyticView(LoginRequiredMixin, FilterView):
-    template_name = "accounting/analytic.html"
-    filterset_class = AnalyticFilter
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

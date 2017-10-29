@@ -60,6 +60,7 @@ class YearAccountFilterForm(YearFilterForm):
         self.helper.layout = Layout(
             'year',
             'account',
+            'analytic',
             'projected',
         )
 
@@ -68,40 +69,18 @@ class AccountFilter(django_filters.FilterSet):
     year = django_filters.ChoiceFilter(label="Exercice", choices=[(i, i) for i in range(settings.NOW().year, 2015, -1)],
                                        name='entry__date', lookup_expr='year')
     account = django_filters.ModelChoiceFilter(label="Compte", queryset=Account.objects)
+    analytic = django_filters.ModelChoiceFilter(label="Compte analytique", queryset=Analytic.objects)
     projected = django_filters.BooleanFilter(label="Projeté", name='entry__projected')
 
     class Meta:
         model = Transaction
-        fields = ('year', 'account', 'projected')
+        fields = ('year', 'account', 'analytic', 'projected')
         form = YearAccountFilterForm
 
     @property
     def qs(self):
         qs = super().qs.order_by('entry__date')
-        qs = qs.select_related('entry', 'analytic')
-        return qs
-
-    def __init__(self, data, *args, **kwargs):
-        if data is None:
-            data = QueryDict('year={}'.format(settings.NOW().year))
-        super().__init__(data, *args, **kwargs)
-
-
-class AnalyticFilter(django_filters.FilterSet):
-    year = django_filters.ChoiceFilter(label="Exercice", choices=[(i, i) for i in range(settings.NOW().year, 2015, -1)],
-                                       name='entry__date', lookup_expr='year')
-    account = django_filters.ModelChoiceFilter(label="Compte analytique", queryset=Analytic.objects, name='analytic')
-    projected = django_filters.BooleanFilter(label="Projeté", name='entry__projected')
-
-    class Meta:
-        model = Transaction
-        fields = ('year', 'account', 'projected')
-        form = YearAccountFilterForm
-
-    @property
-    def qs(self):
-        qs = super().qs.order_by('entry__date')
-        qs = qs.select_related('entry', 'account')
+        qs = qs.select_related('entry', 'account', 'analytic')
         return qs
 
     def __init__(self, data, *args, **kwargs):

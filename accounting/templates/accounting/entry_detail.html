@@ -31,7 +31,7 @@
             <tr>
                 <td>{{ transaction.title }}</td>
                 <td><a href="{% url 'accounting:account' %}?account={{ transaction.account_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
-                <td><a href="{% url 'accounting:analytic' %}?account={{ transaction.analytic_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.analytic.title }}</a></td>
+                <td><a href="{% url 'accounting:account' %}?analytic={{ transaction.analytic_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.analytic.title }}</a></td>
                 <td class="text-right">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right">{% if transaction.reconciliation %}{{ transaction.reconciliation|date:"d/m/y" }}{% endif %}</td>

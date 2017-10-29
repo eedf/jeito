@@ -18,7 +18,7 @@
         </tr>
         {% for row in data %}
             <tr>
-                <td><a href="{% url 'accounting:analytic' %}?account={{ row.analytic__id }}&year={{ filter.form.cleaned_data.year }}">{{ row.analytic__title }}</a></td>
+                <td><a href="{% url 'accounting:account' %}?analytic={{ row.analytic__id }}&year={{ filter.form.cleaned_data.year }}">{{ row.analytic__title }}</a></td>
                 <td class="text-right">{% if row.solde_real %}{{ row.solde_real|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right">{% if row.solde_proj %}{{ row.solde_proj|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right">{% if row.solde_total %}{{ row.solde_total|floatformat:2 }} €{% endif %}</td>
