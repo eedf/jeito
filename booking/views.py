@@ -111,10 +111,13 @@ class OccupancyView(LoginRequiredMixin, FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         occupancy = []
-        range_qs = self.object_list.aggregate(begin=Min('begin'), end=Max('end'))
+        range_qs = self.object_list.filter(end__gte=settings.NOW())
+        range_qs = range_qs.aggregate(begin=Min('begin'), end=Max('end'))
         if range_qs['begin'] and range_qs['end']:
-            for i in range((range_qs['end'] - range_qs['begin']).days + 1):
-                day = range_qs['begin'] + timedelta(days=i)
+            begin = max(range_qs['begin'], settings.NOW().date())
+            end = range_qs['end']
+            for i in range((end - begin).days + 1):
+                day = begin + timedelta(days=i)
                 occupancy.append((day, ) + self.occupancy_for(day, 2) + self.occupancy_for(day, 1))
         context['occupancy'] = occupancy
         return context
