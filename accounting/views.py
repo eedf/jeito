@@ -2,7 +2,7 @@ from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import F, Q, Sum, Case, When, Value
 from django_filters.views import FilterView
-from .filters import BalanceFilter, AccountFilter, BudgetFilter
+from .filters import BalanceFilter, AccountFilter, EntryFilter, BudgetFilter
 from .models import BankStatement, Transaction, Entry
 
 
@@ -85,6 +85,25 @@ class AccountView(LoginRequiredMixin, FilterView):
         context['revenue'] = revenue
         context['expense'] = expense
         context['solde'] = solde
+        return context
+
+
+class EntryListView(LoginRequiredMixin, FilterView):
+    template_name = "accounting/entry_list.html"
+    filterset_class = EntryFilter
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        revenue = 0
+        expense = 0
+        balance = 0
+        for entry in self.object_list:
+            revenue += entry.revenue
+            expense += entry.expense
+            balance += entry.balance
+        context['revenue'] = revenue
+        context['expense'] = expense
+        context['balance'] = balance
         return context
 
 
