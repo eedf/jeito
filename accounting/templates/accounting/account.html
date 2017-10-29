@@ -42,10 +42,10 @@
                 <td>{{ row.entry.date|date:"d/m/y" }}</td>
                 <td class="{% if row.entry.projected %}projected{% endif %}"><a href="{% url 'accounting:entry' row.entry.pk %}">{{ row.entry.title }}{% if row.title %} - {{ row.title }}{% endif %}</a></td>
                 {% if not filter.form.cleaned_data.account %}
-                    <td><a href="{% url 'accounting:account' %}?account={{ row.account_id }}&analytic={{ row.analytic_id }}&year={{ filter.form.data.year }}&projected={{ filter.form.data.projected }}" title="{{ row.account.title }}">{{ row.account.number }}</a></td>
+                    <td><a href="{% url 'accounting:account' %}?account={{ row.account_id }}{% if filter.form.cleaned_data.analytic %}&analytic={{ row.analytic_id }}{% endif %}&year={{ filter.form.data.year }}&projected={{ filter.form.data.projected }}" title="{{ row.account.title }}">{{ row.account.number }}</a></td>
                 {% endif %}
                 {% if not filter.form.cleaned_data.analytic %}
-                    <td><a href="{% url 'accounting:account' %}?account={{ row.account_id }}&analytic={{ row.analytic_id }}&year={{ filter.form.data.year }}&projected={{ filter.form.data.projected }}">{{ row.analytic.title }}</a></td>
+                    <td><a href="{% url 'accounting:account' %}?analytic={{ row.analytic_id }}{% if filter.form.cleaned_data.account %}&account={{ row.account_id }}{%  endif %}&year={{ filter.form.data.year }}&projected={{ filter.form.data.projected }}">{{ row.analytic.title }}</a></td>
                 {% endif %}
                 <td class="text-right text-nowrap">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right text-nowrap">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
