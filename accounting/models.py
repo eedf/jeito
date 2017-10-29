@@ -25,6 +25,17 @@ class Analytic(models.Model):
         return self.title
 
 
+class EntryManager(models.Manager):
+    def get_queryset(self):
+        qs = super().get_queryset()
+        qs = qs.annotate(
+            revenue=models.Sum('transaction__revenue'),
+            expense=models.Sum('transaction__expense'),
+            balance=models.Sum('transaction__revenue') - models.Sum('transaction__expense')
+        )
+        return qs
+
+
 class Entry(models.Model):
     date = models.DateField(verbose_name="Date")
     title = models.CharField(verbose_name="Intitulé", max_length=100)
@@ -32,6 +43,8 @@ class Entry(models.Model):
     forwarded = models.BooleanField(verbose_name="Envoyé à la compta", default=False)
     entered = models.BooleanField(verbose_name="Saisi dans la compta", default=False)
     projected = models.BooleanField(verbose_name="Prévisionnel", default=False)
+
+    objects = EntryManager()
 
     class Meta:
         verbose_name = "Écriture"
@@ -42,14 +55,8 @@ class Entry(models.Model):
     def get_absolute_url(self):
         return reverse('accounting:entry', kwargs={'pk': self.pk})
 
-    def revenue(self):
-        return sum([t.revenue for t in self.transaction_set.all()])
-
-    def expense(self):
-        return sum([t.expense for t in self.transaction_set.all()])
-
     def balanced(self):
-        return sum([t.revenue - t.expense for t in self.transaction_set.all()]) == 0
+        return self.balance == 0
     balanced.short_description = "Équilibré"
     balanced.boolean = True
 
