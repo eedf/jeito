@@ -7,7 +7,7 @@
 
     <h1>
         {% if not filter.form.cleaned_data.account and not filter.form.cleaned_data.analytic %}
-            Écritures
+            Transactions
         {% endif %}
         {% if filter.form.cleaned_data.account %}
             Compte {{ filter.form.cleaned_data.number }} {{ filter.form.cleaned_data.account }}
