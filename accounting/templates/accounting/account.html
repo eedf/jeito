@@ -39,7 +39,7 @@
         </tr>
         {% for row in object_list %}
             <tr>
-                <td>{{ row.entry.date }}</td>
+                <td>{{ row.entry.date|date:"d/m/y" }}</td>
                 <td class="{% if row.entry.projected %}projected{% endif %}"><a href="{% url 'accounting:entry' row.entry.pk %}">{{ row.entry.title }}{% if row.title %} - {{ row.title }}{% endif %}</a></td>
                 {% if not filter.form.cleaned_data.account %}
                     <td><a href="{% url 'accounting:account' %}?account={{ row.account_id }}&analytic={{ row.analytic_id }}&year={{ filter.form.data.year }}&projected={{ filter.form.data.projected }}" title="{{ row.account.title }}">{{ row.account.number }}</a></td>
@@ -47,9 +47,9 @@
                 {% if not filter.form.cleaned_data.analytic %}
                     <td><a href="{% url 'accounting:account' %}?account={{ row.account_id }}&analytic={{ row.analytic_id }}&year={{ filter.form.data.year }}&projected={{ filter.form.data.projected }}">{{ row.analytic.title }}</a></td>
                 {% endif %}
-                <td class="text-right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
-                <td class="text-right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
-                <td class="text-right">{{ row.solde|floatformat:2 }} €</td>
+                <td class="text-right text-nowrap">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right text-nowrap">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right text-nowrap">{{ row.solde|floatformat:2 }} €</td>
             </tr>
         {% endfor %}
         <tr>
@@ -61,9 +61,9 @@
             {% if not filter.form.cleaned_data.analytic %}
                 <td></td>
             {% endif %}
-            <td class="text-right"><strong>{{ expense|floatformat:2 }} €</strong></td>
-            <td class="text-right"><strong>{{ revenue|floatformat:2 }} €</strong></td>
-            <td class="text-right"><strong>{{ solde|floatformat:2 }} €</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ expense|floatformat:2 }} €</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ revenue|floatformat:2 }} €</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ solde|floatformat:2 }} €</strong></td>
         </tr>
     </table>
 

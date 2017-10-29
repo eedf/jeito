@@ -21,17 +21,17 @@
             <tr>
                 <td><a href="{% url 'accounting:account' %}?account={{ row.account__id }}&year={{ filter.form.data.year }}&projected=3">{{ row.account__number }}</a></td>
                 <td><a href="{% url 'accounting:account' %}?account={{ row.account__id }}&year={{ filter.form.data.year }}&projected=3">{{ row.account__title }}</a></td>
-                <td class="text-right">{% if row.expenses %}{{ row.expenses|floatformat:2 }} €{% endif %}</td>
-                <td class="text-right">{% if row.revenues %}{{ row.revenues|floatformat:2 }} €{% endif %}</td>
-                <td class="text-right">{{ row.solde|floatformat:2 }} €</td>
+                <td class="text-right text-nowrap">{% if row.expenses %}{{ row.expenses|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right text-nowrap">{% if row.revenues %}{{ row.revenues|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right text-nowrap">{{ row.solde|floatformat:2 }} €</td>
             </tr>
         {% endfor %}
         <tr>
             <td></td>
             <td><strong>Total</strong></td>
-            <td class="text-right"><strong>{{ expenses|floatformat:2 }} €</strong></td>
-            <td class="text-right"><strong>{{ revenues|floatformat:2 }} €</strong></td>
-            <td class="text-right"><strong>{{ solde|floatformat:2 }} €</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ expenses|floatformat:2 }} €</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ revenues|floatformat:2 }} €</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ solde|floatformat:2 }} €</strong></td>
         </tr>
     </table>
 

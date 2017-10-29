@@ -28,7 +28,7 @@
         </tr>
         {% for bankstatement in bankstatement_list %}
             <tr>
-                <td>{{ bankstatement.date }}</td>
+                <td>{{ bankstatement.date|date:"d/m/y" }}</td>
                 <td class="text-right">{{ bankstatement.number }}</td>
                 <td><a href="{{ bankstatement.scan.url }}">télécharger</a></td>
                 <td class="text-right">{{ bankstatement.balance|floatformat:2 }} €</td>
