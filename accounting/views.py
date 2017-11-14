@@ -29,6 +29,22 @@ class BudgetView(LoginRequiredMixin, FilterView):
         return context
 
 
+class ProjectionView(LoginRequiredMixin, FilterView):
+    template_name = "accounting/projection.html"
+    filterset_class = BudgetFilter
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = self.object_list
+        qs = qs.filter(account__number__regex=r'^[67]')
+        qs = qs.values('account_id', 'account__number', 'account__title', 'analytic__id', 'analytic__title')
+        qs = qs.order_by('account__number', 'analytic__title')
+        qs = qs.annotate(solde=Sum(F('revenue') - F('expense')))
+        context['data'] = qs
+        context['solde'] = sum([account['solde'] for account in qs])
+        return context
+
+
 class AnalyticBalanceView(LoginRequiredMixin, FilterView):
     template_name = "accounting/analytic_balance.html"
     filterset_class = BalanceFilter
