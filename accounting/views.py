@@ -134,14 +134,15 @@ class ReconciliationView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            previous = BankStatement.objects.filter(number__lt=self.object.number).latest('number')
+            previous = BankStatement.objects.filter(date__lt=self.object.date).latest('date')
         except BankStatement.DoesNotExist:
             cond = Q()
         else:
             cond = Q(reconciliation__gt=previous.date)
-        transactions = Transaction.objects.filter(account__number=5120000, entry__date__lte=self.object.date)
+        transactions = Transaction.objects.filter(account__number=5120000)
         transactions = transactions.filter(entry__projected=False)
-        cond = cond & Q(reconciliation__lte=self.object.date) | Q(reconciliation=None)
+        cond = cond & Q(reconciliation__lte=self.object.date) | \
+            Q(reconciliation=None, entry__date__lte=self.object.date)
         transactions = transactions.filter(cond)
         transactions = transactions.order_by('reconciliation', 'entry__date')
         context['transactions'] = transactions
