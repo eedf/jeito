@@ -9,6 +9,7 @@
 /.cache/
 /.pythonhist
 /client_id.json
+/.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
