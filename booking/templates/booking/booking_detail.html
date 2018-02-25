@@ -42,6 +42,20 @@
             <td>{{ booking.overnights|default_if_none:"" }}</td>
             <td></td>
         </tr>
+        {% if booking.preferred_place %}
+            <tr>
+                <th>Placement souhaité</th>
+                <td>{{ booking.preferred_place }}</td>
+                <td></td>
+            </tr>
+        {% endif %}
+        {% if booking.wood %}
+            <tr>
+                <th>Bois</th>
+                <td>{{ booking.wood }}</td>
+                <td></td>
+            </tr>
+        {% endif %}
         {% for item in booking.items.all %}
             {% if item.price_pppn is not None %}
                 <tr>

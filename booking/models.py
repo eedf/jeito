@@ -186,6 +186,8 @@ class Booking(TrackingMixin, models.Model):
     invoice = models.FileField(verbose_name="Facture", upload_to='factures', blank=True)
     invoice_number = models.CharField(max_length=10, blank=True)
     structure = models.ForeignKey(Structure, verbose_name="Structure")
+    preferred_place = models.CharField(verbose_name="Placement souhaité", max_length=1024, blank=True)
+    wood = models.CharField(verbose_name="Bois", max_length=1024, blank=True)
 
     objects = BookingManager.from_queryset(BookingQuerySet)()
 
