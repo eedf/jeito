@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.timezone import now
 from members.models import Structure
-from members.utils import current_season
+from members.utils import current_season, current_year
 
 
 class TrackingEvent(models.Model):
@@ -171,6 +171,7 @@ class Booking(TrackingMixin, models.Model):
         (6, "Scolaires"),
     )
     title = models.CharField(verbose_name="Intitulé", max_length=100, blank=True)
+    year = models.IntegerField(verbose_name="Année", default=current_year)
     org_type = models.IntegerField(verbose_name="Type d'organisation", choices=ORG_TYPE_CHOICES, blank=True, null=True)
     contact = models.CharField(verbose_name="Contact", max_length=100, blank=True)
     email = models.EmailField(verbose_name="Email", blank=True)
@@ -191,9 +192,10 @@ class Booking(TrackingMixin, models.Model):
     class Meta:
         verbose_name = "Réservation"
         permissions = (('show_booking', 'Can show booking'), )
+        ordering = ('-year', 'title')
 
     def __str__(self):
-        return self.title
+        return "{} - {}".format(self.year, self.title)
 
     def get_absolute_url(self):
         return reverse('booking:booking_detail', kwargs={'pk': self.pk})

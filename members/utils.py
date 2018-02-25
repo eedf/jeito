@@ -10,3 +10,7 @@ def current_season():
     if today.month >= 9:
         return today.year + 1
     return today.year
+
+
+def current_year():
+    return settings.NOW().date().year

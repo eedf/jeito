@@ -26,8 +26,8 @@ class PaymentInline(admin.TabularInline):
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
     inlines = (BookingItemInline, PaymentInline)
-    list_display = ('title', 'state', 'contact', 'email', 'tel', 'agreement')
-    list_filter = ('state', )
+    list_display = ('title', 'year', 'state', 'contact', 'email', 'tel', 'agreement')
+    list_filter = ('state', 'year')
     search_fields = ('title', 'contact', 'email')
 
 
