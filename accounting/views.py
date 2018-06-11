@@ -1,12 +1,17 @@
 from django.views.generic import ListView, DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Q, Sum, Case, When, Value
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, EntryFilter, BudgetFilter
 from .models import BankStatement, Transaction, Entry
 
 
-class BudgetView(LoginRequiredMixin, FilterView):
+class UserMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+
+class BudgetView(UserMixin, FilterView):
     template_name = "accounting/budget.html"
     filterset_class = BudgetFilter
 
@@ -29,7 +34,7 @@ class BudgetView(LoginRequiredMixin, FilterView):
         return context
 
 
-class ProjectionView(LoginRequiredMixin, FilterView):
+class ProjectionView(UserMixin, FilterView):
     template_name = "accounting/projection.html"
     filterset_class = BudgetFilter
 
@@ -45,7 +50,7 @@ class ProjectionView(LoginRequiredMixin, FilterView):
         return context
 
 
-class AnalyticBalanceView(LoginRequiredMixin, FilterView):
+class AnalyticBalanceView(UserMixin, FilterView):
     template_name = "accounting/analytic_balance.html"
     filterset_class = BalanceFilter
 
@@ -65,7 +70,7 @@ class AnalyticBalanceView(LoginRequiredMixin, FilterView):
         return context
 
 
-class BalanceView(LoginRequiredMixin, FilterView):
+class BalanceView(UserMixin, FilterView):
     template_name = "accounting/balance.html"
     filterset_class = BalanceFilter
 
@@ -84,7 +89,7 @@ class BalanceView(LoginRequiredMixin, FilterView):
         return context
 
 
-class AccountView(LoginRequiredMixin, FilterView):
+class AccountView(UserMixin, FilterView):
     template_name = "accounting/account.html"
     filterset_class = AccountFilter
 
@@ -104,7 +109,7 @@ class AccountView(LoginRequiredMixin, FilterView):
         return context
 
 
-class EntryListView(LoginRequiredMixin, FilterView):
+class EntryListView(UserMixin, FilterView):
     template_name = "accounting/entry_list.html"
     filterset_class = EntryFilter
 
@@ -123,11 +128,11 @@ class EntryListView(LoginRequiredMixin, FilterView):
         return context
 
 
-class BankStatementView(LoginRequiredMixin, ListView):
+class BankStatementView(UserMixin, ListView):
     model = BankStatement
 
 
-class ReconciliationView(LoginRequiredMixin, DetailView):
+class ReconciliationView(UserMixin, DetailView):
     template_name = 'accounting/reconciliation.html'
     model = BankStatement
 
@@ -149,7 +154,7 @@ class ReconciliationView(LoginRequiredMixin, DetailView):
         return context
 
 
-class NextReconciliationView(LoginRequiredMixin, ListView):
+class NextReconciliationView(UserMixin, ListView):
     template_name = 'accounting/next_reconciliation.html'
 
     def get_queryset(self):
@@ -158,7 +163,7 @@ class NextReconciliationView(LoginRequiredMixin, ListView):
         return qs
 
 
-class EntryView(DetailView):
+class EntryView(UserMixin, DetailView):
     model = Entry
 
     def get_context_data(self, **kwargs):

@@ -1,6 +1,6 @@
 from datetime import timedelta
 from django.conf import settings
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import UserPassesTestMixin, PermissionRequiredMixin
 from django.core.files import File
 from django.db.models import Sum, Min, Max
 from django.http import HttpResponseRedirect, HttpResponseForbidden
@@ -15,7 +15,12 @@ from .forms import BookingForm
 from .models import Booking, BookingItem, Agreement
 
 
-class HomeView(LoginRequiredMixin, TemplateView):
+class UserMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_superuser
+
+
+class HomeView(UserMixin, TemplateView):
     template_name = 'booking/home.html'
 
     def get_context_data(self, **kwargs):
@@ -36,7 +41,7 @@ class HomeView(LoginRequiredMixin, TemplateView):
         return context
 
 
-class BookingListView(LoginRequiredMixin, FilterView):
+class BookingListView(UserMixin, FilterView):
     template_name = 'booking/booking_list.html'
     filterset_class = BookingFilter
 
@@ -52,7 +57,7 @@ class BookingListView(LoginRequiredMixin, FilterView):
         return context
 
 
-class BookingDetailView(LoginRequiredMixin, DetailView):
+class BookingDetailView(UserMixin, DetailView):
     model = Booking
 
     def render_to_response(self, context):
@@ -72,7 +77,7 @@ class BookingCreateView(PermissionRequiredMixin, CreateView):
         return kwargs
 
 
-class CreateAgreementView(LoginRequiredMixin, DetailView):
+class CreateAgreementView(UserMixin, DetailView):
     model = Booking
 
     def render_to_response(self, context):
@@ -96,7 +101,7 @@ class CreateAgreementView(LoginRequiredMixin, DetailView):
         return HttpResponseRedirect(reverse('booking:booking_detail', kwargs={'pk': self.object.pk}))
 
 
-class OccupancyView(LoginRequiredMixin, FilterView):
+class OccupancyView(UserMixin, FilterView):
     template_name = 'booking/occupancy.html'
     filterset_class = BookingItemFilter
 
@@ -123,7 +128,7 @@ class OccupancyView(LoginRequiredMixin, FilterView):
         return context
 
 
-class StatsView(LoginRequiredMixin, TemplateView):
+class StatsView(UserMixin, TemplateView):
     template_name = 'booking/stats.html'
 
     def get_context_data(self, **kwargs):
@@ -175,7 +180,7 @@ class StatsView(LoginRequiredMixin, TemplateView):
         return kwargs
 
 
-class CotisationsView(LoginRequiredMixin, FilterView):
+class CotisationsView(UserMixin, FilterView):
     template_name = 'booking/cotisations.html'
     filterset_class = CotisationsFilter
 
@@ -189,7 +194,7 @@ class CotisationsView(LoginRequiredMixin, FilterView):
         return context
 
 
-class BookingGoogleSyncView(LoginRequiredMixin, DetailView):
+class BookingGoogleSyncView(UserMixin, DetailView):
     model = Booking
 
     def render_to_response(self, context, **response_kwargs):
