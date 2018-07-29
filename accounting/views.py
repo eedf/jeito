@@ -1,3 +1,4 @@
+from datetime import date
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Q, Sum, Case, When, Value
@@ -158,9 +159,25 @@ class NextReconciliationView(UserMixin, ListView):
     template_name = 'accounting/next_reconciliation.html'
 
     def get_queryset(self):
-        qs = Transaction.objects.filter(account__number=5120000, reconciliation=None, entry__projected=False)
-        qs = qs.order_by('entry__date')
+        try:
+            last = BankStatement.objects.latest('date')
+        except BankStatement.DoesNotExist:
+            cond = Q()
+        else:
+            cond = Q(reconciliation__gt=last.date)
+        qs = Transaction.objects.filter(account__number=5120000)
+        qs = qs.filter(entry__projected=False)
+        cond = cond & Q(reconciliation__lte=date.today()) | Q(reconciliation=None)
+        qs = qs.filter(cond)
+        qs = qs.order_by('reconciliation', 'entry__date')
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        transactions = Transaction.objects.filter(account__number='5120000', reconciliation__lte=date.today())
+        sums = transactions.aggregate(expense=Sum('expense'), revenue=Sum('revenue'))
+        context['balance'] = sums['expense'] - sums['revenue']
+        return context
 
 
 class EntryView(UserMixin, DetailView):

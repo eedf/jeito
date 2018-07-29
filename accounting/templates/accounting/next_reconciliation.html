@@ -7,8 +7,11 @@
 
     <h1>Non rapproché</h1>
 
+    <p>Solde rapproché : {{ balance }} €</p>
+
     <table class="table table-striped table-hover">
         <tr>
+            <th>Rapprochement</th>
             <th>Date</th>
             <th>Intitulé</th>
             <th class="text-right">Débit</th>
@@ -17,6 +20,7 @@
         </tr>
         {% for row in object_list %}
             <tr>
+                <td>{{ row.reconciliation|date:"d/m/y" }}</td>
                 <td>{{ row.entry.date|date:"d/m/y" }}</td>
                 <td><a href="{% url 'accounting:entry' row.entry.pk %}">{{ row.entry.title }}{% if row.title %} - {{ row.title }}{% endif %}</a></td>
                 <td class="text-right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
