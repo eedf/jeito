@@ -311,6 +311,7 @@ class Payment(TrackingMixin, models.Model):
         (1, "Chèque"),
         (2, "Virement"),
         (3, "Espèces"),
+        (4, "ANCV"),
     )
     mean = models.IntegerField(verbose_name="Moyen de paiement", choices=MEAN_CHOICES)
     date = models.DateField()

@@ -164,3 +164,5 @@ NOW = now
 
 GOOGLE_OAUTH2_CLIENT_SECRETS_JSON = os.path.join(BASE_DIR, 'client_id.json')
 GOOGLE_OAUTH2_SCOPES = ('https://www.googleapis.com/auth/calendar', )
+
+FILE_UPLOAD_PERMISSIONS = 0o644
