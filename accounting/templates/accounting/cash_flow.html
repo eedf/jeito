@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load staticfiles crispy_forms_tags %}
+
+
+{% block content %}
+
+    <div class="container">
+
+        <h1>Cash flow</h1>
+
+        {#{% crispy form %}#}
+
+        <div class="ct-chart ct-minor-seventh"></div>
+
+        <p id="comment"></p>
+
+    </div>
+
+{% endblock content %}
+
+
+{% block css %}
+
+    {{ block.super }}
+    <link href="{% static 'core/chartist/chartist.min.css' %}" rel="stylesheet">
+    <style>
+        .ct-label {
+            font-size: 100%;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        .ct-series-a .ct-line {
+            stroke: red;
+            stroke-width: 1px;
+            stroke-dasharray: 3px 3px;
+        }
+        .ct-series-b .ct-line {
+            stroke: red;
+            stroke-width: 2px;
+        }
+    </style>
+
+{% endblock css %}
+
+
+{% block js %}
+
+    {{ block.super }}
+    <script src="{% static 'core/chartist/chartist.min.js' %}"></script>
+    <script>
+        var options = {
+            showPoint: false,
+            lineSmooth: false,
+            axisX: {
+                showGrid: false
+            },
+            axisY: {
+                offset: 50
+            }
+        };
+        function updateGraph(updateHistory=true) {
+            params = $('form').serialize();
+            state = {};
+            $('select').each(function() { state[$(this).attr('id')] = $(this).val(); });
+            $.getJSON("{% url 'accounting:cash_flow_data' %}?" + params, function(data) {
+                new Chartist.Line('.ct-chart', data, options);
+                $('#comment').html(data['comment']);
+                if (updateHistory) {
+                    history.pushState(state, "", "?" + params);
+                }
+            });
+        }
+        window.onpopstate = function(event) {
+            if (event.state === null) {
+                $('select').each(function() {
+                   $(this).val($(this).children("option:first").val());
+                });
+            } else {
+                Object.keys(event.state).forEach(function (key) {
+                    $('#' + key).val(event.state[key]);
+                });
+            }
+            updateGraph(false);
+        };
+        $('select').change(updateGraph);
+        updateGraph(false);
+    </script>
+
+{% endblock js %}

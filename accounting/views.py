@@ -1,7 +1,11 @@
-from datetime import date
-from django.views.generic import ListView, DetailView
+from collections import OrderedDict
+from datetime import date, timedelta
+from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Q, Sum, Case, When, Value
+from django.http import JsonResponse
+from django.utils.formats import date_format
+from django.views.generic import ListView, DetailView, TemplateView, View
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, EntryFilter, BudgetFilter
 from .models import BankStatement, Transaction, Entry
@@ -187,3 +191,61 @@ class EntryView(UserMixin, DetailView):
         context = super().get_context_data(**kwargs)
         context['transactions'] = self.object.transaction_set.order_by('account__number', 'analytic__title')
         return context
+
+
+class CashFlowView(UserMixin, TemplateView):
+    template_name = 'accounting/cash_flow.html'
+
+
+class CashFlowJsonView(UserMixin, View):
+    def serie(self, season, GET):
+        self.today = (settings.NOW() - timedelta(days=1)).date()
+        start = date(season, 1, 1)
+        end = min(date(season, 12, 31), self.today)
+        qs = Transaction.objects.filter(account__number__in=('5120000', '5300000'), reconciliation__year=season)
+#        qs = qs.exclude(entry__title=u"A nouveaux")
+        qs = qs.order_by('-reconciliation').values('reconciliation').annotate(balance=Sum('revenue') - Sum('expense'))
+        qs = list(qs)
+        data = OrderedDict()
+        dates = [start + timedelta(days=n) for n in
+                 range((end - start).days + 1)]
+        balance = 0
+        for d in dates:
+            if qs and qs[-1]['reconciliation'] == d:
+                balance += qs.pop()['balance']
+            if d.month == 2 and d.day == 29:
+                continue
+            data[d] = -balance
+        return data
+
+    def get(self, request):
+        season = 2018  # int(self.request.GET['season'])
+        reference = season - 1
+        data = self.serie(season, self.request.GET)
+        ref_data = self.serie(reference, self.request.GET)
+        date_max = max(data.keys())
+        ref_date_max = date_max.replace(year=reference)
+        date1 = ref_date_max.strftime('%d/%m/%Y')
+        date2 = date_max.strftime('%d/%m/%Y')
+        nb1 = ref_data[ref_date_max]
+        nb2 = data[date_max]
+        diff = nb2 - nb1
+        if nb1:
+            percent = 100 * diff / nb1
+            comment = """Au <strong>{}</strong> : <strong>{:+0.2f}</strong> €<br>
+                         Au <strong>{}</strong> : <strong>{:+0.2f}</strong> €,
+                         c'est-à-dire <strong>{:+0.2f}</strong> €
+                         (<strong>{:+0.1f} %</strong>)
+                      """.format(date1, nb1, date2, nb2, diff, percent)
+        else:
+            comment = """Au <strong>{}</strong> : <strong>{:+0.2f}</strong> €
+                      """.format(date2, nb2)
+        data = {
+            'labels': [date_format(x, 'b') if x.day == 1 else '' for x in ref_data.keys()],
+            'series': [
+                list(ref_data.values()),
+                list(data.values()),
+            ],
+            'comment': comment,
+        }
+        return JsonResponse(data)
