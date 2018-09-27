@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'booking',
     'accounting',
     'todo',
+    'life',
 ]
 
 MIDDLEWARE_CLASSES = [
