@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^tableau/structures/$', views.TableauStructureView.as_view(), name='structures'),
     url(r'^tableau/structure_type/$', views.TableauStructureTypeView.as_view(), name='structure_type'),
     url(r'^tableau/rate/$', views.TableauRateView.as_view(), name='tableau_rate'),
+    url(r'^person-autocomplete/$', views.PersonAutocomplete.as_view(), name='person_autocomplete'),
 ]

@@ -1,14 +1,13 @@
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView
+from .forms import ReportForm
 from .models import Report
 
 
-class ReportListView(ListView):
+class ReportListView(LoginRequiredMixin, ListView):
     model = Report
 
 
-class ReportCreateView(CreateView):
+class ReportCreateView(LoginRequiredMixin, CreateView):
     model = Report
-    fields = ('structure', 'date', 'location', 'nb_presents', 'nb_voters', 'representative', 'favour', 'against',
-              'abstention', 'balance', 'budget', 'delegate', 'alternate', 'responsible', 'treasurer',
-              'responsible_validation', 'representative_validation', 'comments_activity_report', 'comments_finances',
-              'comments_national', 'comments_regional', 'comments_problems', 'team')
+    form_class = ReportForm

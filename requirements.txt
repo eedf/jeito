@@ -1,4 +1,5 @@
 Django==1.11.2
+django-autocomplete-light==3.3.2
 django-crispy-forms==1.6.1
 django-cuser==2017.3.16
 django-debug-toolbar==1.8

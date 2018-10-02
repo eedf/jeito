@@ -1,4 +1,5 @@
 from collections import Counter, OrderedDict
+from dal import autocomplete
 from datetime import date, timedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
@@ -10,7 +11,7 @@ import json
 from dashboard import widget
 from .filters import AdhesionFilter
 from .forms import AdhesionsForm
-from .models import Adhesion, Structure, Function, Rate
+from .models import Adhesion, Structure, Function, Rate, Person
 from .utils import current_season
 
 
@@ -427,3 +428,16 @@ class GroupsWidget(widget.Widget):
             'nb_groups': nb_groups,
             'nb_groups_diff': (100 * (nb_groups - ref_nb_groups) / ref_nb_groups) if ref_nb_groups else 0,
         }
+
+
+class PersonAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Person.objects.none()
+
+        qs = Person.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
