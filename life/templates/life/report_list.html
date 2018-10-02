@@ -1,0 +1,27 @@
+{% extends "life/base.html" %}
+
+{% block content %}
+
+<div class="container">
+
+    <a href="{% url 'report_create' %}" class="btn btn-primary title-action">
+        <span class="glyphicon glyphicon-plus"></span> Ajouter
+    </a>
+    <h1>Comptes rendus d'APL</h1>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Structure</th>
+            <th>Date</th>
+        </tr>
+        {% for report in report_list %}
+            <tr>
+                <td><a href="">{{ report.structure }}</a></td>
+                <td>{{ report.date|date:"d/m/Y" }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+</div>
+
+{% endblock content %}

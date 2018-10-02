@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+{% load staticfiles %}
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% block css %}
+        <link href="{% static 'core/bootstrap3/css/bootstrap.css' %}" rel="stylesheet">
+        <link href="{% static 'tagulous/lib/select2-3/select2.css' %}" rel="stylesheet">
+        <link href="{% static 'core/css/select2-bootstrap.css' %}" rel="stylesheet">
+        <link href="{% static 'core/style.css' %}" rel="stylesheet" type="text/css" media="all">
+    {% endblock css %}
+    <title>EEDF - Jeito</title>
+</head>
+
+<body>
+
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/"></a>
+        </div>
+
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        Vie associative
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a href="{% url 'report_list' %}">Comptes rendus d'APL</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            {% if request.user.is_authenticated %}
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-user"></span>
+                            {{ request.user.first_name.title }}
+                            ({{ request.user.number }})
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            {% if user.is_staff %}
+                                <li>
+                                    <a href="{% url 'admin:index' %}">
+                                        Admin
+                                    </a>
+                                </li>
+                            {% endif %}
+                            <li>
+                                <a href="{% url 'core:logout' %}">
+                                    <span class="glyphicon glyphicon-lock"></span>
+                                    Déconnexion
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            {% endif %}
+            {% comment %}
+                <form class="navbar-form navbar-right">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                    </div>
+                    <button type="submit" class="btn btn-default">Chercher</button>
+                </form>
+                {% endcomment %}
+
+        </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+</nav>
+
+{% block content %}{% endblock content %}
+
+<footer>
+    <div class="bandeau">
+        <div class="logo"></div>
+        {% comment %}
+        <span class="licence">
+            &copy; 2016 <a href="http://www.eedf.fr">EEDF</a>
+            sous <a href="https://fr.wikipedia.org/wiki/Licence_MIT">licence <strong>libre</strong> MIT</a>
+        </span>
+        <span class="django">
+            <a href="https://www.djangoproject.com">
+                Propulsé par
+                <img src="{% static 'core/img/django-logo-negative.png' %}">
+            </a>
+        </span>
+        <span class="github">
+            <a href="https://www.github.com/eedf/jeito/">
+                Améliore moi sur
+                <img src="{% static 'core/img/github-logo.png' %}" class="baseline">
+            </a>
+        </span>
+        {% endcomment %}
+    </div>
+</footer>
+
+{% block js %}
+    <script src="{% static 'core/js/jquery-1.12.0.min.js' %}"></script>
+    <script src="{% static 'core/bootstrap3/js/bootstrap.js' %}"></script>
+    <script src="{% static 'tagulous/lib/select2-3/select2.min.js' %}"></script>
+    <script src="{% static 'tagulous/tagulous.js' %}"></script>
+    <script src="{% static 'tagulous/adaptor/select2-3.js' %}"></script>
+{% endblock js %}
+
+</body>
+</html>
