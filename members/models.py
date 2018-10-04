@@ -200,6 +200,10 @@ class Person(PermissionsMixin, AbstractBaseUser):
             return True
         return self.adhesion is not None
 
+    @property
+    def is_becours(self):
+        return self.adhesion and self.adhesion.nomination_set.filter(structure__number='2700000500').exists()
+
 
 class Adhesion(models.Model):
     person = models.ForeignKey(Person, related_name='adhesions')
