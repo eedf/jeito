@@ -13,7 +13,7 @@ from .models import BankStatement, Transaction, Entry
 
 class UserMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.is_becours
+        return self.request.user.is_authenticated and self.request.user.is_becours
 
 
 class BudgetView(UserMixin, FilterView):

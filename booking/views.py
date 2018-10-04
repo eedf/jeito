@@ -17,7 +17,7 @@ from .models import Booking, BookingItem, Agreement
 
 class UserMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.is_becours
+        return self.request.user.is_authenticated and self.request.user.is_becours
 
 
 class HomeView(UserMixin, TemplateView):
