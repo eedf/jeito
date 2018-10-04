@@ -202,6 +202,8 @@ class Person(PermissionsMixin, AbstractBaseUser):
 
     @property
     def is_becours(self):
+        if self.is_superuser:
+            return True
         return self.adhesion and self.adhesion.nomination_set.filter(structure__number='2700000500').exists()
 
 
