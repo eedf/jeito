@@ -18,7 +18,7 @@
             <div class="alert alert-danger" role="alert">Le numéro d'adhérent ou le mot de passe sont incorrects. Merci de réessayer.</div>
         {% endif %}
 
-        <form method="post" action="{% url 'core:login' %}">
+        <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
             <input type="hidden" name="next" value="{{ next }}" />
             <div class="form-group">

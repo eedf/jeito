@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'haystack',
     'tagulous',
     'django_filters',
-    'core',
     'dashboard',
     'members',
     # 'docs',
@@ -129,13 +128,14 @@ AUTH_USER_MODEL = 'members.Person'
 AUTHENTICATION_BACKENDS = [
     'members.auth_backends.PersonBackend',
 ]
-LOGIN_URL = 'core:login'
+LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard:dashboard'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'var/media/')
 MEDIA_URL = '/media/'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'jeito/static/')]
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 STATIC_URL = '/static/'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
