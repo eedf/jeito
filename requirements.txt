@@ -3,7 +3,7 @@ django-crispy-forms==1.6.1
 django-cuser==2017.3.16
 django-debug-toolbar==1.8
 django-filter==1.0.4
-django-haystack==2.6.1
+django-haystack==2.8.1
 django-mptt==0.8.7
 django-tagulous==0.12.0
 django-tracking2==0.4.0
