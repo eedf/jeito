@@ -63,9 +63,11 @@
                         </li>
                     </ul>
                 </li>
-                <li>
-                    <a href="{% url 'docs:index' %}">Documents</a>
-                </li>
+                {% if 'docs' in conf.docs_enabled %}
+                    <li>
+                        <a href="{% url 'docs:index' %}">Documents</a>
+                    </li>
+                {% endif %}
 {% if user.is_becours %}
                 <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

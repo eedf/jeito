@@ -8,12 +8,16 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^', include('dashboard.urls', namespace='dashboard')),
     url(r'^', include('core.urls')),
-    url(r'^docs/', include('docs.urls', namespace='docs')),
     url(r'^members/', include('members.urls', namespace='members')),
     url(r'^booking/', include('booking.urls', namespace='booking')),
     url(r'^accounting/', include('accounting.urls', namespace='accounting')),
     url(r'^tracking/', include('tracking.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if 'docs' in settings.INSTALLED_APPS:
+    urlpatterns += [
+        url(r'^docs/', include('docs.urls', namespace='docs')),
+    ]
 
 if settings.DEBUG:
     import debug_toolbar
