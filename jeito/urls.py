@@ -6,20 +6,20 @@ from django.contrib.auth import views as auth_views
 
 
 urlpatterns = [
-    url(r'^login/$', auth_views.login, name='login'),
+    url(r'^login/$', auth_views.LoginView.as_view(), name='login'),
     url(r'^logout/$', auth_views.logout_then_login, name='logout'),
     url(r'^admin/', admin.site.urls),
-    url(r'^', include('dashboard.urls', namespace='dashboard')),
-    url(r'^members/', include('members.urls', namespace='members')),
-    url(r'^booking/', include('booking.urls', namespace='booking')),
-    url(r'^accounting/', include('accounting.urls', namespace='accounting')),
-    url(r'^life/', include('life.urls', namespace='life')),
+    url(r'^', include('dashboard.urls')),
+    url(r'^members/', include('members.urls')),
+    url(r'^booking/', include('booking.urls')),
+    url(r'^accounting/', include('accounting.urls')),
+    url(r'^life/', include('life.urls')),
     url(r'^tracking/', include('tracking.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if 'docs' in settings.INSTALLED_APPS:
     urlpatterns += [
-        url(r'^docs/', include('docs.urls', namespace='docs')),
+        url(r'^docs/', include('docs.urls')),
     ]
 
 if settings.DEBUG:

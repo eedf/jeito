@@ -34,7 +34,7 @@ class TrackingEvent(models.Model):
 
 
 class TrackingValue(models.Model):
-    event = models.ForeignKey(TrackingEvent, verbose_name="Événement")
+    event = models.ForeignKey(TrackingEvent, verbose_name="Événement", on_delete=models.PROTECT)
     field = models.CharField(max_length=100, verbose_name="Champ")
     value = models.TextField(null=True, verbose_name="Valeur")
 
@@ -80,8 +80,10 @@ class Agreement(TrackingMixin, models.Model):
     order = models.IntegerField(verbose_name="Numéro d'ordre")
     odt = models.FileField(upload_to='conventions', blank=True)
     pdf = models.FileField(upload_to='conventions', blank=True)
-    booking = models.ForeignKey('Booking', verbose_name="Réservation", related_name='agreements', null=True)
-    structure = models.ForeignKey(Structure, verbose_name="Structure")
+    booking = models.ForeignKey(
+        'Booking', verbose_name="Réservation", related_name='agreements', null=True,
+        on_delete=models.PROTECT)
+    structure = models.ForeignKey(Structure, verbose_name="Structure", on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = "Convention"
@@ -176,16 +178,18 @@ class Booking(TrackingMixin, models.Model):
     contact = models.CharField(verbose_name="Contact", max_length=100, blank=True)
     email = models.EmailField(verbose_name="Email", blank=True)
     tel = models.CharField(verbose_name="Téléphone", max_length=12, blank=True)
-    state = models.ForeignKey(BookingState, verbose_name="Statut", blank=True, null=True)
+    state = models.ForeignKey(
+        BookingState, verbose_name="Statut", blank=True, null=True, on_delete=models.PROTECT)
     description = models.TextField(verbose_name="Description", blank=True)
-    signed_agreement = models.OneToOneField(Agreement, verbose_name="N° convention signée", blank=True, null=True,
-                                            related_name='signedx_booking')
-    signed_agreement_scan = models.FileField(verbose_name="Scan convention signée", upload_to='conventions_signees',
-                                             blank=True)
+    signed_agreement = models.OneToOneField(
+        Agreement, verbose_name="N° convention signée", blank=True, null=True,
+        related_name='signedx_booking', on_delete=models.PROTECT)
+    signed_agreement_scan = models.FileField(
+        verbose_name="Scan convention signée", upload_to='conventions_signees', blank=True)
     insurance_scan = models.FileField(verbose_name="Attestation d'assurance", upload_to='assurance', blank=True)
     invoice = models.FileField(verbose_name="Facture", upload_to='factures', blank=True)
     invoice_number = models.CharField(max_length=10, blank=True)
-    structure = models.ForeignKey(Structure, verbose_name="Structure")
+    structure = models.ForeignKey(Structure, verbose_name="Structure", on_delete=models.PROTECT)
     preferred_place = models.CharField(verbose_name="Placement souhaité", max_length=1024, blank=True)
     wood = models.CharField(verbose_name="Bois", max_length=1024, blank=True)
 

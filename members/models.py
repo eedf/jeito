@@ -63,7 +63,8 @@ class Structure(MPTTModel):
         ]
     )
     name = models.CharField("Nom", max_length=100)
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
+    parent = TreeForeignKey(
+        'self', null=True, blank=True, related_name='children', db_index=True, on_delete=models.PROTECT)
     type = models.IntegerField("Type", choices=TYPE_CHOICES)
     subtype = models.IntegerField("Sous-type", choices=SUBTYPE_CHOICES, null=True, blank=True)
 
@@ -206,20 +207,21 @@ class Person(PermissionsMixin, AbstractBaseUser):
 
 
 class Adhesion(models.Model):
-    person = models.ForeignKey(Person, related_name='adhesions')
+    person = models.ForeignKey(Person, related_name='adhesions', on_delete=models.PROTECT)
     season = models.IntegerField("Saison")
     date = models.DateField()
-    rate = models.ForeignKey(Rate, verbose_name="Tarif")
-    structure = models.ForeignKey(Structure, verbose_name="Structure", related_name='adherents')
+    rate = models.ForeignKey(Rate, verbose_name="Tarif", on_delete=models.PROTECT)
+    structure = models.ForeignKey(
+        Structure, verbose_name="Structure", related_name='adherents', on_delete=models.PROTECT)
 
     def __str__(self):
         return "{self.season}-{self.person}".format(self=self)
 
 
 class Nomination(models.Model):
-    adhesion = models.ForeignKey(Adhesion, verbose_name="Adhésion")
-    structure = models.ForeignKey(Structure, verbose_name="Structure")
-    function = models.ForeignKey(Function, verbose_name="Fonction")
+    adhesion = models.ForeignKey(Adhesion, verbose_name="Adhésion", on_delete=models.PROTECT)
+    structure = models.ForeignKey(Structure, verbose_name="Structure", on_delete=models.PROTECT)
+    function = models.ForeignKey(Function, verbose_name="Fonction", on_delete=models.PROTECT)
     main = models.BooleanField(verbose_name="Principale", default=False)
 
     class Meta:

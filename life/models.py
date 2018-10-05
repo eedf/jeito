@@ -3,8 +3,8 @@ from members.models import Structure, Person
 
 
 class Membership(models.Model):
-    person = models.ForeignKey(Person)
-    report = models.ForeignKey('Report')
+    person = models.ForeignKey(Person, on_delete=models.PROTECT)
+    report = models.ForeignKey('Report', on_delete=models.PROTECT)
     function = models.TextField(max_length=100, blank=True)
 
 
