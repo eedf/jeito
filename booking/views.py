@@ -1,18 +1,14 @@
 from datetime import timedelta
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin, PermissionRequiredMixin
-from django.core.files import File
 from django.db.models import Sum, Min, Max
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.urls import reverse
-from django.utils.text import slugify
 from django.views.generic import TemplateView, DetailView, CreateView
 from django_filters.views import FilterView
-from os import unlink
-from templated_docs import fill_template
 from .filters import BookingFilter, BookingItemFilter, StatsFilter, CotisationsFilter
 from .forms import BookingForm
-from .models import Booking, BookingItem, Agreement
+from .models import Booking, BookingItem
 
 
 class UserMixin(UserPassesTestMixin):
@@ -75,30 +71,6 @@ class BookingCreateView(PermissionRequiredMixin, CreateView):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
-
-
-class CreateAgreementView(UserMixin, DetailView):
-    model = Booking
-
-    def render_to_response(self, context):
-        if not self.object.structure.nominated(self.request.user):
-            return HttpResponseForbidden()
-        year = self.object.items.earliest('begin').begin.year
-        try:
-            order = Agreement.objects.filter(date__year=year).latest('order').order + 1
-        except Agreement.DoesNotExist:
-            order = 1
-        agreement = Agreement.objects.create(date=settings.NOW().date(), order=order, booking=self.object)
-        context['agreement'] = agreement
-        for ext in ('odt', 'pdf'):
-            filename = fill_template('booking/agreement.odt', context, output_format=ext)
-            visible_filename = "Convention_{number}_{title}.{ext}".format(number=agreement.number(), ext=ext,
-                                                                          title=slugify(self.object.title))
-            f = open(filename, 'rb')
-            getattr(agreement, ext).save(visible_filename, File(f))
-            f.close()
-            unlink(filename)
-        return HttpResponseRedirect(reverse('booking:booking_detail', kwargs={'pk': self.object.pk}))
 
 
 class OccupancyView(UserMixin, FilterView):
