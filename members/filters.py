@@ -56,7 +56,8 @@ class AdhesionFilter(django_filters.FilterSet):
                                            choices=Function.CATEGORY_CHOICES, empty_label="Toutes")
     rate = django_filters.ChoiceFilter(name='rate__category', label="Tarif",
                                        choices=Rate.CATEGORY_CHOICES, empty_label="Tous")
-    date2date = django_filters.BooleanFilter(widget=forms.CheckboxInput, method='filter_date')
+    date2date = django_filters.BooleanFilter(label="Date à date", widget=forms.CheckboxInput,
+                                             method='filter_date')
 
     class Meta:
         model = Adhesion
@@ -69,8 +70,6 @@ class AdhesionFilter(django_filters.FilterSet):
         if kwargs.pop('ref', False):
             data['season'] = int(data['season']) - 1
         super(AdhesionFilter, self).__init__(data, *args, **kwargs)
-        date = (settings.NOW() - datetime.timedelta(days=1)).date()
-        self.filters['date2date'].label = "Au {}".format(date.strftime('%d/%m'))
 
     @property
     def qs(self):
@@ -95,12 +94,10 @@ class AdhesionFilter(django_filters.FilterSet):
 
     def filter_date(self, qs, name, value):
         season = int(self.form.cleaned_data['season'])
-        date = (settings.NOW() - datetime.timedelta(days=1)).date()
-        date = date.replace(year=season if date.month <= 8 else season - 1)
-        end = datetime.date(season, 12, 31)
-        if value or end >= settings.NOW().date():
-            qs = qs.filter(date__lte=date)
+        if value or season == current_season():
+            self.date = (settings.NOW() - datetime.timedelta(days=1)).date()
+            self.date = self.date.replace(year=season if self.date.month <= 8 else season - 1)
+            qs = qs.filter(date__lte=self.date)
         else:
-            date = end
-        self.date = date
+            self.date = datetime.date(season, 8, 31)
         return qs
