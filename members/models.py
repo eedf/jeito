@@ -167,7 +167,8 @@ class Person(PermissionsMixin, AbstractBaseUser):
         verbose_name = "Personne"
 
     def __str__(self):
-        return self.number
+        return "{last_name} {first_name} ({number})".format(
+            last_name=self.last_name, first_name=self.first_name, number=self.number)
 
     def get_short_name(self):
         return u'{first_name}'.format(**self.__dict__)

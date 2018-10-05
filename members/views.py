@@ -1,9 +1,13 @@
 from collections import Counter, OrderedDict
 from dal import autocomplete
 from datetime import date, timedelta
+from functools import reduce
+from operator import and_
+from re import split
+from unicodedata import normalize
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
-from django.db.models import Count, Sum, F, ExpressionWrapper, DecimalField
+from django.db.models import Count, Sum, F, Q, ExpressionWrapper, DecimalField
 from django.http import JsonResponse
 from django.utils.formats import date_format
 from django.views.generic import View, TemplateView
@@ -438,6 +442,15 @@ class PersonAutocomplete(autocomplete.Select2QuerySetView):
         qs = Person.objects.all()
 
         if self.q:
-            qs = qs.filter(name__istartswith=self.q)
+            q = normalize('NFKD', self.q).encode('ascii', 'ignore').decode('utf8').upper()
+            tokens = split(r'[^A-Z0-9-]', q)
+            tokens = [token.replace("-", " ") for token in tokens]
+            letter_tokens = [token for token in tokens if not token.isdigit()]
+            digit_tokens = [token for token in tokens if token.isdigit()]
+            letter_q = [Q(last_name__startswith=token) | Q(first_name__startswith=token) for token in letter_tokens]
+            digit_q = [Q(number="{:>06}".format(token)) for token in digit_tokens]
+            qs = qs.filter(reduce(and_, letter_q + digit_q))
+
+        qs = qs.order_by('last_name', 'first_name', 'number')
 
         return qs
