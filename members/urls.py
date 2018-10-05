@@ -14,6 +14,4 @@ urlpatterns = [
     url(r'^tableau/structures/$', views.TableauStructureView.as_view(), name='structures'),
     url(r'^tableau/structure_type/$', views.TableauStructureTypeView.as_view(), name='structure_type'),
     url(r'^tableau/rate/$', views.TableauRateView.as_view(), name='tableau_rate'),
-    url(r'^oauth/authorize/(?P<pk>\d+)/$', views.OAuthAuthorizeView.as_view(), name='oauth_authorize'),
-    url(r'^oauth/callback/$', views.OAuthCallbackView.as_view(), name='oauth_callback'),
 ]

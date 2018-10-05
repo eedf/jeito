@@ -3,7 +3,6 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-import oauth2client.contrib.django_util.models
 
 
 class Migration(migrations.Migration):
@@ -13,9 +12,4 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='structure',
-            name='google',
-            field=oauth2client.contrib.django_util.models.CredentialsField(null=True, blank=True),
-        ),
     ]
