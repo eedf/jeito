@@ -6,7 +6,6 @@ django-filter==1.0.4
 django-haystack==2.6.1
 django-mptt==0.8.7
 django-tagulous==0.12.0
-django-tracking-fields==1.0.6
 django-tracking2==0.4.0
 elasticsearch==5.4.0
 factory-boy==2.8.1

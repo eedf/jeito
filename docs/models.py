@@ -1,7 +1,6 @@
 from tika import parser
 from django.db import models
 from tagulous.models import TagField, TagModel
-from tracking_fields.decorators import track
 
 
 class DocumentTags(TagModel):
@@ -9,7 +8,6 @@ class DocumentTags(TagModel):
         autocomplete_view = 'docs:tags_autocomplete'
 
 
-@track('file', 'title', 'tags')
 class Document(models.Model):
     file = models.FileField(u"Fichier", max_length=200, upload_to='docs/%Y/%m/%d/')
     title = models.CharField(u"Titre", max_length=200)

@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'debug_toolbar',
     'cuser',
-    'tracking_fields',
     'tracking',
     'crispy_forms',
     'haystack',
