@@ -62,11 +62,6 @@ class BalanceFilter(django_filters.FilterSet):
             data = QueryDict('year={}'.format(settings.NOW().year))
         super().__init__(data, *args, **kwargs)
 
-    @property
-    def qs(self):
-        qs = super().qs.filter(entry__projected=False)
-        return qs
-
 
 class YearAccountFilterForm(BaseFilterForm):
     def __init__(self, *args, **kwargs):
