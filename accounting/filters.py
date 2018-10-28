@@ -7,13 +7,18 @@ import django_filters
 from .models import Analytic, Account, Transaction, Entry
 
 
-class YearFilterForm(forms.Form):
+class BaseFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
         self.helper.form_class = 'form-inline'
         self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
         self.helper.form_method = 'get'
+
+
+class BudgetFilterForm(BaseFilterForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.helper.layout = Layout(
             'year',
         )
@@ -26,7 +31,7 @@ class BudgetFilter(django_filters.FilterSet):
     class Meta:
         model = Transaction
         fields = ('year', )
-        form = YearFilterForm
+        form = BudgetFilterForm
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
@@ -34,14 +39,23 @@ class BudgetFilter(django_filters.FilterSet):
         super().__init__(data, *args, **kwargs)
 
 
+class BalanceFilterForm(BaseFilterForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            'year', 'prajected'
+        )
+
+
 class BalanceFilter(django_filters.FilterSet):
     year = django_filters.ChoiceFilter(label="Exercice", choices=[(i, i) for i in range(settings.NOW().year, 2015, -1)],
                                        name='entry__date', lookup_expr='year')
+    projected = django_filters.BooleanFilter(label="Projeté", name='entry__projected')
 
     class Meta:
         model = Transaction
-        fields = ('year', )
-        form = YearFilterForm
+        fields = ('year', 'projected')
+        form = BalanceFilterForm
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
@@ -54,7 +68,7 @@ class BalanceFilter(django_filters.FilterSet):
         return qs
 
 
-class YearAccountFilterForm(YearFilterForm):
+class YearAccountFilterForm(BaseFilterForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper.layout = Layout(
@@ -89,13 +103,9 @@ class AccountFilter(django_filters.FilterSet):
         super().__init__(data, *args, **kwargs)
 
 
-class EntryFilterForm(forms.Form):
+class EntryFilterForm(BaseFilterForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_class = 'form-inline'
-        self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
-        self.helper.form_method = 'get'
         self.helper.layout = Layout(
             'year', 'projected'
         )
