@@ -1,8 +1,12 @@
-from django.conf.urls import url
+from django.conf.urls import url, include
+from rest_framework import routers
 from . import views
 
 
 app_name = 'members'
+
+router = routers.DefaultRouter()
+router.register(r'adhesions', views.AdhesionViewSet)
 
 urlpatterns = [
     url(r'^adhesions/$', views.AdhesionsView.as_view(), name='adhesions'),
@@ -14,4 +18,5 @@ urlpatterns = [
     url(r'^tableau/structures/$', views.TableauStructureView.as_view(), name='structures'),
     url(r'^tableau/structure_type/$', views.TableauStructureTypeView.as_view(), name='structure_type'),
     url(r'^tableau/rate/$', views.TableauRateView.as_view(), name='tableau_rate'),
+    url(r'^api/', include(router.urls)),
 ]

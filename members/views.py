@@ -7,11 +7,13 @@ from django.http import JsonResponse
 from django.utils.formats import date_format
 from django.views.generic import View, TemplateView
 import json
+from rest_framework import viewsets
 from dashboard import widget
 from .filters import AdhesionFilter
 from .forms import AdhesionsForm
 from .models import Adhesion, Structure, Function, Rate
 from .utils import current_season
+from .serializers import AdhesionSerializer
 
 
 SVN_NUMBERS = ('0300000200', '0500000100', '1900140100')
@@ -427,3 +429,8 @@ class GroupsWidget(widget.Widget):
             'nb_groups': nb_groups,
             'nb_groups_diff': (100 * (nb_groups - ref_nb_groups) / ref_nb_groups) if ref_nb_groups else 0,
         }
+
+
+class AdhesionViewSet(viewsets.ModelViewSet):
+    queryset = Adhesion.objects.filter(season=current_season())
+    serializer_class = AdhesionSerializer

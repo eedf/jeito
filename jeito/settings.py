@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'haystack',
     'tagulous',
     'django_filters',
+    'rest_framework',
     'dashboard',
     'members',
     # 'docs',
