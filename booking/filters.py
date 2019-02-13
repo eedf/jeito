@@ -16,11 +16,11 @@ def structures_queryset(request):
 class BookingFilter(django_filters.FilterSet):
     initial_query = 'state=3&state=4&state=5&state=6&state=7&state=9&state=11'
 
-    structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset, name='structure')
+    structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset, field_name='structure')
     year_choices = [(year, str(year)) for year in range(settings.NOW().year, 2015, -1)]
-    year = django_filters.ChoiceFilter(label="Année", choices=year_choices, name='begin__year')
-    month = django_filters.ChoiceFilter(label="Mois", choices=(('%2d' % m, m) for m in range(1, 13)),
-                                        name='begin__month')
+    year = django_filters.ChoiceFilter(label="Année", choices=year_choices, field_name='begin__year')
+    month = django_filters.ChoiceFilter(label="Mois", choices=[('%2d' % m, m) for m in range(1, 13)],
+                                        field_name='begin__month')
     org_type = django_filters.ChoiceFilter(label="Type d'org°", choices=Booking.ORG_TYPE_CHOICES)
     state = django_filters.ModelMultipleChoiceFilter(label="Statut", queryset=BookingState.objects.all(),
                                                      widget=CheckboxSelectMultiple)
@@ -49,15 +49,15 @@ class StatsFilter(BookingFilter):
 
 class BookingItemFilter(django_filters.FilterSet):
     structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset,
-                                                 name='booking__structure')
+                                                 field_name='booking__structure')
     year_choices = [(year, str(year)) for year in range(settings.NOW().year, 2015, -1)]
-    year = django_filters.ChoiceFilter(label="Année", choices=year_choices, name='begin__year')
-    month = django_filters.ChoiceFilter(label="Mois", choices=(('%2d' % m, m) for m in range(1, 13)),
-                                        name='begin__month')
+    year = django_filters.ChoiceFilter(label="Année", choices=year_choices, field_name='begin__year')
+    month = django_filters.ChoiceFilter(label="Mois", choices=[('%2d' % m, m) for m in range(1, 13)],
+                                        field_name='begin__month')
     org_type = django_filters.ChoiceFilter(label="Type d'org°", choices=Booking.ORG_TYPE_CHOICES,
-                                           name="booking__org_type")
+                                           field_name="booking__org_type")
     state = django_filters.ModelMultipleChoiceFilter(label="Statut", queryset=BookingState.objects.all(),
-                                                     widget=CheckboxSelectMultiple, name='booking__state')
+                                                     widget=CheckboxSelectMultiple, field_name='booking__state')
 
     class Meta:
         model = BookingItem
@@ -77,13 +77,13 @@ class BookingItemFilter(django_filters.FilterSet):
 
 class CotisationsFilter(django_filters.FilterSet):
     structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset,
-                                                 name='booking__structure')
+                                                 field_name='booking__structure')
     year_choices = [(year, "{}/{}".format(year - 1, year)) for year in range(current_season(), 2016, -1)]
     year = django_filters.ChoiceFilter(label="Année", choices=year_choices, method='filter_year')
     org_type = django_filters.ChoiceFilter(label="Type d'org°", choices=Booking.ORG_TYPE_CHOICES,
-                                           name="booking__org_type")
+                                           field_name="booking__org_type")
     state = django_filters.ModelMultipleChoiceFilter(label="Statut", queryset=BookingState.objects.all(),
-                                                     widget=CheckboxSelectMultiple, name='booking__state')
+                                                     widget=CheckboxSelectMultiple, field_name='booking__state')
 
     class Meta:
         model = BookingItem

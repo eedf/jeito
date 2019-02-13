@@ -62,10 +62,10 @@ class Entry(models.Model):
 
 
 class Transaction(models.Model):
-    entry = models.ForeignKey(Entry)
+    entry = models.ForeignKey(Entry, on_delete=models.PROTECT)
     title = models.CharField(verbose_name="Intitulé", max_length=100, blank=True)
-    account = models.ForeignKey(Account, verbose_name="Compte")
-    analytic = models.ForeignKey(Analytic, verbose_name="Analytique", blank=True, null=True)
+    account = models.ForeignKey(Account, verbose_name="Compte", on_delete=models.PROTECT)
+    analytic = models.ForeignKey(Analytic, verbose_name="Analytique", blank=True, null=True, on_delete=models.PROTECT)
     expense = models.DecimalField(verbose_name="Débit", max_digits=8, decimal_places=2, default=0)
     revenue = models.DecimalField(verbose_name="Crédit", max_digits=8, decimal_places=2, default=0)
     reconciliation = models.DateField(verbose_name="Rapprochement", blank=True, null=True)

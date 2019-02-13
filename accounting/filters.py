@@ -25,7 +25,7 @@ class BudgetFilterForm(BaseFilterForm):
 
 
 class BudgetFilter(django_filters.FilterSet):
-    year = django_filters.ChoiceFilter(label="Exercice", name='entry__date', lookup_expr='year',
+    year = django_filters.ChoiceFilter(label="Exercice", field_name='entry__date', lookup_expr='year',
                                        choices=[(i, i) for i in range(settings.NOW().year + 1, 2015, -1)])
 
     class Meta:
@@ -49,8 +49,8 @@ class BalanceFilterForm(BaseFilterForm):
 
 class BalanceFilter(django_filters.FilterSet):
     year = django_filters.ChoiceFilter(label="Exercice", choices=[(i, i) for i in range(settings.NOW().year, 2015, -1)],
-                                       name='entry__date', lookup_expr='year')
-    projected = django_filters.BooleanFilter(label="Projeté", name='entry__projected')
+                                       field_name='entry__date', lookup_expr='year')
+    projected = django_filters.BooleanFilter(label="Projeté", field_name='entry__projected')
 
     class Meta:
         model = Transaction
@@ -76,10 +76,10 @@ class YearAccountFilterForm(BaseFilterForm):
 
 class AccountFilter(django_filters.FilterSet):
     year = django_filters.ChoiceFilter(label="Exercice", choices=[(i, i) for i in range(settings.NOW().year, 2015, -1)],
-                                       name='entry__date', lookup_expr='year')
+                                       field_name='entry__date', lookup_expr='year')
     account = django_filters.ModelChoiceFilter(label="Compte", queryset=Account.objects)
     analytic = django_filters.ModelChoiceFilter(label="Compte analytique", queryset=Analytic.objects)
-    projected = django_filters.BooleanFilter(label="Projeté", name='entry__projected')
+    projected = django_filters.BooleanFilter(label="Projeté", field_name='entry__projected')
 
     class Meta:
         model = Transaction
@@ -108,8 +108,8 @@ class EntryFilterForm(BaseFilterForm):
 
 class EntryFilter(django_filters.FilterSet):
     year = django_filters.ChoiceFilter(label="Exercice", choices=[(i, i) for i in range(settings.NOW().year, 2015, -1)],
-                                       name='date', lookup_expr='year')
-    projected = django_filters.BooleanFilter(label="Projeté", name='projected')
+                                       field_name='date', lookup_expr='year')
+    projected = django_filters.BooleanFilter(label="Projeté", field_name='projected')
 
     class Meta:
         model = Entry

@@ -4,6 +4,8 @@ from .views import (BalanceView, AnalyticBalanceView, BankStatementView, Account
                     CashFlowView, CashFlowJsonView)
 
 
+app_name = 'accounting'
+
 urlpatterns = [
     url(r'^entry/$', EntryListView.as_view(), name='entry_list'),
     url(r'^entry/(?P<pk>\d+)/$', EntryView.as_view(), name='entry'),
