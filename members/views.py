@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.utils.formats import date_format
 from django.views.generic import View, TemplateView
 import json
-from rest_framework import viewsets
+from rest_framework.generics import RetrieveAPIView
 from dashboard import widget
 from .filters import AdhesionFilter
 from .forms import AdhesionsForm
@@ -431,6 +431,7 @@ class GroupsWidget(widget.Widget):
         }
 
 
-class AdhesionViewSet(viewsets.ModelViewSet):
-    queryset = Adhesion.objects.filter(season=current_season())
+class AdhesionRetrieveAPIView(RetrieveAPIView):
+    queryset = Adhesion.objects.select_related('person', 'structure').filter(season=current_season())
     serializer_class = AdhesionSerializer
+    lookup_field = 'person__number'

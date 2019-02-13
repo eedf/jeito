@@ -2,6 +2,7 @@
 
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from rest_framework.authtoken.admin import TokenAdmin
 from .models import Structure, Function, Rate, Person, Adhesion, Nomination
 
 
@@ -66,3 +67,6 @@ class AdhesionAdmin(admin.ModelAdmin):
     inlines = (NominationInline, )
     raw_id_fields = ('person', )
     date_hierarchy = 'date'
+
+
+TokenAdmin.raw_id_fields = ('user', )
