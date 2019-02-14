@@ -17,7 +17,7 @@ class BookingFilter(django_filters.FilterSet):
     initial_query = 'state=3&state=4&state=5&state=6&state=7&state=9&state=11'
 
     structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset, field_name='structure')
-    year_choices = [(year, str(year)) for year in range(settings.NOW().year, 2015, -1)]
+    year_choices = [(year, str(year)) for year in range(settings.NOW().year + 2, 2015, -1)]
     year = django_filters.ChoiceFilter(label="Année", choices=year_choices, field_name='begin__year')
     month = django_filters.ChoiceFilter(label="Mois", choices=[('%2d' % m, m) for m in range(1, 13)],
                                         field_name='begin__month')
@@ -50,7 +50,7 @@ class StatsFilter(BookingFilter):
 class BookingItemFilter(django_filters.FilterSet):
     structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset,
                                                  field_name='booking__structure')
-    year_choices = [(year, str(year)) for year in range(settings.NOW().year, 2015, -1)]
+    year_choices = [(year, str(year)) for year in range(settings.NOW().year + 2, 2015, -1)]
     year = django_filters.ChoiceFilter(label="Année", choices=year_choices, field_name='begin__year')
     month = django_filters.ChoiceFilter(label="Mois", choices=[('%2d' % m, m) for m in range(1, 13)],
                                         field_name='begin__month')
