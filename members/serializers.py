@@ -9,7 +9,9 @@ class AdhesionSerializer(serializers.ModelSerializer):
     gender = serializers.IntegerField(source='person.gender')
     email = serializers.CharField(source='person.email')
     structure = serializers.CharField(source='structure.name')
+    sla = serializers.CharField(source='structure.sla')
+    region = serializers.CharField(source='structure.region')
 
     class Meta:
         model = Adhesion
-        fields = ('number', 'first_name', 'last_name', 'gender', 'email', 'structure')
+        fields = ('number', 'first_name', 'last_name', 'gender', 'email', 'structure', 'sla', 'region')

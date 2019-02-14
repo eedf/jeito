@@ -73,6 +73,20 @@ class Structure(MPTTModel):
     def __str__(self):
         return self.name
 
+    @property
+    def region(self):
+        for structure in self.get_ancestors(ascending=True, include_self=True):
+            if structure.type == 6:
+                return structure
+        return None
+
+    @property
+    def sla(self):
+        for structure in self.get_ancestors(ascending=True, include_self=True):
+            if structure.type in (10, 11, 15):
+                return structure
+        return None
+
     class Meta:
         verbose_name = "Structure"
 
