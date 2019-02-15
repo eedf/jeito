@@ -1,5 +1,15 @@
 from rest_framework import serializers
-from members.models import Adhesion
+from members.models import Adhesion, Nomination
+
+
+class NominationSerializer(serializers.ModelSerializer):
+    structure = serializers.CharField(source='structure.name')
+    structure_type = serializers.CharField(source='structure.get_type_display')
+    function = serializers.CharField(source='function.code')
+
+    class Meta:
+        model = Nomination
+        fields = ('structure', 'structure_type', 'function', 'main', 'is_responsible')
 
 
 class AdhesionSerializer(serializers.ModelSerializer):
@@ -9,9 +19,13 @@ class AdhesionSerializer(serializers.ModelSerializer):
     gender = serializers.IntegerField(source='person.gender')
     email = serializers.CharField(source='person.email')
     structure = serializers.CharField(source='structure.name')
-    sla = serializers.CharField(source='structure.sla')
-    region = serializers.CharField(source='structure.region')
+    structure_type = serializers.CharField(source='structure.get_type_display')
+    rate = serializers.CharField(source='rate.name')
+    nominations = NominationSerializer(many=True)
 
     class Meta:
         model = Adhesion
-        fields = ('number', 'first_name', 'last_name', 'gender', 'email', 'structure', 'sla', 'region')
+        fields = (
+            'number', 'first_name', 'last_name', 'gender', 'email',
+            'structure', 'structure_type', 'rate', 'nominations',
+        )

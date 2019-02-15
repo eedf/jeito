@@ -233,7 +233,8 @@ class Adhesion(models.Model):
 
 
 class Nomination(models.Model):
-    adhesion = models.ForeignKey(Adhesion, verbose_name="Adhésion", on_delete=models.PROTECT)
+    adhesion = models.ForeignKey(Adhesion, verbose_name="Adhésion", on_delete=models.PROTECT,
+                                 related_name='nominations')
     structure = models.ForeignKey(Structure, verbose_name="Structure", on_delete=models.PROTECT)
     function = models.ForeignKey(Function, verbose_name="Fonction", on_delete=models.PROTECT)
     main = models.BooleanField(verbose_name="Principale", default=False)
@@ -243,3 +244,19 @@ class Nomination(models.Model):
 
     def __str__(self):
         return "{self.adhesion}:{self.function}@{self.structure}".format(self=self)
+
+    @property
+    def is_responsible(self):
+        return self.function.code in (
+            'PRE',  # Président
+            'RRR',  # Responsable régional
+            'RRI',
+            'RESLA',  # Responsable de SLA
+            'RESR',
+            'RCP',  # Responsable de centre permanent
+            'RESSV',  # Responsable de service vacances
+            'RUO',  # Responsable d'unité
+            'RUC',
+            'RUE',
+            'RUA',
+        )
