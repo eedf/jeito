@@ -5,11 +5,12 @@ from members.models import Adhesion, Nomination
 class NominationSerializer(serializers.ModelSerializer):
     structure = serializers.CharField(source='structure.name')
     structure_type = serializers.CharField(source='structure.get_type_display')
+    region = serializers.CharField(source='structure.region')
     function = serializers.CharField(source='function.code')
 
     class Meta:
         model = Nomination
-        fields = ('structure', 'structure_type', 'function', 'main', 'is_responsible')
+        fields = ('structure', 'structure_type', 'region', 'function', 'main', 'is_responsible')
 
 
 class AdhesionSerializer(serializers.ModelSerializer):
@@ -20,6 +21,7 @@ class AdhesionSerializer(serializers.ModelSerializer):
     email = serializers.CharField(source='person.email')
     structure = serializers.CharField(source='structure.name')
     structure_type = serializers.CharField(source='structure.get_type_display')
+    region = serializers.CharField(source='structure.region')
     rate = serializers.CharField(source='rate.name')
     nominations = NominationSerializer(many=True)
 
@@ -27,5 +29,5 @@ class AdhesionSerializer(serializers.ModelSerializer):
         model = Adhesion
         fields = (
             'number', 'first_name', 'last_name', 'gender', 'email',
-            'structure', 'structure_type', 'rate', 'nominations',
+            'structure', 'structure_type', 'region', 'rate', 'nominations',
         )
