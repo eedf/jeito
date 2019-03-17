@@ -10,6 +10,12 @@ class BookingStateAdmin(admin.ModelAdmin):
 @admin.register(Agreement)
 class AgreementAdmin(admin.ModelAdmin):
     list_display = ('number', 'date', 'booking')
+    ordering = ('-date', )
+
+
+class AgreementInline(admin.TabularInline):
+    model = Agreement
+    fields = ('date', 'order', 'odt', 'pdf', 'structure')
 
 
 class BookingItemInline(admin.TabularInline):
@@ -25,7 +31,7 @@ class PaymentInline(admin.TabularInline):
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    inlines = (BookingItemInline, PaymentInline)
+    inlines = (AgreementInline, BookingItemInline, PaymentInline)
     list_display = ('title', 'year', 'state', 'contact', 'email', 'tel', 'agreement')
     list_filter = ('state', 'year')
     search_fields = ('title', 'contact', 'email')
