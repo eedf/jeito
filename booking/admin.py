@@ -15,7 +15,8 @@ class AgreementAdmin(admin.ModelAdmin):
 
 class AgreementInline(admin.TabularInline):
     model = Agreement
-    fields = ('date', 'order', 'odt', 'pdf', 'structure')
+    fields = ('date', 'order', 'odt', 'pdf')
+    extra = 1
 
 
 class BookingItemInline(admin.TabularInline):
@@ -27,6 +28,7 @@ class BookingItemInline(admin.TabularInline):
 class PaymentInline(admin.TabularInline):
     model = Payment
     fields = ('mean', 'date', 'amount', 'scan')
+    extra = 1
 
 
 @admin.register(Booking)

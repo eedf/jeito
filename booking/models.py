@@ -81,8 +81,7 @@ class Agreement(TrackingMixin, models.Model):
     odt = models.FileField(upload_to='conventions', blank=True)
     pdf = models.FileField(upload_to='conventions', blank=True)
     booking = models.ForeignKey('Booking', verbose_name="Réservation", related_name='agreements',
-                                null=True, on_delete=models.PROTECT)
-    structure = models.ForeignKey(Structure, verbose_name="Structure", on_delete=models.PROTECT)
+                                on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = "Convention"
@@ -90,7 +89,7 @@ class Agreement(TrackingMixin, models.Model):
         ordering = ('order', )
 
     def number(self):
-        return "{year}-{order:03}".format(year=self.date.year, order=self.order)
+        return "{year}-{order:03}".format(year=self.booking.year, order=self.order)
 
     number.short_description = "Numéro"
     number.admin_order_field = 'order'
