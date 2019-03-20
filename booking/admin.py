@@ -10,7 +10,9 @@ class BookingStateAdmin(admin.ModelAdmin):
 @admin.register(Agreement)
 class AgreementAdmin(admin.ModelAdmin):
     list_display = ('number', 'date', 'booking')
-    ordering = ('-date', )
+    list_filter = ('booking__year', )
+    ordering = ('-booking__year', '-order', )
+    date_hierarchy = 'date'
 
 
 class AgreementInline(admin.TabularInline):

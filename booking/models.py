@@ -1,8 +1,8 @@
 from datetime import timedelta
 from cuser.middleware import CuserMiddleware
 from django.db import models
-from django.db.models import Case, ExpressionWrapper, F, Min, Max, Sum, When
-from django.db.models.functions import Cast, Coalesce, ExtractDay
+from django.db.models import Case, ExpressionWrapper, F, Min, Max, Sum, When, Value
+from django.db.models.functions import Cast, Coalesce, ExtractDay, Concat
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -90,9 +90,12 @@ class Agreement(TrackingMixin, models.Model):
 
     def number(self):
         return "{year}-{order:03}".format(year=self.booking.year, order=self.order)
-
     number.short_description = "Numéro"
-    number.admin_order_field = 'order'
+    number.admin_order_field = Concat(
+        Cast('booking__year', output_field=models.CharField(max_length=4)),
+        Value('-'),
+        Cast('order', output_field=models.CharField(max_length=3))
+    )
 
     def __str__(self):
         return self.number()
