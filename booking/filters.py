@@ -66,7 +66,9 @@ class BookingItemFilter(django_filters.FilterSet):
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
-            data = QueryDict('state=3&state=4&state=5&state=6&state=7&state=9&state=11')
+            data = QueryDict(
+                'year={}&state=3&state=4&state=5&state=6&state=7&state=9&state=11'.format(current_season())
+            )
         super().__init__(data, *args, **kwargs)
 
     @property

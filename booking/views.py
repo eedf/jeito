@@ -1,5 +1,4 @@
 from datetime import timedelta
-from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin, PermissionRequiredMixin
 from django.db.models import Sum, Min, Max
 from django.http import HttpResponseRedirect, HttpResponseForbidden
@@ -88,10 +87,9 @@ class OccupancyView(UserMixin, FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         occupancy = []
-        range_qs = self.object_list.filter(end__gte=settings.NOW())
-        range_qs = range_qs.aggregate(begin=Min('begin'), end=Max('end'))
+        range_qs = self.object_list.aggregate(begin=Min('begin'), end=Max('end'))
         if range_qs['begin'] and range_qs['end']:
-            begin = max(range_qs['begin'], settings.NOW().date())
+            begin = range_qs['begin']
             end = range_qs['end']
             for i in range((end - begin).days + 1):
                 day = begin + timedelta(days=i)
