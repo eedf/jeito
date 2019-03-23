@@ -19,60 +19,17 @@
             <th class="text-right">prix</th>
             <th class="text-right">Effectifs</th>
         </tr>
-        <tr>
-            <th>Terrain</th>
-            <td class="text-right">{{ stats_terrain.amount_hosting|floatformat:"0" }} €</td>
-            <td class="text-right">{{ stats_terrain.amount_hosting_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_terrain.overnights }}</td>
-            <td class="text-right">{{ stats_terrain.overnights_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_terrain.overnight_cost|floatformat:"2" }} €</td>
-            <td class="text-right">{{ stats_terrain.headcount }}</td>
-        </tr>
-        <tr>
-            <th>Village</th>
-            <td class="text-right">{{ stats_village.amount_hosting|floatformat:"0" }} €</td>
-            <td class="text-right">{{ stats_village.amount_hosting_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_village.overnights }}</td>
-            <td class="text-right">{{ stats_village.overnights_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_village.overnight_cost|floatformat:"2" }} €</td>
-            <td class="text-right">{{ stats_village.headcount }}</td>
-        </tr>
-        <tr>
-            <th>1er trimestre</th>
-            <td class="text-right">{{ stats_q1.amount_hosting|floatformat:"0" }} €</td>
-            <td class="text-right">{{ stats_q1.amount_hosting_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_q1.overnights }}</td>
-            <td class="text-right">{{ stats_q1.overnights_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_q1.overnight_cost|floatformat:"2" }} €</td>
-            <td class="text-right">{{ stats_q1.headcount }}</td>
-        </tr>
-        <tr>
-            <th>2ème trimestre</th>
-            <td class="text-right">{{ stats_q2.amount_hosting|floatformat:"0" }} €</td>
-            <td class="text-right">{{ stats_q2.amount_hosting_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_q2.overnights }}</td>
-            <td class="text-right">{{ stats_q2.overnights_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_q2.overnight_cost|floatformat:"2" }} €</td>
-            <td class="text-right">{{ stats_q2.headcount }}</td>
-        </tr>
-        <tr>
-            <th>3ème trimestre</th>
-            <td class="text-right">{{ stats_q3.amount_hosting|floatformat:"0" }} €</td>
-            <td class="text-right">{{ stats_q3.amount_hosting_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_q3.overnights }}</td>
-            <td class="text-right">{{ stats_q3.overnights_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_q3.overnight_cost|floatformat:"2" }} €</td>
-            <td class="text-right">{{ stats_q3.headcount }}</td>
-        </tr>
-        <tr>
-            <th>4ème trimestre</th>
-            <td class="text-right">{{ stats_q4.amount_hosting|floatformat:"0" }} €</td>
-            <td class="text-right">{{ stats_q4.amount_hosting_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_q4.overnights }}</td>
-            <td class="text-right">{{ stats_q4.overnights_rate|floatformat:"0" }} %</td>
-            <td class="text-right">{{ stats_q4.overnight_cost|floatformat:"2" }} €</td>
-            <td class="text-right">{{ stats_q4.headcount }}</td>
-        </tr>
+        {% for name, substats in detailed_stats.items %}
+            <tr>
+                <th>{{ name }}</th>
+                <td class="text-right">{{ substats.amount_hosting|floatformat:"0" }} €</td>
+                <td class="text-right">{{ substats.amount_hosting_rate|floatformat:"0" }} %</td>
+                <td class="text-right">{{ substats.overnights }}</td>
+                <td class="text-right">{{ substats.overnights_rate|floatformat:"0" }} %</td>
+                <td class="text-right">{{ substats.overnight_cost|floatformat:"2" }} €</td>
+                <td class="text-right">{{ substats.headcount }}</td>
+            </tr>
+        {% endfor %}
         <tr>
             <th>Hébergement</th>
             <td class="text-right">{{ stats.amount_hosting|floatformat:"0" }} €</td>

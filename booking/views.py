@@ -120,16 +120,14 @@ class StatsView(UserMixin, TemplateView):
         if kwargs['stats']['overnights']:
             kwargs['stats']['overnight_cost'] = kwargs['stats']['amount_hosting'] / kwargs['stats']['overnights']
 
-        stats = (
-            ('stats_village', items.filter(product__in=(2, 5))),
-            ('stats_terrain', items.filter(product=1)),
-            ('stats_q1', items.filter(begin__month__lte=3)),
-            ('stats_q2', items.filter(begin__month__gte=4, begin__month__lte=6)),
-            ('stats_q3', items.filter(begin__month__gte=7, begin__month__lte=9)),
-            ('stats_q4', items.filter(begin__month__gte=10)),
-        )
+        stats = [
+            ('Village', items.filter(product__in=(2, 5))),
+            ('Terrain', items.filter(product=1)),
+        ]
+        stats += [(str(month), items.filter(begin__month=month)) for month in range(1, 13)]
+        kwargs['detailed_stats'] = {}
         for (name, subitems) in stats:
-            kwargs[name] = {
+            substats = {
                 'headcount': sum([item.headcount for item in subitems if item.headcount]),
                 'overnights': sum([item.overnights for item in subitems if item.overnights]),
                 'amount_hosting': sum([item.amount - item.amount_cot
@@ -139,13 +137,15 @@ class StatsView(UserMixin, TemplateView):
                 'amount_recharge': sum([item.amount for item in subitems if item.product == 4]),
                 'amount': sum([item.amount for item in subitems]),
             }
-            if kwargs['stats']['overnights']:
-                kwargs[name]['overnights_rate'] = (100 * kwargs[name]['overnights'] / kwargs['stats']['overnights'])
-            if kwargs['stats']['amount_hosting']:
-                kwargs[name]['amount_hosting_rate'] = (100 * kwargs[name]['amount_hosting'] /
-                                                       kwargs['stats']['amount_hosting'])
-            if kwargs[name]['overnights']:
-                kwargs[name]['overnight_cost'] = (kwargs[name]['amount_hosting'] / kwargs[name]['overnights'])
+            if substats['overnights']:
+                substats['overnights_rate'] = (100 * substats['overnights'] / kwargs['stats']['overnights'])
+            if substats['amount_hosting']:
+                substats['amount_hosting_rate'] = (100 * substats['amount_hosting'] /
+                                                   kwargs['stats']['amount_hosting'])
+            if substats['overnights']:
+                substats['overnight_cost'] = (substats['amount_hosting'] / substats['overnights'])
+
+            kwargs['detailed_stats'][name] = substats
 
         return kwargs
 
