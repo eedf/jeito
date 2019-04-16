@@ -233,14 +233,22 @@ class Adhesion(models.Model):
         person = self.structure.adherents.filter(
             season=self.season, nominations__function__code__in=('RASLA', 'RAREG', 'RACPN', 'RASR')
         ).order_by('-nominations__main')
-        return person and person[0]
+        return person and person[0] or None
 
     @property
     def structure_resp(self):
         person = self.structure.adherents.filter(
             season=self.season, nominations__function__code__in=('RESLA', 'RRR', 'RCP', 'RESR')
         ).order_by('-nominations__main')
-        return person and person[0]
+        return person and person[0] or None
+
+    @property
+    def adhesions_resp_email(self):
+        return self.adhesions_resp and self.adhesions_resp.person.email
+
+    @property
+    def structure_resp_email(self):
+        return self.structure_resp and self.structure_resp.person.email
 
     def __str__(self):
         return "{self.season}-{self.person}".format(self=self)

@@ -24,8 +24,6 @@ class AdhesionSerializer(serializers.ModelSerializer):
     region = serializers.CharField(source='structure.region')
     rate = serializers.CharField(source='rate.name')
     nominations = NominationSerializer(many=True)
-    adhesions_resp_email = serializers.EmailField(source='adhesions_resp.person.email')
-    structure_resp_email = serializers.EmailField(source='structure_resp.person.email')
 
     class Meta:
         model = Adhesion
