@@ -228,6 +228,20 @@ class Adhesion(models.Model):
     structure = models.ForeignKey(Structure, verbose_name="Structure",
                                   related_name='adherents', on_delete=models.PROTECT)
 
+    @property
+    def adhesions_resp(self):
+        person = self.structure.adherents.filter(
+            season=self.season, nominations__function__code__in=('RASLA', 'RAREG', 'RACPN', 'RASR')
+        ).order_by('-nominations__main')
+        return person and person[0]
+
+    @property
+    def structure_resp(self):
+        person = self.structure.adherents.filter(
+            season=self.season, nominations__function__code__in=('RESLA', 'RRR', 'RCP', 'RESR')
+        ).order_by('-nominations__main')
+        return person and person[0]
+
     def __str__(self):
         return "{self.season}-{self.person}".format(self=self)
 
