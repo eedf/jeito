@@ -5,7 +5,7 @@ from django.http import QueryDict
 import django_filters
 from members.models import Structure
 from members.utils import current_season
-from .forms import BookingFilterForm, CotisationsForm
+from .forms import BookingFilterForm, BookingItemFilterForm, CotisationsForm, StatsFilterForm
 from .models import Booking, BookingState, BookingItem
 
 
@@ -14,8 +14,6 @@ def structures_queryset(request):
 
 
 class BookingFilter(django_filters.FilterSet):
-    initial_query = 'state=3&state=4&state=5&state=6&state=7&state=9&state=11'
-
     structure = django_filters.ModelChoiceFilter(label="Centre", queryset=structures_queryset, field_name='structure')
     year_choices = [(year, str(year)) for year in range(settings.NOW().year + 2, 2015, -1)]
     year = django_filters.ChoiceFilter(label="Année", choices=year_choices, field_name='begin__year')
@@ -31,8 +29,9 @@ class BookingFilter(django_filters.FilterSet):
         form = BookingFilterForm
 
     def __init__(self, data, *args, **kwargs):
+        initial_query = 'state=3&state=4&state=5&state=6&state=7&state=9&state=11&year={}'.format(current_season())
         if data is None:
-            data = QueryDict(self.initial_query)
+            data = QueryDict(initial_query)
         super().__init__(data, *args, **kwargs)
 
     @property
@@ -45,6 +44,11 @@ class BookingFilter(django_filters.FilterSet):
 
 class StatsFilter(BookingFilter):
     initial_query = "state=11&state=9&state=8&state=6&year={}".format(settings.NOW().year)
+
+    class Meta:
+        model = Booking
+        fields = BookingFilter.Meta.fields
+        form = StatsFilterForm
 
 
 class BookingItemFilter(django_filters.FilterSet):
@@ -62,7 +66,7 @@ class BookingItemFilter(django_filters.FilterSet):
     class Meta:
         model = BookingItem
         fields = ('structure', 'year', 'month', 'org_type', 'state')
-        form = BookingFilterForm
+        form = BookingItemFilterForm
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
