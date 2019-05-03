@@ -11,6 +11,7 @@ class BaseFilterForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper = FormHelper()
+        self.helper.attrs = {'id': 'filter'}
         self.helper.form_class = 'form-inline'
         self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
         self.helper.form_method = 'get'

@@ -14,9 +14,10 @@ class BookingFilterForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields['year'].initial = settings.NOW().year
         self.helper = FormHelper()
+        self.helper.attrs = {'id': 'filter'}
         self.helper.form_class = 'form-inline'
         self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
-        self.helper.form_method = 'get'
+        self.helper.form_method = 'GET'
         self.helper.form_action = 'booking:booking_list'
         self.helper.layout = Layout(
             'structure',
@@ -44,9 +45,10 @@ class CotisationsForm(forms.Form):
         super().__init__(*args, **kwargs)
         self.fields['year'].initial = settings.NOW().year
         self.helper = FormHelper()
+        self.helper.attrs = {'id': 'filter'}
         self.helper.form_class = 'form-inline'
         self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
-        self.helper.form_method = 'get'
+        self.helper.form_method = 'GET'
         self.helper.form_action = 'booking:cotisations'
         self.helper.layout = Layout(
             'structure',
@@ -72,7 +74,7 @@ class BookingForm(forms.ModelForm):
         self.fields['structure'].queryset = structures
         self.fields['structure'].label = "Centre"
         self.helper = FormHelper()
-        self.helper.form_method = 'post'
+        self.helper.form_method = 'POST'
         self.helper.layout = Layout(
             HTML('<div class="row"><div class="col-md-6">'),
             'title',

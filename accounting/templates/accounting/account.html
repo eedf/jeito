@@ -77,7 +77,7 @@
     {{ block.super }}
 
     <script>
-        $('select, :checkbox').change(function() {$('form').submit()});
+        $('select, :checkbox').change(function() {$('#filter').submit()});
     </script>
 
 {% endblock js %}
