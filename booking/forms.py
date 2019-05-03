@@ -17,6 +17,7 @@ class BookingFilterForm(forms.Form):
         self.helper.form_class = 'form-inline'
         self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
         self.helper.form_method = 'get'
+        self.helper.form_action = 'booking:booking_list'
         self.helper.layout = Layout(
             'structure',
             'year',
@@ -26,17 +27,16 @@ class BookingFilterForm(forms.Form):
         )
 
 
-class BookingItemFilterForm(forms.Form):
+class BookingItemFilterForm(BookingFilterForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_class = 'form-inline'
-        self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
-        self.helper.form_method = 'get'
-        self.helper.layout = Layout(
-            'structure',
-            InlineCheckboxes('state'),
-        )
+        self.helper.form_action = 'booking:occupancy'
+
+
+class StatsFilterForm(BookingFilterForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.form_action = 'booking:stats'
 
 
 class CotisationsForm(forms.Form):
@@ -47,6 +47,7 @@ class CotisationsForm(forms.Form):
         self.helper.form_class = 'form-inline'
         self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
         self.helper.form_method = 'get'
+        self.helper.form_action = 'booking:cotisations'
         self.helper.layout = Layout(
             'structure',
             'year',
