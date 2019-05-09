@@ -97,18 +97,18 @@ class Command(BaseCommand):
                     'rate': rate,
                 }
             )
-            main_nomination, created = Nomination.objects.update_or_create(
-                adhesion=adhesion,
-                structure=structure,
-                function=function,
-                defaults={
-                    'main': True,
-                }
-            )
-            delegations = cols[41]
-            if not delegations:
-                return
-            for delegation in delegations.split(','):
+            initial = list(adhesion.nominations.values_list('structure_id', 'function_id', 'main'))
+            to_keep = []
+            to_create = []
+            main_nomination = (structure.id, function.id, True)
+            if main_nomination[:2] + (False, ) in initial:
+                to_create.append(main_nomination)
+            elif main_nomination in initial:
+                to_keep.append(main_nomination)
+            else:
+                to_create.append(main_nomination)
+            delegations = cols[41].split(',') if cols[41] else []
+            for delegation in delegations:
                 code, number = delegation[:-1].split('(')
                 function, created = Function.objects.get_or_create(
                     code=code,
@@ -118,15 +118,31 @@ class Command(BaseCommand):
                     structure = Structure.objects.get(number=number)
                 except Structure.DoesNotExist:
                     structure = self.get_structure(number, parent=None, recursive=False)
-                if structure == main_nomination.structure and function == main_nomination.function:
-                    continue
-                Nomination.objects.update_or_create(
+                nomination = (structure.id, function.id, False)
+                if nomination[:2] == main_nomination[:2]:
+                    pass  # ignore since already main nomination
+                elif nomination[:2] + (True, ) in initial:
+                    to_create.append(nomination)
+                elif nomination in initial:
+                    to_keep.append(nomination)
+                else:
+                    to_create.append(nomination)
+            to_delete = list(set(initial) - set(to_keep))
+            for nomination in to_delete:
+                print("delete nomination {}".format(nomination))
+                Nomination.objects.get(
                     adhesion=adhesion,
-                    structure=structure,
-                    function=function,
-                    defaults={
-                        'main': False,
-                    }
+                    structure_id=nomination[0],
+                    function_id=nomination[1],
+                    main=nomination[2],
+                ).delete()
+            for nomination in to_create:
+                print("create nomination {}".format(nomination))
+                Nomination.objects.create(
+                    adhesion=adhesion,
+                    structure_id=nomination[0],
+                    function_id=nomination[1],
+                    main=nomination[2],
                 )
         except:
             self.stdout.write("failed to create {}".format(cols))
