@@ -39,7 +39,7 @@ class EntryManager(models.Manager):
 class Entry(models.Model):
     date = models.DateField(verbose_name="Date")
     title = models.CharField(verbose_name="Intitulé", max_length=100)
-    scan = models.FileField(upload_to='justificatif', blank=True)
+    scan = models.FileField(verbose_name="Justificatif", upload_to='justificatif', blank=True)
     forwarded = models.BooleanField(verbose_name="Envoyé à la compta", default=False)
     entered = models.BooleanField(verbose_name="Saisi dans la compta", default=False)
     projected = models.BooleanField(verbose_name="Prévisionnel", default=False)
