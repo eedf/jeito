@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.db.models import Q
-from .models import Account, Analytic, Entry, BankStatement, Transaction
+from .models import (Account, Analytic, Entry, BankStatement, Transaction,
+                     ThirdPartyAccount, PurchaseInvoice, TransferOrder)
 
 
 class HasScanListFilter(admin.SimpleListFilter):
@@ -26,6 +27,12 @@ class HasScanListFilter(admin.SimpleListFilter):
 class AccountAdmin(admin.ModelAdmin):
     list_display = ('number', 'title')
     search_fields = ('=number', 'title')
+
+
+@admin.register(ThirdPartyAccount)
+class ThirdPartyAccountAdmin(AccountAdmin):
+    list_display = ('number', 'title', 'client_number', 'iban', 'bic')
+    search_fields = ('=number', 'title', '=client_number', '=iban', '=bic')
     ordering = ('number', )
 
 
@@ -53,6 +60,20 @@ class EntryAdmin(admin.ModelAdmin):
     has_scan.short_description = "Justificatif"
     has_scan.boolean = True
     has_scan.admin_order_field = 'scan'
+
+
+@admin.register(PurchaseInvoice)
+class PurchaseInvoiceAdmin(EntryAdmin):
+    list_display = ('date', 'title', 'deadline', 'number')
+    search_fields = ('title', '=number')
+    date_hierarchy = 'deadline'
+    inlines = (TransactionInline, )
+    save_as = True
+
+
+@admin.register(TransferOrder)
+class TransferOrderAdmin(EntryAdmin):
+    pass
 
 
 @admin.register(BankStatement)

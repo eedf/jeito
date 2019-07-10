@@ -35,6 +35,7 @@ setup(
         'django-debug-toolbar>=1.11',
         'django-filter>=2.1',
         'django-haystack>=2.8',
+        'django-localflavor>=2.1',
         'django-mptt>=0.9',
         'django-tagulous>=0.13',
         'django-tracking2>=0.5',

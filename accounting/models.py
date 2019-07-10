@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from localflavor.generic.models import IBANField, BICField
 
 
 class Account(models.Model):
@@ -12,6 +13,17 @@ class Account(models.Model):
 
     def __str__(self):
         return "{} {}".format(self.number, self.title)
+
+
+class ThirdPartyAccount(Account):
+    iban = IBANField(verbose_name="IBAN", blank=True)
+    bic = BICField(verbose_name="BIC", blank=True)
+    client_number = models.CharField(verbose_name="Numéro client", max_length=100, blank=True)
+
+    class Meta:
+        verbose_name = "Compte de tiers"
+        verbose_name_plural = "Comptes de tiers"
+        ordering = ('number', )
 
 
 class Analytic(models.Model):
@@ -59,6 +71,23 @@ class Entry(models.Model):
         return self.balance == 0
     balanced.short_description = "Équilibré"
     balanced.boolean = True
+
+
+class PurchaseInvoice(Entry):
+    deadline = models.DateField(verbose_name="Date limite", null=True, blank=True)
+    number = models.CharField(verbose_name="Numéro", max_length=100, blank=True)
+
+    class Meta:
+        verbose_name = "Facture d'achat"
+        verbose_name_plural = "Factures d'achat"
+
+
+class TransferOrder(Entry):
+    xml = models.TextField()
+
+    class Meta:
+        verbose_name = "Ordre de virement"
+        verbose_name_plural = "Ordres de virement"
 
 
 class Transaction(models.Model):
