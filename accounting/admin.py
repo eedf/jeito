@@ -64,8 +64,8 @@ class EntryAdmin(admin.ModelAdmin):
 
 @admin.register(PurchaseInvoice)
 class PurchaseInvoiceAdmin(EntryAdmin):
-    list_display = ('date', 'title', 'deadline', 'number')
-    search_fields = ('title', '=number')
+    list_display = ('date', 'title', 'deadline', 'number', 'balanced', 'has_scan', 'forwarded', 'entered', 'projected')
+    search_fields = ('title', '=number', 'transaction__account__title', 'transaction__analytic__title')
     date_hierarchy = 'deadline'
     inlines = (TransactionInline, )
     save_as = True
