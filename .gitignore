@@ -10,6 +10,8 @@
 /.pythonhist
 /client_id.json
 /.vscode/
+/jeito.egg-info/
+/dist/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

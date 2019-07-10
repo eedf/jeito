@@ -1,0 +1,12 @@
+include LICENSE
+include README.md
+recursive-include accounting/static *
+recursive-include accounting/templates *
+recursive-include booking/static *
+recursive-include booking/templates *
+recursive-include dashboard/static *
+recursive-include dashboard/templates *
+recursive-include members/static *
+recursive-include members/templates *
+recursive-include todo/static *
+recursive-include todo/templates *
