@@ -1,11 +1,33 @@
+import datetime
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from localflavor.generic.models import IBANField, BICField
 
 
+class AccountManager(models.Manager):
+    def get_queryset(self):
+        filter = models.Q(
+            transaction__entry__date__year=settings.NOW().year,
+            transaction__entry__projected=False,
+        )
+        qs = super().get_queryset()
+        qs = qs.annotate(
+            revenue=models.Sum('transaction__revenue', filter=filter),
+            expense=models.Sum('transaction__expense', filter=filter),
+            balance=(
+                models.Sum('transaction__revenue', filter=filter) -
+                models.Sum('transaction__expense', filter=filter)
+            )
+        )
+        return qs
+
+
 class Account(models.Model):
     number = models.CharField(verbose_name="Numéro", max_length=7)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
+
+    objects = AccountManager()
 
     class Meta:
         verbose_name = "Compte"
@@ -49,7 +71,7 @@ class EntryManager(models.Manager):
 
 
 class Entry(models.Model):
-    date = models.DateField(verbose_name="Date")
+    date = models.DateField(verbose_name="Date", default=datetime.date.today())
     title = models.CharField(verbose_name="Intitulé", max_length=100)
     scan = models.FileField(verbose_name="Justificatif", upload_to='justificatif', blank=True)
     forwarded = models.BooleanField(verbose_name="Envoyé à la compta", default=False)

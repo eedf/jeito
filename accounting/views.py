@@ -5,10 +5,10 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Q, Sum, Case, When, Value
 from django.http import JsonResponse
 from django.utils.formats import date_format
-from django.views.generic import ListView, DetailView, TemplateView, View
+from django.views.generic import ListView, DetailView, TemplateView, View, CreateView
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, EntryFilter, BudgetFilter, BankStatementFilter
-from .models import BankStatement, Transaction, Entry
+from .models import BankStatement, Transaction, Entry, TransferOrder, ThirdPartyAccount
 
 
 class UserMixin(UserPassesTestMixin):
@@ -250,3 +250,38 @@ class CashFlowJsonView(UserMixin, View):
             'comment': comment,
         }
         return JsonResponse(data)
+
+
+class TransferOrderListView(UserMixin, FilterView):
+    model = TransferOrder
+    filterset_class = EntryFilter
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        revenue = 0
+        expense = 0
+        balance = 0
+        for order in self.object_list:
+            revenue += order.revenue
+            expense += order.expense
+            balance += order.balance
+        context['revenue'] = revenue
+        context['expense'] = expense
+        context['balance'] = balance
+        return context
+
+
+class TransferOrderDetailView(DetailView):
+    model = TransferOrder
+
+
+class TransferOrderCreateView(CreateView):
+    model = TransferOrder
+    fields = ('date', 'title')
+    initial = {'title': "Virements"}
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        creditors = ThirdPartyAccount.objects.filter(balance__gt=0)
+        context['creditors'] = creditors
+        return context
