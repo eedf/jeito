@@ -203,7 +203,6 @@ class CashFlowJsonView(UserMixin, View):
         start = date(season, 1, 1)
         end = min(date(season, 12, 31), self.today)
         qs = Transaction.objects.filter(account__number__in=('5120000', '5300000'), reconciliation__year=season)
-#        qs = qs.exclude(entry__title=u"A nouveaux")
         qs = qs.order_by('-reconciliation').values('reconciliation').annotate(balance=Sum('revenue') - Sum('expense'))
         qs = list(qs)
         data = OrderedDict()
@@ -219,7 +218,7 @@ class CashFlowJsonView(UserMixin, View):
         return data
 
     def get(self, request):
-        season = 2018  # int(self.request.GET['season'])
+        season = settings.NOW().year
         reference = season - 1
         data = self.serie(season, self.request.GET)
         ref_data = self.serie(reference, self.request.GET)
