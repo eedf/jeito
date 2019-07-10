@@ -91,7 +91,7 @@ class TransferOrder(Entry):
 
 
 class Transaction(models.Model):
-    entry = models.ForeignKey(Entry, on_delete=models.PROTECT)
+    entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
     title = models.CharField(verbose_name="Intitulé", max_length=100, blank=True)
     account = models.ForeignKey(Account, verbose_name="Compte", on_delete=models.PROTECT)
     analytic = models.ForeignKey(Analytic, verbose_name="Analytique", blank=True, null=True, on_delete=models.PROTECT)
