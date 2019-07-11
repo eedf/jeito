@@ -1,4 +1,7 @@
 import datetime
+import fintech
+fintech.register()  # noqa
+from fintech import sepa
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
@@ -105,11 +108,32 @@ class PurchaseInvoice(Entry):
 
 
 class TransferOrder(Entry):
-    xml = models.TextField()
+    xml = models.TextField(editable=False)
 
     class Meta:
         verbose_name = "Ordre de virement"
         verbose_name_plural = "Ordres de virement"
+
+    def save(self, *args, **kwargs):
+        # Create the debtor account from an IBAN
+        debtor = sepa.Account(settings.IBAN, settings.HOLDER)
+        # Create a SEPACreditTransfer instance
+        sct = sepa.SEPACreditTransfer(debtor)
+        for transaction in self.transaction_set.filter(expense__gt=0):
+            account = transaction.account.thirdpartyaccount
+            # Create the creditor account from a tuple (IBAN, BIC)
+            creditor = sepa.Account(
+                (account.iban, account.bic),
+                account.title
+            )
+            # Add the transaction
+            sct.add_transaction(
+                creditor,
+                sepa.Amount(transaction.expense, 'EUR'),
+                transaction.title
+            )
+        self.xml = sct.render()
+        super().save(*args, **kwargs)
 
 
 class Transaction(models.Model):
