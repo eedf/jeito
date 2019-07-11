@@ -7,7 +7,7 @@ from django.http import JsonResponse
 from django.utils.formats import date_format
 from django.views.generic import ListView, DetailView, TemplateView, View
 from django_filters.views import FilterView
-from .filters import BalanceFilter, AccountFilter, EntryFilter, BudgetFilter
+from .filters import BalanceFilter, AccountFilter, EntryFilter, BudgetFilter, BankStatementFilter
 from .models import BankStatement, Transaction, Entry
 
 
@@ -133,8 +133,10 @@ class EntryListView(UserMixin, FilterView):
         return context
 
 
-class BankStatementView(UserMixin, ListView):
+class BankStatementView(UserMixin, FilterView):
     model = BankStatement
+    template_name = "accounting/bankstatement_list.html"
+    filterset_class = BankStatementFilter
 
 
 class ReconciliationView(UserMixin, DetailView):

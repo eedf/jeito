@@ -4,7 +4,7 @@ from django import forms
 from django.conf import settings
 from django.http import QueryDict
 import django_filters
-from .models import Analytic, Account, Transaction, Entry
+from .models import Analytic, Account, Transaction, Entry, BankStatement
 
 
 class BaseFilterForm(forms.Form):
@@ -15,6 +15,29 @@ class BaseFilterForm(forms.Form):
         self.helper.form_class = 'form-inline'
         self.helper.field_template = 'bootstrap3/layout/inline_field_with_label.html'
         self.helper.form_method = 'get'
+
+
+class BankStatementFilterForm(BaseFilterForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            'year',
+        )
+
+
+class BankStatementFilter(django_filters.FilterSet):
+    year = django_filters.ChoiceFilter(label="Exercice", field_name='date', lookup_expr='year',
+                                       choices=[(i, i) for i in range(settings.NOW().year + 1, 2015, -1)])
+
+    class Meta:
+        model = BankStatement
+        fields = ('year', )
+        form = BankStatementFilterForm
+
+    def __init__(self, data, *args, **kwargs):
+        if data is None:
+            data = QueryDict('year={}'.format(settings.NOW().year))
+        super().__init__(data, *args, **kwargs)
 
 
 class BudgetFilterForm(BaseFilterForm):
