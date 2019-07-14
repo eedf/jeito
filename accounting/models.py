@@ -74,7 +74,7 @@ class EntryManager(models.Manager):
 
 
 class Entry(models.Model):
-    date = models.DateField(verbose_name="Date", default=datetime.date.today())
+    date = models.DateField(verbose_name="Date", default=datetime.date.today)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
     scan = models.FileField(verbose_name="Justificatif", upload_to='justificatif', blank=True)
     forwarded = models.BooleanField(verbose_name="Envoyé à la compta", default=False)
@@ -132,7 +132,7 @@ class TransferOrder(Entry):
                 sepa.Amount(transaction.expense, 'EUR'),
                 transaction.title
             )
-        self.xml = sct.render()
+        self.xml = sct.render().decode('ascii')
         super().save(*args, **kwargs)
 
 

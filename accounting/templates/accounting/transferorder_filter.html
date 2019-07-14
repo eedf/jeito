@@ -5,7 +5,7 @@
 
 <div class="container accounting">
 
-    {% if perms.booking.create %}
+    {% if perms.accounting.add_transferorder %}
         <a href="{% url 'accounting:transferorder_create' %}" class="btn btn-primary title-action">Créer</a>
     {% endif %}
     <h1>Ordres de virement</h1>
@@ -16,33 +16,22 @@
         <tr>
             <th>Date</th>
             <th>Intitulé</th>
-            <th>Labels</th>
-            <th class="text-right">Débit</th>
-            <th class="text-right">Crédit</th>
-            <th class="text-right">Solde</th>
+            <th class="text-right">Montant</th>
+            <th>Fichier SEPA</th>
         </tr>
         {% for order in object_list %}
             <tr>
                 <td>{{ order.date|date:"d/m/y" }}</td>
-                <td class="{% if order.projected %}projected{% endif %}"><a href="{% url 'accounting:order' order.pk %}">{{ order.title }}</a></td>
-                <td>
-                    {% if order.projected %}<span class="label label-info">Projeté</span>{% endif %}
-                    {% if order.forwarded %}<span class="label label-primary">Envoyé</span>{% endif %}
-                    {% if order.entered %}<span class="label label-success">Saisi</span>{% endif %}
-                    {% if not order.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
-                </td>
+                <td class="{% if order.projected %}projected{% endif %}"><a href="{% url 'accounting:transferorder_detail' order.pk %}">{{ order.title }}</a></td>
                 <td class="text-right text-nowrap">{% if order.expense %}{{ order.expense|floatformat:2 }} €{% endif %}</td>
-                <td class="text-right text-nowrap">{% if order.revenue %}{{ order.revenue|floatformat:2 }} €{% endif %}</td>
-                <td class="text-right text-nowrap {% if not order.balanced %}text-danger{% endif %}">{{ order.balance|floatformat:2 }} €</td>
+                <td class="text-nowrap"><a href="{% url 'accounting:transferorder_download' order.pk %}">Télécharger</a></td>
             </tr>
         {% endfor %}
         <tr>
             <td></td>
             <td><strong>Total</strong></td>
-            <td></td>
             <td class="text-right text-nowrap"><strong>{{ expense|floatformat:2 }} €</strong></td>
-            <td class="text-right text-nowrap"><strong>{{ revenue|floatformat:2 }} €</strong></td>
-            <td class="text-right text-nowrap"><strong>{{ balance|floatformat:2 }} €</strong></td>
+            <td></td>
         </tr>
     </table>
 

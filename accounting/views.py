@@ -3,7 +3,7 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Q, Sum, Case, When, Value
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils.formats import date_format
 from django.views.generic import ListView, DetailView, TemplateView, View, CreateView
 from django_filters.views import FilterView
@@ -273,6 +273,13 @@ class TransferOrderListView(UserMixin, FilterView):
 
 class TransferOrderDetailView(DetailView):
     model = TransferOrder
+
+
+class TransferOrderDownloadView(DetailView):
+    model = TransferOrder
+
+    def render_to_response(self, context, **response_kwargs):
+        return HttpResponse(self.object.xml, content_type='application/xml')
 
 
 class TransferOrderCreateView(CreateView):
