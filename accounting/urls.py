@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from .views import (BalanceView, AnalyticBalanceView, BankStatementView, AccountView, ReconciliationView,
                     NextReconciliationView, BudgetView, ProjectionView, EntryView, EntryListView,
-                    CashFlowView, CashFlowJsonView)
+                    CashFlowView, CashFlowJsonView, TransferOrderDownloadView)
 
 
 app_name = 'accounting'
@@ -19,4 +19,5 @@ urlpatterns = [
     url(r'^reconciliation/(?P<pk>\d+)/$', ReconciliationView.as_view(), name='reconciliation'),
     url(r'^cash-flow/$', CashFlowView.as_view(), name='cash-flow'),
     url(r'^cash-flow/data/$', CashFlowJsonView.as_view(), name='cash_flow_data'),
+    url(r'^transfer-order/(?P<pk>\d+)/download/$', TransferOrderDownloadView.as_view(), name='transfer_order_download'),
 ]

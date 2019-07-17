@@ -47,12 +47,20 @@
         </tr>
     </table>
 
-    {% if perms.accounting.change_entry %}
-        <p><a href="{% url 'admin:accounting_entry_change' entry.pk %}" class="btn btn-primary">
-            <span class="glyphicon glyphicon-edit"></span>
-            Modifier
-        </a></p>
-    {% endif %}
+    <p>
+        {% if perms.accounting.change_entry %}
+            <a href="{% url 'admin:accounting_entry_change' entry.pk %}" class="btn btn-primary">
+                <span class="glyphicon glyphicon-edit"></span>
+                Modifier
+            </a>
+        {% endif %}
+        {% if entry.transferorder %}
+            <a href="{% url 'accounting:transfer_order_download' entry.pk %}" class="btn btn-primary">
+                <span class="glyphicon glyphicon-download"></span>
+                Fichier SEPA
+            </a>
+        {% endif %}
+    </p>
 
 </div>
 

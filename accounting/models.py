@@ -107,10 +107,15 @@ class TransferOrder(Entry):
                 super().save(*args, **kwargs)
                 return
             # Create the creditor account from a tuple (IBAN, BIC)
-            creditor = sepa.Account(
-                (account.iban, account.bic),
-                account.title
-            )
+            try:
+                creditor = sepa.Account(
+                    (account.iban, account.bic),
+                    account.title
+                )
+            except ValueError as e:
+                self.xml = "{} for {}".format(e, transaction.account)
+                super().save(*args, **kwargs)
+                return
             # Add the transaction
             sct.add_transaction(
                 creditor,
