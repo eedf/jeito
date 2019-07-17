@@ -100,7 +100,12 @@ class TransferOrder(Entry):
         # Create a SEPACreditTransfer instance
         sct = sepa.SEPACreditTransfer(debtor)
         for transaction in self.transaction_set.filter(expense__gt=0):
-            account = transaction.account.thirdpartyaccount
+            try:
+                account = transaction.account.thirdpartyaccount
+            except ThirdPartyAccount.DoesNotExist:
+                self.xml = "No third party account for {}".format(transaction.account)
+                super().save(*args, **kwargs)
+                return
             # Create the creditor account from a tuple (IBAN, BIC)
             creditor = sepa.Account(
                 (account.iban, account.bic),
