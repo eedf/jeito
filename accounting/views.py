@@ -82,6 +82,7 @@ class ThirdPartyBalanceView(UserMixin, FilterView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         qs = self.object_list
+        qs = qs.exclude(thirdparty=None)
         qs = qs.values('thirdparty__id', 'thirdparty__number', 'thirdparty__title')
         qs = qs.annotate(revenues=Sum('revenue'), expenses=Sum('expense'))
         qs = qs.order_by('thirdparty__number')
