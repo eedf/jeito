@@ -75,6 +75,25 @@ class AnalyticBalanceView(UserMixin, FilterView):
         return context
 
 
+class ThirdPartyBalanceView(UserMixin, FilterView):
+    template_name = "accounting/thirdparty_balance.html"
+    filterset_class = BalanceFilter
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = self.object_list
+        qs = qs.values('thirdparty__id', 'thirdparty__number', 'thirdparty__title')
+        qs = qs.annotate(revenues=Sum('revenue'), expenses=Sum('expense'))
+        qs = qs.order_by('thirdparty__number')
+        for thirdparty in qs:
+            thirdparty['solde'] = thirdparty['revenues'] - thirdparty['expenses']
+        context['data'] = qs
+        context['revenues'] = sum([thirdparty['revenues'] for thirdparty in qs])
+        context['expenses'] = sum([thirdparty['expenses'] for thirdparty in qs])
+        context['solde'] = sum([thirdparty['solde'] for thirdparty in qs])
+        return context
+
+
 class BalanceView(UserMixin, FilterView):
     template_name = "accounting/balance.html"
     filterset_class = BalanceFilter

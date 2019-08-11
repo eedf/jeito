@@ -22,6 +22,7 @@
         <tr>
             <th>Intitulé</th>
             <th>Compte</th>
+            <th>Tiers</th>
             <th>Analytique</th>
             <th class="text-right">Débit</th>
             <th class="text-right">Crédit</th>
@@ -31,6 +32,7 @@
             <tr>
                 <td>{{ transaction.title }}</td>
                 <td><a href="{% url 'accounting:account' %}?account={{ transaction.account_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
+                <td><a href="{% url 'accounting:account' %}?thirdparty={{ transaction.thirdparty_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.thirdparty.number }} - {{ transaction.thirdparty.title }}</a></td>
                 <td><a href="{% url 'accounting:account' %}?analytic={{ transaction.analytic_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.analytic.title }}</a></td>
                 <td class="text-right">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
@@ -39,6 +41,7 @@
         {% endfor %}
         <tr>
             <td><strong>Total</strong></td>
+            <td></td>
             <td></td>
             <td></td>
             <td class="text-right {% if not entry.balanced %}text-danger{% endif %}"><strong>{{ entry.expense|floatformat:2 }} €</strong></td>

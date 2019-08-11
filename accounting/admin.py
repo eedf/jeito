@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Q
 from .models import (Account, Analytic, Entry, BankStatement, Transaction,
-                     ThirdPartyAccount, PurchaseInvoice, TransferOrder)
+                     ThirdParty, PurchaseInvoice, TransferOrder)
 
 
 class HasScanListFilter(admin.SimpleListFilter):
@@ -29,8 +29,8 @@ class AccountAdmin(admin.ModelAdmin):
     search_fields = ('=number', 'title')
 
 
-@admin.register(ThirdPartyAccount)
-class ThirdPartyAccountAdmin(AccountAdmin):
+@admin.register(ThirdParty)
+class ThirdPartyAdmin(AccountAdmin):
     list_display = ('number', 'title', 'client_number', 'iban', 'bic')
     search_fields = ('=number', 'title', '=client_number', '=iban', '=bic')
     ordering = ('number', )

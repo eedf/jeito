@@ -20,15 +20,20 @@ class Account(models.Model):
         return "{} {}".format(self.number, self.title)
 
 
-class ThirdPartyAccount(Account):
+class ThirdParty(models.Model):
+    number = models.CharField(verbose_name="Numéro", max_length=4)
+    title = models.CharField(verbose_name="Intitulé", max_length=100)
     iban = IBANField(verbose_name="IBAN", blank=True)
     bic = BICField(verbose_name="BIC", blank=True)
     client_number = models.CharField(verbose_name="Numéro client", max_length=100, blank=True)
 
     class Meta:
-        verbose_name = "Compte de tiers"
-        verbose_name_plural = "Comptes de tiers"
+        verbose_name = "Tiers"
+        verbose_name_plural = "Tiers"
         ordering = ('number', )
+
+    def __str__(self):
+        return "{} {}".format(self.number, self.title)
 
 
 class Analytic(models.Model):
@@ -100,17 +105,16 @@ class TransferOrder(Entry):
         # Create a SEPACreditTransfer instance
         sct = sepa.SEPACreditTransfer(debtor)
         for transaction in self.transaction_set.filter(expense__gt=0):
-            try:
-                account = transaction.account.thirdpartyaccount
-            except ThirdPartyAccount.DoesNotExist:
-                self.xml = "No third party account for {}".format(transaction.account)
+            thirdparty = transaction.thirdparty
+            if not thirdparty:
+                self.xml = "No third party for {}".format(transaction)
                 super().save(*args, **kwargs)
                 return
             # Create the creditor account from a tuple (IBAN, BIC)
             try:
-                creditor = sepa.Account(account.iban, account.title)
+                creditor = sepa.Account(thirdparty.iban, thirdparty.title)
             except ValueError as e:
-                self.xml = "{} for {}".format(e, transaction.account)
+                self.xml = "{} for thirdparty {}".format(e, thirdparty)
                 super().save(*args, **kwargs)
                 return
             # Add the transaction
@@ -127,6 +131,8 @@ class Transaction(models.Model):
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
     title = models.CharField(verbose_name="Intitulé", max_length=100, blank=True)
     account = models.ForeignKey(Account, verbose_name="Compte", on_delete=models.PROTECT)
+    thirdparty = models.ForeignKey(ThirdParty, verbose_name="Tiers", null=True, blank=True,
+                                   on_delete=models.PROTECT)
     analytic = models.ForeignKey(Analytic, verbose_name="Analytique", blank=True, null=True, on_delete=models.PROTECT)
     expense = models.DecimalField(verbose_name="Débit", max_digits=8, decimal_places=2, default=0)
     revenue = models.DecimalField(verbose_name="Crédit", max_digits=8, decimal_places=2, default=0)
