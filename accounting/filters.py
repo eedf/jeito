@@ -83,7 +83,7 @@ class BalanceFilter(django_filters.FilterSet):
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
-            data = QueryDict('year={}'.format(settings.NOW().year))
+            data = QueryDict('year={}&projected=3'.format(settings.NOW().year))
         super().__init__(data, *args, **kwargs)
 
 
@@ -149,5 +149,5 @@ class EntryFilter(django_filters.FilterSet):
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
-            data = QueryDict('year={}'.format(settings.NOW().year))
+            data = QueryDict('year={}&projected=3'.format(settings.NOW().year))
         super().__init__(data, *args, **kwargs)
