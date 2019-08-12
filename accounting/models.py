@@ -17,7 +17,7 @@ class Account(models.Model):
         ordering = ('number', )
 
     def __str__(self):
-        return "{} {}".format(self.number, self.title)
+        return "{} : {}".format(self.number, self.title)
 
 
 class ThirdParty(models.Model):
@@ -33,18 +33,19 @@ class ThirdParty(models.Model):
         ordering = ('number', )
 
     def __str__(self):
-        return "{} {}".format(self.number, self.title)
+        return "{} : {}".format(self.number, self.title)
 
 
 class Analytic(models.Model):
+    number = models.CharField(verbose_name="Numéro", max_length=3)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
 
     class Meta:
         verbose_name = "Analytique"
-        ordering = ('title', )
+        ordering = ('number', )
 
     def __str__(self):
-        return self.title
+        return "{} : {}".format(self.number, self.title)
 
 
 class EntryManager(models.Manager):

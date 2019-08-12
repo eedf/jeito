@@ -60,7 +60,7 @@
                     <td><a href="{% url 'accounting:account' %}?thirdparty={{ row.thirdparty_id }}{% if filter.form.cleaned_data.account %}&account={{ row.account_id }}{% endif %}{% if filter.form.cleaned_data.analytic %}&analytic={{ row.analytic_id }}{% endif %}&year={{ filter.form.data.year }}&projected={{ filter.form.data.projected }}" title="{{ row.thirdparty.title }}">{{ row.thirdparty.number }}</a></td>
                 {% endif %}
                 {% if not filter.form.cleaned_data.analytic %}
-                    <td><a href="{% url 'accounting:account' %}?analytic={{ row.analytic_id }}{% if filter.form.cleaned_data.account %}&account={{ row.account_id }}{% endif %}{% if filter.form.cleaned_data.thirdparty %}&thirdparty={{ row.thirdparty_id }}{% endif %}&year={{ filter.form.data.year }}&projected={{ filter.form.data.projected }}">{{ row.analytic.title }}</a></td>
+                    <td><a href="{% url 'accounting:account' %}?analytic={{ row.analytic_id }}{% if filter.form.cleaned_data.account %}&account={{ row.account_id }}{% endif %}{% if filter.form.cleaned_data.thirdparty %}&thirdparty={{ row.thirdparty_id }}{% endif %}&year={{ filter.form.data.year }}&projected={{ filter.form.data.projected }}">{{ row.analytic.number }}</a></td>
                 {% endif %}
                 <td class="text-right text-nowrap">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right text-nowrap">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>

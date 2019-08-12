@@ -59,19 +59,17 @@ class AnalyticBalanceView(UserMixin, FilterView):
     template_name = "accounting/analytic_balance.html"
     filterset_class = BalanceFilter
 
+    def get_filterset_kwargs(self, filterset_class):
+        kwargs = super().get_filterset_kwargs(filterset_class)
+        kwargs['aggregate'] = 'analytic'
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = self.object_list
-        qs = qs.filter(account__number__regex=r'^[67]')
-        qs = qs.values('analytic__id', 'analytic__title')
-        qs = qs.annotate(revenue=Sum('revenue'), expense=Sum('expense'))
-        qs = qs.order_by('analytic__title')
-        for analytic in qs:
-            analytic['solde'] = analytic['revenue'] - analytic['expense']
-        context['data'] = qs
-        context['revenues'] = sum([analytic['revenue'] for analytic in qs])
-        context['expenses'] = sum([analytic['expense'] for analytic in qs])
-        context['solde'] = sum([analytic['solde'] for analytic in qs])
+        context['data'] = self.object_list
+        context['revenues'] = sum([analytic['revenues'] for analytic in self.object_list])
+        context['expenses'] = sum([analytic['expenses'] for analytic in self.object_list])
+        context['balance'] = sum([analytic['balance'] for analytic in self.object_list])
         return context
 
 
@@ -79,19 +77,17 @@ class ThirdPartyBalanceView(UserMixin, FilterView):
     template_name = "accounting/thirdparty_balance.html"
     filterset_class = BalanceFilter
 
+    def get_filterset_kwargs(self, filterset_class):
+        kwargs = super().get_filterset_kwargs(filterset_class)
+        kwargs['aggregate'] = 'thirdparty'
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = self.object_list
-        qs = qs.exclude(thirdparty=None)
-        qs = qs.values('thirdparty__id', 'thirdparty__number', 'thirdparty__title')
-        qs = qs.annotate(revenues=Sum('revenue'), expenses=Sum('expense'))
-        qs = qs.order_by('thirdparty__number')
-        for thirdparty in qs:
-            thirdparty['solde'] = thirdparty['revenues'] - thirdparty['expenses']
-        context['data'] = qs
-        context['revenues'] = sum([thirdparty['revenues'] for thirdparty in qs])
-        context['expenses'] = sum([thirdparty['expenses'] for thirdparty in qs])
-        context['solde'] = sum([thirdparty['solde'] for thirdparty in qs])
+        context['data'] = self.object_list
+        context['revenues'] = sum([thirdparty['revenues'] for thirdparty in self.object_list])
+        context['expenses'] = sum([thirdparty['expenses'] for thirdparty in self.object_list])
+        context['balance'] = sum([thirdparty['balance'] for thirdparty in self.object_list])
         return context
 
 
@@ -99,18 +95,17 @@ class BalanceView(UserMixin, FilterView):
     template_name = "accounting/balance.html"
     filterset_class = BalanceFilter
 
+    def get_filterset_kwargs(self, filterset_class):
+        kwargs = super().get_filterset_kwargs(filterset_class)
+        kwargs['aggregate'] = 'account'
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = self.object_list
-        qs = qs.values('account__id', 'account__number', 'account__title')
-        qs = qs.annotate(revenues=Sum('revenue'), expenses=Sum('expense'))
-        qs = qs.order_by('account__number')
-        for account in qs:
-            account['solde'] = account['revenues'] - account['expenses']
-        context['data'] = qs
-        context['revenues'] = sum([account['revenues'] for account in qs])
-        context['expenses'] = sum([account['expenses'] for account in qs])
-        context['solde'] = sum([account['solde'] for account in qs])
+        context['data'] = self.object_list
+        context['revenues'] = sum([account['revenues'] for account in self.object_list])
+        context['expenses'] = sum([account['expenses'] for account in self.object_list])
+        context['balance'] = sum([account['balance'] for account in self.object_list])
         return context
 
 

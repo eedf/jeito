@@ -38,8 +38,8 @@ class ThirdPartyAdmin(AccountAdmin):
 
 @admin.register(Analytic)
 class AnalyticAdmin(admin.ModelAdmin):
-    list_display = ('title', )
-    search_fields = ('title', )
+    list_display = ('number', 'title')
+    search_fields = ('=number', 'title')
 
 
 class TransactionInline(admin.TabularInline):
