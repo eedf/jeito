@@ -8,6 +8,18 @@ from django.urls import reverse
 from localflavor.generic.models import IBANField, BICField
 
 
+class Journal(models.Model):
+    number = models.CharField(verbose_name="Numéro", max_length=2)
+    title = models.CharField(verbose_name="Intitulé", max_length=100)
+
+    class Meta:
+        verbose_name = "Journal"
+        ordering = ('number', )
+
+    def __str__(self):
+        return "{} : {}".format(self.number, self.title)
+
+
 class Account(models.Model):
     number = models.CharField(verbose_name="Numéro", max_length=7)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
@@ -61,6 +73,7 @@ class EntryManager(models.Manager):
 
 class Entry(models.Model):
     date = models.DateField(verbose_name="Date", default=datetime.date.today)
+    journal = models.ForeignKey(Journal, verbose_name="Journal", on_delete=models.PROTECT)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
     scan = models.FileField(verbose_name="Justificatif", upload_to='justificatif', blank=True)
     forwarded = models.BooleanField(verbose_name="Envoyé à la compta", default=False)
