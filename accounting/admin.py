@@ -37,7 +37,7 @@ class AccountAdmin(admin.ModelAdmin):
 
 @admin.register(ThirdParty)
 class ThirdPartyAdmin(AccountAdmin):
-    list_display = ('number', 'title', 'client_number', 'iban', 'bic')
+    list_display = ('number', 'title', 'account', 'client_number', 'iban', 'bic')
     search_fields = ('=number', 'title', '=client_number', '=iban', '=bic')
     ordering = ('number', )
 

@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from .views import (BalanceView, ThirdPartyBalanceView, AnalyticBalanceView,
-                    BankStatementView, AccountView, ReconciliationView,
+                    BankStatementView, AccountView, ReconciliationView, ThirdPartyCsvView,
                     NextReconciliationView, BudgetView, ProjectionView, EntryView, EntryListView,
                     CashFlowView, CashFlowJsonView, TransferOrderDownloadView)
 
@@ -15,6 +15,7 @@ urlpatterns = [
     url(r'^balance/$', BalanceView.as_view(), name='balance'),
     url(r'^account/$', AccountView.as_view(), name='account'),
     url(r'^thirdparty-balance/$', ThirdPartyBalanceView.as_view(), name='thirdparty-balance'),
+    url(r'^thirdparty.csv$', ThirdPartyCsvView.as_view(), name='thirdparty-csv'),
     url(r'^analytic-balance/$', AnalyticBalanceView.as_view(), name='analytic-balance'),
     url(r'^bank-statement/$', BankStatementView.as_view(), name='bank-statement'),
     url(r'^reconciliation/next/$', NextReconciliationView.as_view(), name='next_reconciliation'),

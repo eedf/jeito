@@ -1,3 +1,4 @@
+from csv import DictWriter
 from collections import OrderedDict
 from datetime import date, timedelta
 from django.conf import settings
@@ -8,7 +9,7 @@ from django.utils.formats import date_format
 from django.views.generic import ListView, DetailView, TemplateView, View
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, EntryFilter, BudgetFilter, BankStatementFilter
-from .models import BankStatement, Transaction, Entry, TransferOrder
+from .models import BankStatement, Transaction, Entry, TransferOrder, ThirdParty
 
 
 class UserMixin(UserPassesTestMixin):
@@ -272,3 +273,16 @@ class TransferOrderDownloadView(DetailView):
 
     def render_to_response(self, context, **response_kwargs):
         return HttpResponse(self.object.xml, content_type='application/xml')
+
+
+class ThirdPartyCsvView(ListView):
+    model = ThirdParty
+    fields = ('number', 'title', 'type', 'account_number', 'iban', 'bic')
+
+    def render_to_response(self, context):
+        response = HttpResponse(content_type='text/csv; charset=cp1252')
+        writer = DictWriter(response, self.fields, delimiter=';')
+        writer.writeheader()
+        for obj in self.object_list:
+            writer.writerow({field: getattr(obj, field) for field in self.fields})
+        return response

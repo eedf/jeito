@@ -38,6 +38,7 @@ class ThirdParty(models.Model):
     iban = IBANField(verbose_name="IBAN", blank=True)
     bic = BICField(verbose_name="BIC", blank=True)
     client_number = models.CharField(verbose_name="Numéro client", max_length=100, blank=True)
+    account = models.ForeignKey(Account, verbose_name="Compte principal", on_delete=models.PROTECT)
 
     class Meta:
         verbose_name = "Tiers"
@@ -46,6 +47,21 @@ class ThirdParty(models.Model):
 
     def __str__(self):
         return "{} : {}".format(self.number, self.title)
+
+    @property
+    def account_number(self):
+        return self.account.number
+
+    @property
+    def type(self):
+        return {
+            '4010000': 'F',
+            '4090000': 'F',
+            '4110000': 'C',
+            '4190000': 'C',
+            '4500000': 'A',
+            '4670000': 'A',
+        }[self.account.number]
 
 
 class Analytic(models.Model):
