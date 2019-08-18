@@ -36,7 +36,7 @@ class BookingFilter(django_filters.FilterSet):
 
     @property
     def qs(self):
-        qs = super().qs.order_by('begin')
+        qs = super().qs.order_by('end', 'begin')
         qs = qs.select_related('state')
         qs = qs.prefetch_related('agreements', 'payments')
         return qs
