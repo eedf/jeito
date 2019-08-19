@@ -9,7 +9,7 @@ from localflavor.generic.models import IBANField, BICField
 
 
 class Journal(models.Model):
-    number = models.CharField(verbose_name="Numéro", max_length=2)
+    number = models.CharField(verbose_name="Numéro", max_length=2, unique=True)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
 
     class Meta:
@@ -21,7 +21,7 @@ class Journal(models.Model):
 
 
 class Account(models.Model):
-    number = models.CharField(verbose_name="Numéro", max_length=7)
+    number = models.CharField(verbose_name="Numéro", max_length=7, unique=True)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
 
     class Meta:
@@ -33,7 +33,7 @@ class Account(models.Model):
 
 
 class ThirdParty(models.Model):
-    number = models.CharField(verbose_name="Numéro", max_length=4)
+    number = models.CharField(verbose_name="Numéro", max_length=4, unique=True)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
     iban = IBANField(verbose_name="IBAN", blank=True)
     bic = BICField(verbose_name="BIC", blank=True)
@@ -65,7 +65,7 @@ class ThirdParty(models.Model):
 
 
 class Analytic(models.Model):
-    number = models.CharField(verbose_name="Numéro", max_length=3)
+    number = models.CharField(verbose_name="Numéro", max_length=3, unique=True)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
 
     class Meta:
