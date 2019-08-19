@@ -1,4 +1,4 @@
-from csv import DictWriter
+from csv import DictWriter, QUOTE_NONNUMERIC
 from collections import OrderedDict
 from datetime import date, timedelta
 from django.conf import settings
@@ -281,7 +281,7 @@ class ThirdPartyCsvView(ListView):
 
     def render_to_response(self, context):
         response = HttpResponse(content_type='text/csv; charset=cp1252')
-        writer = DictWriter(response, self.fields, delimiter=';')
+        writer = DictWriter(response, self.fields, delimiter=';', quoting=QUOTE_NONNUMERIC)
         writer.writeheader()
         for obj in self.object_list:
             writer.writerow({field: getattr(obj, field) for field in self.fields})
