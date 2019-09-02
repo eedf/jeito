@@ -123,13 +123,11 @@ class PurchaseInvoice(Entry):
 
 
 class TransferOrder(Entry):
-    xml = models.TextField(editable=False)
-
     class Meta:
         verbose_name = "Ordre de virement"
         verbose_name_plural = "Ordres de virement"
 
-    def save(self, *args, **kwargs):
+    def sepa(self):
         # Create the debtor account from an IBAN
         debtor = sepa.Account(settings.IBAN, settings.HOLDER)
         # Create a SEPACreditTransfer instance
@@ -137,24 +135,22 @@ class TransferOrder(Entry):
         for transaction in self.transaction_set.filter(expense__gt=0):
             thirdparty = transaction.thirdparty
             if not thirdparty:
-                self.xml = "No third party for {}".format(transaction)
-                super().save(*args, **kwargs)
-                return
+                return "No third party for {}".format(transaction)
             # Create the creditor account from a tuple (IBAN, BIC)
             try:
                 creditor = sepa.Account(thirdparty.iban, thirdparty.title)
             except ValueError as e:
-                self.xml = "{} for thirdparty {}".format(e, thirdparty)
-                super().save(*args, **kwargs)
-                return
+                return "{} for thirdparty {}".format(e, thirdparty)
             # Add the transaction
             sct.add_transaction(
                 creditor,
                 sepa.Amount(transaction.expense, 'EUR'),
                 transaction.title
             )
-        self.xml = sct.render().decode('ascii')
-        super().save(*args, **kwargs)
+        try:
+            return sct.render().decode('ascii')
+        except RuntimeError as e:
+            return str(e)
 
 
 class Transaction(models.Model):

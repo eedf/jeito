@@ -272,7 +272,7 @@ class TransferOrderDownloadView(DetailView):
     model = TransferOrder
 
     def render_to_response(self, context, **response_kwargs):
-        return HttpResponse(self.object.xml, content_type='application/xml')
+        return HttpResponse(self.object.sepa(), content_type='application/xml')
 
 
 class ThirdPartyCsvView(ListView):
