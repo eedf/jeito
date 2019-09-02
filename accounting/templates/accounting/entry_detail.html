@@ -14,7 +14,12 @@
         {% if not entry.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
     </p>
 
-    <p>Date: {{ entry.date|date:"d/m/y" }}</p>
+    <p>
+        Date : {{ entry.date|date:"d/m/y" }}{% if entry.purchaseinvoice %},
+            Facture : {{ entry.purchaseinvoice.number }},
+            Date limite : {{ entry.purchaseinvoice.deadline }}
+        {% endif %}
+    </p>
 
     {% if entry.scan %}<p><a href="{{ entry.scan.url }}" class="btn btn-primary"><span class="glyphicon glyphicon-file"></span> Télécharger la pièce</a></p>{% endif %}
 

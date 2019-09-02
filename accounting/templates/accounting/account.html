@@ -32,6 +32,13 @@
 
     {% crispy filter.form %}
 
+    {% if filter.form.cleaned_data.thirdparty %}
+        <p>
+            Client : {{ filter.form.cleaned_data.thirdparty.client_number }},
+            IBAN : {{ filter.form.cleaned_data.thirdparty.iban }}
+        </p>
+    {% endif %}
+
     <table class="table table-striped table-hover">
         <tr>
             <th>Date</th>
