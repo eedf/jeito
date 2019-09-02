@@ -33,12 +33,20 @@ class Account(models.Model):
 
 
 class ThirdParty(models.Model):
+    TYPE_CHOICES = (
+        (0, "Client"),
+        (1, "Fournisseur"),
+        (2, "Salarié"),
+        (3, "Autre"),
+    )
+
     number = models.CharField(verbose_name="Numéro", max_length=4, unique=True)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
     iban = IBANField(verbose_name="IBAN", blank=True)
     bic = BICField(verbose_name="BIC", blank=True)
     client_number = models.CharField(verbose_name="Numéro client", max_length=100, blank=True)
     account = models.ForeignKey(Account, verbose_name="Compte principal", on_delete=models.PROTECT)
+    type = models.IntegerField(verbose_name="Type", choices=TYPE_CHOICES)
 
     class Meta:
         verbose_name = "Tiers"
@@ -51,17 +59,6 @@ class ThirdParty(models.Model):
     @property
     def account_number(self):
         return self.account.number
-
-    @property
-    def type(self):
-        return {
-            '4010000': 1,
-            '4090000': 1,
-            '4110000': 0,
-            '4190000': 0,
-            '4500000': 1,
-            '4670000': 3,
-        }[self.account.number]
 
 
 class Analytic(models.Model):
