@@ -57,9 +57,7 @@
             <th class="text-right">Débit</th>
             <th class="text-right">Crédit</th>
             <th class="text-right">Solde</th>
-            {% if filter.form.cleaned_data.thirdparty %}
-                <th>Lettrage</th>
-            {% endif %}
+            <th>Lettrage</th>
         </tr>
         {% for row in object_list %}
             <tr>
@@ -77,9 +75,7 @@
                 <td class="text-right text-nowrap">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right text-nowrap">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right text-nowrap">{{ row.solde|floatformat:2 }} €</td>
-                {% if filter.form.cleaned_data.thirdparty %}
-                    <td>{% if row.letter %}{{ row.letter }}{% else %}<input type="checkbox" name="letter{{ row.id }}">{% endif %}</td>
-                {% endif %}
+                <td>{% if row.letter %}{{ row.letter }}{% else %}<input type="checkbox" name="letter{{ row.id }}">{% endif %}</td>
             </tr>
         {% endfor %}
         <tr>
@@ -97,16 +93,14 @@
             <td class="text-right text-nowrap"><strong>{{ expense|floatformat:2 }} €</strong></td>
             <td class="text-right text-nowrap"><strong>{{ revenue|floatformat:2 }} €</strong></td>
             <td class="text-right text-nowrap"><strong>{{ solde|floatformat:2 }} €</strong></td>
-            {% if filter.form.cleaned_data.thirdparty %}<td></td>{% endif %}
+            <td></td>
         </tr>
     </table>
     <p>
-        {% if filter.form.cleaned_data.thirdparty %}
-            <button type="submit" class="btn btn-primary">
-                <span class="glyphicon glyphicon-edit"></span>
-                Lettrer
-            </button>
-        {% endif %}
+        <button type="submit" class="btn btn-primary">
+            <span class="glyphicon glyphicon-edit"></span>
+            Lettrer
+        </button>
     </p>
     </form>
 
