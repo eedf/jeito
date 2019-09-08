@@ -170,8 +170,28 @@ class Transaction(models.Model):
     date.admin_order_field = "entry__date"
 
     @property
+    def date_dmy(self):
+        return self.date().strftime('%d%m%y')
+
+    @property
     def balance(self):
         return self.revenue - self.expense
+
+    @property
+    def account_number(self):
+        return self.account.number
+
+    @property
+    def thirdparty_number(self):
+        return self.thirdparty and self.thirdparty.number
+
+    @property
+    def journal_number(self):
+        return self.entry.journal.number
+
+    @property
+    def full_title(self):
+        return str(self)
 
 
 class BankStatement(models.Model):

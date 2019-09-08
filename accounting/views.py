@@ -286,3 +286,29 @@ class ThirdPartyCsvView(ListView):
         for obj in self.object_list:
             writer.writerow({field: getattr(obj, field) for field in self.fields})
         return response
+
+
+class EntryCsvView(ListView):
+    queryset = Transaction.objects \
+        .filter(entry__date__year=2019, entry__projected=False) \
+        .order_by('entry__id', 'id') \
+        .select_related('entry', 'entry__journal', 'account', 'thirdparty')
+    fields = (
+        'journal_number', 'date_dmy', 'account_number', 'entry_id',
+        'thirdparty_number', '__str__', 'expense', 'revenue'
+    )
+
+    def render_to_response(self, context):
+        response = HttpResponse(content_type='text/csv; charset=cp1252')
+        writer = DictWriter(response, self.fields, delimiter=';', quoting=QUOTE_NONNUMERIC)
+        writer.writeheader()
+
+        def get_value(obj, field):
+            value = getattr(obj, field)
+            if callable(value):
+                value = value()
+            return value
+
+        for obj in self.object_list:
+            writer.writerow({field: get_value(obj, field) for field in self.fields})
+        return response

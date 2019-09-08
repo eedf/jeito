@@ -2,7 +2,7 @@ from django.conf.urls import url
 from .views import (BalanceView, ThirdPartyBalanceView, AnalyticBalanceView,
                     BankStatementView, AccountView, ReconciliationView, ThirdPartyCsvView,
                     NextReconciliationView, BudgetView, ProjectionView, EntryView, EntryListView,
-                    CashFlowView, CashFlowJsonView, TransferOrderDownloadView)
+                    CashFlowView, CashFlowJsonView, TransferOrderDownloadView, EntryCsvView)
 
 
 app_name = 'accounting'
@@ -10,6 +10,7 @@ app_name = 'accounting'
 urlpatterns = [
     url(r'^entry/$', EntryListView.as_view(), name='entry_list'),
     url(r'^entry/(?P<pk>\d+)/$', EntryView.as_view(), name='entry'),
+    url(r'^entry.csv$', EntryCsvView.as_view(), name='entry-csv'),
     url(r'^budget/$', BudgetView.as_view(), name='budget'),
     url(r'^projection/$', ProjectionView.as_view(), name='projection'),
     url(r'^balance/$', BalanceView.as_view(), name='balance'),
