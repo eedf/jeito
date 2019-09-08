@@ -150,6 +150,16 @@ class TransferOrder(Entry):
             return str(e)
 
 
+class Letter(models.Model):
+    def __str__(self):
+        i = self.id
+        s = ''
+        while i:
+            s = chr((i % 26) + 64) + s
+            i //= 26
+        return s
+
+
 class Transaction(models.Model):
     entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
     title = models.CharField(verbose_name="Intitulé", max_length=100, blank=True)
@@ -160,6 +170,7 @@ class Transaction(models.Model):
     expense = models.DecimalField(verbose_name="Débit", max_digits=8, decimal_places=2, default=0)
     revenue = models.DecimalField(verbose_name="Crédit", max_digits=8, decimal_places=2, default=0)
     reconciliation = models.DateField(verbose_name="Rapprochement", blank=True, null=True)
+    letter = models.ForeignKey(Letter, verbose_name="Lettrage", blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.title or self.entry.title

@@ -4,12 +4,12 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Q, Sum, Case, When, Value
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.utils.formats import date_format
 from django.views.generic import ListView, DetailView, TemplateView, View
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, EntryFilter, BudgetFilter, BankStatementFilter
-from .models import BankStatement, Transaction, Entry, TransferOrder, ThirdParty
+from .models import BankStatement, Transaction, Entry, TransferOrder, ThirdParty, Letter
 
 
 class UserMixin(UserPassesTestMixin):
@@ -128,6 +128,20 @@ class AccountView(UserMixin, FilterView):
         context['expense'] = expense
         context['solde'] = solde
         return context
+
+    def post(self, request):
+        ids = [
+            key[6:] for key, val in self.request.POST.items()
+            if key.startswith('letter') and val == 'on'
+        ]
+        transactions = Transaction.objects.filter(id__in=ids)
+        if transactions.filter(letter__isnull=False).exists():
+            return HttpResponse("Certaines transactions sont déjà lettrées")
+        if sum([transaction.balance for transaction in transactions]) != 0:
+            return HttpResponse("Le lettrage n'est pas équilibré")
+        if transactions:
+            transactions.update(letter=Letter.objects.create())
+        return HttpResponseRedirect(request.get_full_path())
 
 
 class EntryListView(UserMixin, FilterView):
