@@ -109,6 +109,11 @@ class Entry(models.Model):
     balanced.short_description = "Équilibré"
     balanced.boolean = True
 
+    def delete(self, *args, **kwargs):
+        "Delete lettering if need be"
+        Letter.objects.filter(transaction__entry=self).delete()
+        return super().delete(*args, **kwargs)
+
 
 class PurchaseInvoice(Entry):
     deadline = models.DateField(verbose_name="Date limite", null=True, blank=True)
@@ -203,6 +208,24 @@ class Transaction(models.Model):
     @property
     def full_title(self):
         return str(self)
+
+    def save(self, *args, **kwargs):
+        "Delete lettering if need be"
+        if self.id and self.letter:
+            try:
+                old = Transaction.objects.get(id=self.id)
+            except Transaction.DoesNotExist:
+                old = None
+            if old and self.expense != old.expense or self.revenue != old.revenue:
+                self.letter.delete()
+                self.letter = None
+        return super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        "Delete lettering if need be"
+        if self.letter:
+            self.letter.delete()
+        return super().delete(*args, **kwargs)
 
 
 class BankStatement(models.Model):
