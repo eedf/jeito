@@ -157,10 +157,10 @@ class TransferOrder(Entry):
 
 class Letter(models.Model):
     def __str__(self):
-        i = self.id
+        i = self.id - 1
         s = ''
         while i:
-            s = chr((i % 26) + 64) + s
+            s = chr((i % 26) + 65) + s
             i //= 26
         return s
 
