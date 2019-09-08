@@ -139,6 +139,10 @@ class AccountView(UserMixin, FilterView):
             return HttpResponse("Certaines transactions sont déjà lettrées")
         if sum([transaction.balance for transaction in transactions]) != 0:
             return HttpResponse("Le lettrage n'est pas équilibré")
+        if len(set([transaction.account_id for transaction in transactions])) > 1:
+            return HttpResponse("Le lettrage doit concerner un seul compte général")
+        if len(set([transaction.thirdparty_id for transaction in transactions])) > 1:
+            return HttpResponse("Le lettrage doit concerner un seul tiers")
         if transactions:
             transactions.update(letter=Letter.objects.create())
         return HttpResponseRedirect(request.get_full_path())
