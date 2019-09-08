@@ -115,6 +115,7 @@ class YearAccountFilterForm(BaseFilterForm):
             'thirdparty',
             'analytic',
             'projected',
+            'lettered',
         )
 
 
@@ -125,10 +126,11 @@ class AccountFilter(django_filters.FilterSet):
     thirdparty = django_filters.ModelChoiceFilter(label="Tiers", queryset=ThirdParty.objects)
     analytic = django_filters.ModelChoiceFilter(label="Compte analytique", queryset=Analytic.objects)
     projected = django_filters.BooleanFilter(label="Projeté", field_name='entry__projected')
+    lettered = django_filters.BooleanFilter(label="Lettré", field_name='letter', lookup_expr='isnull', exclude=True)
 
     class Meta:
         model = Transaction
-        fields = ('year', 'account', 'thirdparty', 'analytic', 'projected')
+        fields = ('year', 'account', 'thirdparty', 'analytic', 'projected', 'lettered')
         form = YearAccountFilterForm
 
     @property
@@ -139,7 +141,7 @@ class AccountFilter(django_filters.FilterSet):
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
-            data = QueryDict('year={}'.format(settings.NOW().year))
+            data = QueryDict('year={}&projected=3'.format(settings.NOW().year))
         super().__init__(data, *args, **kwargs)
 
 
