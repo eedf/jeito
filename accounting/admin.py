@@ -18,7 +18,6 @@ class HasScanListFilter(admin.SimpleListFilter):
             return queryset.filter(
                 Q(transaction__account__number__startswith='6') |
                 Q(transaction__account__number__startswith='7'),
-                projected=False,
                 scan=''
             )
 
@@ -55,10 +54,10 @@ class TransactionInline(admin.TabularInline):
 
 @admin.register(Entry)
 class EntryAdmin(admin.ModelAdmin):
-    list_display = ('date', 'title', 'balanced', 'has_scan', 'forwarded', 'entered', 'projected')
+    list_display = ('date', 'title', 'balanced', 'has_scan', 'forwarded', 'entered')
     search_fields = ('title', 'transaction__account__title', 'transaction__analytic__title')
     date_hierarchy = 'date'
-    list_filter = (HasScanListFilter, 'journal', 'forwarded', 'entered', 'projected', 'transaction__analytic')
+    list_filter = (HasScanListFilter, 'journal', 'forwarded', 'entered', 'transaction__analytic')
     inlines = (TransactionInline, )
     save_as = True
 
@@ -71,7 +70,7 @@ class EntryAdmin(admin.ModelAdmin):
 
 @admin.register(PurchaseInvoice)
 class PurchaseInvoiceAdmin(EntryAdmin):
-    list_display = ('date', 'title', 'deadline', 'number', 'balanced', 'has_scan', 'forwarded', 'entered', 'projected')
+    list_display = ('date', 'title', 'deadline', 'number', 'balanced', 'has_scan', 'forwarded', 'entered')
     search_fields = ('title', '=number', 'transaction__account__title', 'transaction__analytic__title')
     date_hierarchy = 'deadline'
     inlines = (TransactionInline, )

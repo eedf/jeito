@@ -5,10 +5,9 @@
 
 <div class="container accounting">
 
-    <h1 class="{% if entry.projected %}projected{% endif %}">{{ entry.title }}</h1>
+    <h1>{{ entry.title }}</h1>
 
     <p>
-        {% if entry.projected %}<span class="label label-info">Projeté</span>{% endif %}
         {% if entry.forwarded %}<span class="label label-primary">Envoyé</span>{% endif %}
         {% if entry.entered %}<span class="label label-success">Saisi</span>{% endif %}
         {% if not entry.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}

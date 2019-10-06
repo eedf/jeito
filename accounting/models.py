@@ -91,7 +91,6 @@ class Entry(models.Model):
     scan = models.FileField(verbose_name="Justificatif", upload_to='justificatif', blank=True)
     forwarded = models.BooleanField(verbose_name="Envoyé à la compta", default=False)
     entered = models.BooleanField(verbose_name="Saisi dans la compta", default=False)
-    projected = models.BooleanField(verbose_name="Prévisionnel", default=False)
 
     objects = EntryManager()
 

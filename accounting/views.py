@@ -4,14 +4,14 @@ from datetime import date, timedelta
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import F, Q, Sum, Case, When, Value
+from django.db.models import F, Q, Sum
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.formats import date_format
 from django.views.generic import ListView, DetailView, TemplateView, View
 from django.views.generic.base import ContextMixin, TemplateResponseMixin
 from django_filters.views import FilterView
-from .filters import BalanceFilter, AccountFilter, EntryFilter, BudgetFilter, BankStatementFilter
+from .filters import BalanceFilter, AccountFilter, EntryFilter, ProjectionFilter, BankStatementFilter
 from .forms import PurchaseForm, PurchaseFormSet
 from .models import (BankStatement, Transaction, Entry, TransferOrder, ThirdParty,
                      Letter, PurchaseInvoice, Journal, Account)
@@ -22,32 +22,9 @@ class UserMixin(UserPassesTestMixin):
         return self.request.user.is_authenticated and self.request.user.is_becours
 
 
-class BudgetView(UserMixin, FilterView):
-    template_name = "accounting/budget.html"
-    filterset_class = BudgetFilter
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        qs = self.object_list
-        qs = qs.filter(account__number__regex=r'^[67]')
-        qs = qs.values('analytic__id', 'analytic__title')
-        qs = qs.annotate(solde_real=Sum(Case(When(entry__projected=False, then=F('revenue') - F('expense')),
-                                             default=Value(0))),
-                         solde_proj=Sum(Case(When(entry__projected=True, then=F('revenue') - F('expense')),
-                                             default=Value(0))))
-        qs = qs.order_by('analytic__title')
-        for row in qs:
-            row['solde_total'] = row['solde_real'] + row['solde_proj']
-        context['data'] = qs
-        context['solde_real'] = sum([account['solde_real'] for account in qs])
-        context['solde_proj'] = sum([account['solde_proj'] for account in qs])
-        context['solde_total'] = sum([account['solde_total'] for account in qs])
-        return context
-
-
 class ProjectionView(UserMixin, FilterView):
     template_name = "accounting/projection.html"
-    filterset_class = BudgetFilter
+    filterset_class = ProjectionFilter
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -191,7 +168,6 @@ class ReconciliationView(UserMixin, DetailView):
         else:
             cond = Q(reconciliation__gt=previous.date)
         transactions = Transaction.objects.filter(account__number=5120000)
-        transactions = transactions.filter(entry__projected=False)
         cond = cond & Q(reconciliation__lte=self.object.date) | \
             Q(reconciliation=None, entry__date__lte=self.object.date)
         transactions = transactions.filter(cond)
@@ -211,7 +187,6 @@ class NextReconciliationView(UserMixin, ListView):
         else:
             cond = Q(reconciliation__gt=last.date)
         qs = Transaction.objects.filter(account__number=5120000)
-        qs = qs.filter(entry__projected=False)
         cond = cond & Q(reconciliation__lte=date.today()) | Q(reconciliation=None)
         qs = qs.filter(cond)
         qs = qs.order_by('reconciliation', 'entry__date')
@@ -313,7 +288,7 @@ class ThirdPartyCsvView(ListView):
 
 class EntryCsvView(ListView):
     queryset = Transaction.objects \
-        .filter(entry__date__year=2019, entry__projected=False, entry__entered=False) \
+        .filter(entry__date__year=2019, entry__entered=False) \
         .order_by('entry__id', 'id') \
         .select_related('entry', 'entry__journal', 'account', 'thirdparty')
     fields = (

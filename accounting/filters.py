@@ -41,7 +41,7 @@ class BankStatementFilter(django_filters.FilterSet):
         super().__init__(data, *args, **kwargs)
 
 
-class BudgetFilterForm(BaseFilterForm):
+class ProjectionFilterForm(BaseFilterForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper.layout = Layout(
@@ -49,14 +49,14 @@ class BudgetFilterForm(BaseFilterForm):
         )
 
 
-class BudgetFilter(django_filters.FilterSet):
+class ProjectionFilter(django_filters.FilterSet):
     year = django_filters.ChoiceFilter(label="Exercice", field_name='entry__date', lookup_expr='year',
                                        choices=[(i, i) for i in range(settings.NOW().year + 1, 2015, -1)])
 
     class Meta:
         model = Transaction
         fields = ('year', )
-        form = BudgetFilterForm
+        form = ProjectionFilterForm
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
@@ -68,7 +68,7 @@ class BalanceFilterForm(BaseFilterForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper.layout = Layout(
-            'year', 'balance', 'projected'
+            'year', 'balance',
         )
 
 
@@ -77,17 +77,16 @@ class BalanceFilter(django_filters.FilterSet):
                                        field_name='entry__date', lookup_expr='year')
     balance = django_filters.ChoiceFilter(label="Solde", choices=(('D', "Débiteur"), ('C', "Créditeur")),
                                           method='filter_balance')
-    projected = django_filters.BooleanFilter(label="Projeté", field_name='entry__projected')
 
     class Meta:
         model = Transaction
-        fields = ('year', 'balance', 'projected')
+        fields = ('year', 'balance')
         form = BalanceFilterForm
 
     def __init__(self, aggregate, data, *args, **kwargs):
         self.aggregate = aggregate
         if data is None:
-            data = QueryDict('year={}&projected=3'.format(settings.NOW().year))
+            data = QueryDict('year={}'.format(settings.NOW().year))
         super().__init__(data, *args, **kwargs)
         self.queryset = self.queryset.exclude(**{self.aggregate: None})
         self.queryset = self.queryset.values(
@@ -114,7 +113,6 @@ class YearAccountFilterForm(BaseFilterForm):
             'account',
             'thirdparty',
             'analytic',
-            'projected',
             'lettered',
         )
 
@@ -125,12 +123,11 @@ class AccountFilter(django_filters.FilterSet):
     account = django_filters.ModelChoiceFilter(label="Compte", queryset=Account.objects)
     thirdparty = django_filters.ModelChoiceFilter(label="Tiers", queryset=ThirdParty.objects)
     analytic = django_filters.ModelChoiceFilter(label="Compte analytique", queryset=Analytic.objects)
-    projected = django_filters.BooleanFilter(label="Projeté", field_name='entry__projected')
     lettered = django_filters.BooleanFilter(label="Lettré", field_name='letter', lookup_expr='isnull', exclude=True)
 
     class Meta:
         model = Transaction
-        fields = ('year', 'account', 'thirdparty', 'analytic', 'projected', 'lettered')
+        fields = ('year', 'account', 'thirdparty', 'analytic', 'lettered')
         form = YearAccountFilterForm
 
     @property
@@ -141,7 +138,7 @@ class AccountFilter(django_filters.FilterSet):
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
-            data = QueryDict('year={}&projected=3'.format(settings.NOW().year))
+            data = QueryDict('year={}'.format(settings.NOW().year))
         super().__init__(data, *args, **kwargs)
 
 
@@ -149,18 +146,17 @@ class EntryFilterForm(BaseFilterForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.helper.layout = Layout(
-            'year', 'projected'
+            'year',
         )
 
 
 class EntryFilter(django_filters.FilterSet):
     year = django_filters.ChoiceFilter(label="Exercice", choices=[(i, i) for i in range(settings.NOW().year, 2015, -1)],
                                        field_name='date', lookup_expr='year')
-    projected = django_filters.BooleanFilter(label="Projeté", field_name='projected')
 
     class Meta:
         model = Entry
-        fields = ('year', 'projected')
+        fields = ('year', )
         form = EntryFilterForm
 
     @property
@@ -170,5 +166,5 @@ class EntryFilter(django_filters.FilterSet):
 
     def __init__(self, data, *args, **kwargs):
         if data is None:
-            data = QueryDict('year={}&projected=3'.format(settings.NOW().year))
+            data = QueryDict('year={}'.format(settings.NOW().year))
         super().__init__(data, *args, **kwargs)
