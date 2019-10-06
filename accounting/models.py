@@ -89,7 +89,7 @@ class Entry(models.Model):
     journal = models.ForeignKey(Journal, verbose_name="Journal", on_delete=models.PROTECT)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
     scan = models.FileField(verbose_name="Justificatif", upload_to='justificatif', blank=True)
-    entered = models.BooleanField(verbose_name="Saisi dans la compta", default=False)
+    exported = models.BooleanField(verbose_name="Exporté", default=False)
 
     objects = EntryManager()
 

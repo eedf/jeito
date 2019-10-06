@@ -8,7 +8,7 @@
     <h1>{{ entry.title }}</h1>
 
     <p>
-        {% if entry.entered %}<span class="label label-success">Saisi</span>{% endif %}
+        {% if entry.exported %}<span class="label label-success">Exporté</span>{% endif %}
         {% if not entry.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
     </p>
 

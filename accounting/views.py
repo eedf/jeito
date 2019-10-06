@@ -288,7 +288,7 @@ class ThirdPartyCsvView(ListView):
 
 class EntryCsvView(ListView):
     queryset = Transaction.objects \
-        .filter(entry__date__year=2019, entry__entered=False) \
+        .filter(entry__date__year=2019, entry__exported=False) \
         .order_by('entry__id', 'id') \
         .select_related('entry', 'entry__journal', 'account', 'thirdparty')
     fields = (
