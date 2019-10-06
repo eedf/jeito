@@ -3,6 +3,11 @@
 from django.db import migrations
 
 
+def remove_projected(apps, schema_editor):
+    Entry = apps.get_model('accounting', 'Entry')
+    Entry.objects.filter(projected=True).delete()
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -10,8 +15,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='entry',
-            name='projected',
+        migrations.RunPython(
+            remove_projected,
+            migrations.RunPython.noop
         ),
     ]

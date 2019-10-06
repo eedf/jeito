@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('accounting', '0040_remove_entry_forwarded'),
+        ('accounting', '0041_remove_entry_forwarded'),
     ]
 
     operations = [
