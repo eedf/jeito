@@ -330,3 +330,14 @@ class EntryCsvView(ListView):
         for obj in self.object_list:
             writer.writerow({field: get_value(obj, field) for field in self.fields})
         return response
+
+
+class ChecksView(TemplateView):
+    template_name = 'accounting/checks.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        transactions = Transaction.objects.filter(entry__date__year=2019)
+        context['missing_analytic'] = transactions.filter(account__number__regex=r'^[67]', analytic__isnull=True)
+        context['extraneous_analytic'] = transactions.filter(account__number__regex=r'^[^67]', analytic__isnull=False)
+        return context
