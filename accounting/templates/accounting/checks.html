@@ -16,6 +16,7 @@
             <th>Analytique</th>
             <th class="text-right">Débit</th>
             <th class="text-right">Crédit</th>
+            <th>Lettrage</th>
         </tr>
         {% for transaction in missing_analytic %}
             <tr>
@@ -25,6 +26,7 @@
                 <td><a href="{% url 'accounting:account' %}?analytic={{ transaction.analytic_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.analytic.number }} - {{ transaction.analytic.title }}</a></td>
                 <td class="text-right">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
+                <td>{{ transaction.letter }}</td>
             </tr>
         {% endfor %}
     </table>
@@ -39,6 +41,7 @@
             <th>Analytique</th>
             <th class="text-right">Débit</th>
             <th class="text-right">Crédit</th>
+            <th>Lettrage</th>
         </tr>
         {% for transaction in extraneous_analytic %}
             <tr>
@@ -48,7 +51,36 @@
                 <td><a href="{% url 'accounting:account' %}?analytic={{ transaction.analytic_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.analytic.number }} - {{ transaction.analytic.title }}</a></td>
                 <td class="text-right">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
+                <td>{{ transaction.letter }}</td>
             </tr>
+        {% endfor %}
+    </table>
+
+    <p>Lettrage non équilibré</p>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Intitulé</th>
+            <th>Compte</th>
+            <th>Tiers</th>
+            <th>Analytique</th>
+            <th class="text-right">Débit</th>
+            <th class="text-right">Crédit</th>
+            <th>Lettrage</th>
+        </tr>
+        {% for letter in unbalanced_letters %}
+            <tr><td>{{ letter }}</td></tr>
+            {% for transaction in letter.transaction.all %}
+                <tr>
+                    <td><a href="{% url 'accounting:entry' transaction.entry.pk %}">{{ transaction.title|default:transaction.entry.title }}</a></td>
+                    <td><a href="{% url 'accounting:account' %}?account={{ transaction.account_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
+                    <td><a href="{% url 'accounting:account' %}?thirdparty={{ transaction.thirdparty_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.thirdparty.number }} - {{ transaction.thirdparty.title }}</a></td>
+                    <td><a href="{% url 'accounting:account' %}?analytic={{ transaction.analytic_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.analytic.number }} - {{ transaction.analytic.title }}</a></td>
+                    <td class="text-right">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
+                    <td class="text-right">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
+                    <td>{{ transaction.letter }}</td>
+                </tr>
+            {% endfor %}
         {% endfor %}
     </table>
 

@@ -320,6 +320,8 @@ class ChecksView(TemplateView):
         transactions = Transaction.objects.filter(entry__date__year=2019)
         context['missing_analytic'] = transactions.filter(account__number__regex=r'^[67]', analytic__isnull=True)
         context['extraneous_analytic'] = transactions.filter(account__number__regex=r'^[^67]', analytic__isnull=False)
+        letters = Letter.objects.annotate(balance=Sum('transaction__revenue') - Sum('transaction__expense'))
+        context['unbalanced_letters'] = letters.exclude(balance=0)
         return context
 
 
