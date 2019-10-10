@@ -12,7 +12,8 @@ djangorestframework==3.9.1
 elasticsearch==5.5.3
 factory-boy==2.11.1
 fintech==6.0.7
-fpdf==1.7.2flake8==3.7.5
+fpdf==1.7.2
+flake8==3.7.5
 google-api-python-client==1.6.2
 gunicorn==19.9.0
 lxml==4.3.1
