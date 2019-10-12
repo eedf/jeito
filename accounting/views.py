@@ -362,7 +362,7 @@ class PurchaseListView(UserMixin, YearMixin, ListView):
     template_name = 'accounting/purchase_list.html'
 
     def get_queryset(self):
-        return PurchaseInvoice.objects.filter(year=self.year).order_by('date', 'pk')
+        return PurchaseInvoice.objects.filter(year=self.year).order_by('-date', '-pk')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
