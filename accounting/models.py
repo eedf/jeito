@@ -127,7 +127,7 @@ class Entry(models.Model):
         return super().delete(*args, **kwargs)
 
 
-class PurchaseInvoice(Entry):
+class Purchase(Entry):
     deadline = models.DateField(verbose_name="Date limite", null=True, blank=True)
     number = models.CharField(verbose_name="Numéro", max_length=100, blank=True)
 

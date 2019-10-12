@@ -1,7 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
 from django import forms
-from .models import Account, Journal, PurchaseInvoice, ThirdParty, Transaction
+from .models import Account, Journal, Purchase, ThirdParty, Transaction
 
 
 class PurchaseForm(forms.ModelForm):
@@ -9,7 +9,7 @@ class PurchaseForm(forms.ModelForm):
     revenue = forms.DecimalField(label="Montant total", max_digits=8, decimal_places=2)
 
     class Meta:
-        model = PurchaseInvoice
+        model = Purchase
         fields = ('title', 'date', 'thirdparty', 'number', 'deadline', 'scan', 'revenue')
 
     def __init__(self, *args, **kwargs):
@@ -67,7 +67,7 @@ class PurchaseTransactionForm(forms.ModelForm):
 class PurchaseFormSet(forms.BaseInlineFormSet):
     def __new__(cls, *args, **kwargs):
         formset_class = forms.inlineformset_factory(
-            PurchaseInvoice,
+            Purchase,
             Transaction,
             form=PurchaseTransactionForm,
             can_delete=False,
@@ -76,7 +76,7 @@ class PurchaseFormSet(forms.BaseInlineFormSet):
         formset = formset_class(
             *args,
             queryset=Transaction.objects.filter(account__number__startswith='6'),
-            **kwargs,
+            **kwargs
         )
         formset.helper = FormHelper()
         formset.helper.form_tag = False

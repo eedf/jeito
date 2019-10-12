@@ -13,7 +13,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter
 from .forms import PurchaseForm, PurchaseFormSet
-from .models import BankStatement, Transaction, Entry, TransferOrder, ThirdParty, Letter, PurchaseInvoice, Year
+from .models import BankStatement, Transaction, Entry, TransferOrder, ThirdParty, Letter, Purchase, Year
 
 
 class UserMixin(UserPassesTestMixin):
@@ -362,7 +362,7 @@ class PurchaseListView(UserMixin, YearMixin, ListView):
     template_name = 'accounting/purchase_list.html'
 
     def get_queryset(self):
-        return PurchaseInvoice.objects.filter(year=self.year).order_by('-date', '-pk')
+        return Purchase.objects.filter(year=self.year).order_by('-date', '-pk')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -412,10 +412,10 @@ class PurchaseCreateView(UserMixin, YearMixin, TemplateView):
 
 class PurchaseUpdateView(UserMixin, YearMixin, SingleObjectMixin, TemplateView):
     template_name = 'accounting/purchase_form.html'
-    model = PurchaseInvoice
+    model = Purchase
 
     def get_queryset(self):
-        return PurchaseInvoice.objects.filter(year=self.year)
+        return Purchase.objects.filter(year=self.year)
 
     def get_context_data(self, **kwargs):
         if 'form' not in kwargs:

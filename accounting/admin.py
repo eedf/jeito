@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Q
 from .models import (Account, Analytic, Entry, BankStatement, Transaction,
-                     ThirdParty, PurchaseInvoice, TransferOrder, Journal, Year)
+                     ThirdParty, Purchase, TransferOrder, Journal, Year)
 
 
 class HasScanListFilter(admin.SimpleListFilter):
@@ -74,8 +74,8 @@ class EntryAdmin(admin.ModelAdmin):
     has_scan.admin_order_field = 'scan'
 
 
-@admin.register(PurchaseInvoice)
-class PurchaseInvoiceAdmin(EntryAdmin):
+@admin.register(Purchase)
+class PurchaseAdmin(EntryAdmin):
     list_display = ('date', 'title', 'deadline', 'number', 'balanced', 'has_scan', 'exported')
     search_fields = ('title', '=number', 'transaction__account__title', 'transaction__analytic__title')
     date_hierarchy = 'deadline'
