@@ -34,9 +34,9 @@
         {% for transaction in transactions %}
             <tr>
                 <td>{{ transaction.title }}</td>
-                <td><a href="{% url 'accounting:account' %}?account={{ transaction.account_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
-                <td><a href="{% url 'accounting:account' %}?thirdparty={{ transaction.thirdparty_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.thirdparty.number }} - {{ transaction.thirdparty.title }}</a></td>
-                <td><a href="{% url 'accounting:account' %}?analytic={{ transaction.analytic_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.analytic.number }} - {{ transaction.analytic.title }}</a></td>
+                <td><a href="{% url 'accounting:account' year.pk %}?account={{ transaction.account_id }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
+                <td><a href="{% url 'accounting:account' year.pk %}?thirdparty={{ transaction.thirdparty_id }}">{{ transaction.thirdparty.number }} - {{ transaction.thirdparty.title }}</a></td>
+                <td><a href="{% url 'accounting:account' year.pk %}?analytic={{ transaction.analytic_id }}">{{ transaction.analytic.number }} - {{ transaction.analytic.title }}</a></td>
                 <td class="text-right">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right">{% if transaction.reconciliation %}{{ transaction.reconciliation|date:"d/m/y" }}{% endif %}</td>
@@ -61,7 +61,7 @@
             </a>
         {% endif %}
         {% if entry.transferorder %}
-            <a href="{% url 'accounting:transfer_order_download' entry.pk %}" class="btn btn-primary">
+            <a href="{% url 'accounting:transfer_order_download' year.pk entry.pk %}" class="btn btn-primary">
                 <span class="glyphicon glyphicon-download"></span>
                 Fichier SEPA
             </a>

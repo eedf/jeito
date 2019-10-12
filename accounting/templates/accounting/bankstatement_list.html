@@ -7,8 +7,6 @@
 
     <h1>Relevés de compte</h1>
 
-    {% crispy filter.form %}
-
     <table class="table table-striped table-hover">
         <tr>
             <th>Date</th>
@@ -26,7 +24,7 @@
             <td class="text-right"></td>
             <td class="text-right"></td>
             <td class="text-right"></td>
-            <td><a href="{% url 'accounting:next_reconciliation' %}">détail</a></td>
+            <td><a href="{% url 'accounting:next_reconciliation' year.pk %}">détail</a></td>
         </tr>
         {% for bankstatement in bankstatement_list %}
             <tr>
@@ -36,7 +34,7 @@
                 <td class="text-right">{{ bankstatement.balance|floatformat:2 }} €</td>
                 <td class="text-right">{{ bankstatement.entries_balance|floatformat:2 }} €</td>
                 <td class="text-right">{{ bankstatement.reconciliation|floatformat:2 }} €</td>
-                <td><a href="{% url 'accounting:reconciliation' bankstatement.pk %}">détail</a></td>
+                <td><a href="{% url 'accounting:reconciliation' year.pk bankstatement.pk %}">détail</a></td>
             </tr>
         {% endfor %}
     </table>
@@ -44,14 +42,3 @@
 </div>
 
 {% endblock content %}
-
-
-{% block js %}
-
-    {{ block.super }}
-
-    <script>
-        $('select, :checkbox').change(function() {$('#filter').submit()});
-    </script>
-
-{% endblock js %}

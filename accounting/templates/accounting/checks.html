@@ -20,13 +20,13 @@
         </tr>
         {% for transaction in missing_analytic %}
             <tr>
-                <td><a href="{% url 'accounting:entry' transaction.entry.pk %}">{{ transaction.title|default:transaction.entry.title }}</a></td>
-                <td><a href="{% url 'accounting:account' %}?account={{ transaction.account_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
-                <td><a href="{% url 'accounting:account' %}?thirdparty={{ transaction.thirdparty_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.thirdparty.number }} - {{ transaction.thirdparty.title }}</a></td>
-                <td><a href="{% url 'accounting:account' %}?analytic={{ transaction.analytic_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.analytic.number }} - {{ transaction.analytic.title }}</a></td>
+                <td><a href="{% url 'accounting:entry' transaction.entry.year.pk transaction.entry.pk %}">{{ transaction.title|default:transaction.entry.title }}</a></td>
+                <td><a href="{% url 'accounting:account' transaction.entry.year.pk %}?account={{ transaction.account_id }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
+                <td><a href="{% url 'accounting:account' transaction.entry.year.pk %}?thirdparty={{ transaction.thirdparty_id }}">{{ transaction.thirdparty.number }} - {{ transaction.thirdparty.title }}</a></td>
+                <td><a href="{% url 'accounting:account' transaction.entry.year.pk %}?analytic={{ transaction.analytic_id }}">{{ transaction.analytic.number }} - {{ transaction.analytic.title }}</a></td>
                 <td class="text-right">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
-                <td>{{ transaction.letter }}</td>
+                <td>{{ transaction.letter|default:"" }}</td>
             </tr>
         {% endfor %}
     </table>
@@ -45,13 +45,13 @@
         </tr>
         {% for transaction in extraneous_analytic %}
             <tr>
-                <td><a href="{% url 'accounting:entry' transaction.entry.pk %}">{{ transaction.title|default:transaction.entry.title }}</a></td>
-                <td><a href="{% url 'accounting:account' %}?account={{ transaction.account_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
-                <td><a href="{% url 'accounting:account' %}?thirdparty={{ transaction.thirdparty_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.thirdparty.number }} - {{ transaction.thirdparty.title }}</a></td>
-                <td><a href="{% url 'accounting:account' %}?analytic={{ transaction.analytic_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.analytic.number }} - {{ transaction.analytic.title }}</a></td>
+                <td><a href="{% url 'accounting:entry' transaction.entry.year.pk transaction.entry.pk %}">{{ transaction.title|default:transaction.entry.title }}</a></td>
+                <td><a href="{% url 'accounting:account' transaction.entry.year.pk %}?account={{ transaction.account_id }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
+                <td><a href="{% url 'accounting:account' transaction.entry.year.pk %}?thirdparty={{ transaction.thirdparty_id }}">{{ transaction.thirdparty.number }} - {{ transaction.thirdparty.title }}</a></td>
+                <td><a href="{% url 'accounting:account' transaction.entry.year.pk %}?analytic={{ transaction.analytic_id }}">{{ transaction.analytic.number }} - {{ transaction.analytic.title }}</a></td>
                 <td class="text-right">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
-                <td>{{ transaction.letter }}</td>
+                <td>{{ transaction.letter|default:"" }}</td>
             </tr>
         {% endfor %}
     </table>
@@ -72,13 +72,13 @@
             <tr><td>{{ letter }}</td></tr>
             {% for transaction in letter.transaction.all %}
                 <tr>
-                    <td><a href="{% url 'accounting:entry' transaction.entry.pk %}">{{ transaction.title|default:transaction.entry.title }}</a></td>
-                    <td><a href="{% url 'accounting:account' %}?account={{ transaction.account_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
-                    <td><a href="{% url 'accounting:account' %}?thirdparty={{ transaction.thirdparty_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.thirdparty.number }} - {{ transaction.thirdparty.title }}</a></td>
-                    <td><a href="{% url 'accounting:account' %}?analytic={{ transaction.analytic_id }}&year={{ entry.date|date:'Y' }}">{{ transaction.analytic.number }} - {{ transaction.analytic.title }}</a></td>
+                    <td><a href="{% url 'accounting:entry' transaction.entry.year.pk transaction.entry.pk %}">{{ transaction.title|default:transaction.entry.title }}</a></td>
+                    <td><a href="{% url 'accounting:account' transaction.entry.year.pk %}?account={{ transaction.account_id }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>
+                    <td><a href="{% url 'accounting:account' transaction.entry.year.pk %}?thirdparty={{ transaction.thirdparty_id }}">{{ transaction.thirdparty.number }} - {{ transaction.thirdparty.title }}</a></td>
+                    <td><a href="{% url 'accounting:account' transaction.entry.year.pk %}?analytic={{ transaction.analytic_id }}">{{ transaction.analytic.number }} - {{ transaction.analytic.title }}</a></td>
                     <td class="text-right">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
                     <td class="text-right">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
-                    <td>{{ transaction.letter }}</td>
+                    <td>{{ transaction.letter|default:"" }}</td>
                 </tr>
             {% endfor %}
         {% endfor %}

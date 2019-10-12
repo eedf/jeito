@@ -5,9 +5,7 @@
 
 <div class="container accounting">
 
-    <h1>Écritures</h1>
-
-    {% crispy filter.form %}
+    <h1>Écritures {{ year }}</h1>
 
     <table class="table table-striped table-hover">
         <tr>
@@ -21,7 +19,7 @@
         {% for entry in object_list %}
             <tr>
                 <td>{{ entry.date|date:"d/m/y" }}</td>
-                <td><a href="{% url 'accounting:entry' entry.pk %}">{{ entry.title }}</a></td>
+                <td><a href="{% url 'accounting:entry' year.pk entry.pk %}">{{ entry.title }}</a></td>
                 <td>
                     {% if entry.exported %}<span class="label label-success">Exporté</span>{% endif %}
                     {% if not entry.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
@@ -44,14 +42,3 @@
 </div>
 
 {% endblock content %}
-
-
-{% block js %}
-
-    {{ block.super }}
-
-    <script>
-        $('select, :checkbox').change(function() {$('#filter').submit()});
-    </script>
-
-{% endblock js %}

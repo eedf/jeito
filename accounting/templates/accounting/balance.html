@@ -5,7 +5,7 @@
 
 <div class="container">
 
-    <h1>Balance</h1>
+    <h1>Balance {{ year }}</h1>
 
     {% crispy filter.form %}
 
@@ -19,8 +19,8 @@
         </tr>
         {% for row in data %}
             <tr>
-                <td><a href="{% url 'accounting:account' %}?account={{ row.account__id }}&year={{ filter.form.data.year }}">{{ row.account__number }}</a></td>
-                <td><a href="{% url 'accounting:account' %}?account={{ row.account__id }}&year={{ filter.form.data.year }}">{{ row.account__title }}</a></td>
+                <td><a href="{% url 'accounting:account' year.pk %}?account={{ row.account__id }}">{{ row.account__number }}</a></td>
+                <td><a href="{% url 'accounting:account' year.pk %}?account={{ row.account__id }}">{{ row.account__title }}</a></td>
                 <td class="text-right text-nowrap">{% if row.expenses %}{{ row.expenses|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right text-nowrap">{% if row.revenues %}{{ row.revenues|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right text-nowrap">{{ row.balance|floatformat:2 }} €</td>

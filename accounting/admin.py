@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Q
 from .models import (Account, Analytic, Entry, BankStatement, Transaction,
-                     ThirdParty, PurchaseInvoice, TransferOrder, Journal)
+                     ThirdParty, PurchaseInvoice, TransferOrder, Journal, Year)
 
 
 class HasScanListFilter(admin.SimpleListFilter):
@@ -20,6 +20,12 @@ class HasScanListFilter(admin.SimpleListFilter):
                 Q(transaction__account__number__startswith='7'),
                 scan=''
             )
+
+
+@admin.register(Year)
+class YearAdmin(admin.ModelAdmin):
+    list_display = ('title', 'start', 'end')
+    search_fields = ('title', )
 
 
 @admin.register(Journal)
@@ -54,10 +60,10 @@ class TransactionInline(admin.TabularInline):
 
 @admin.register(Entry)
 class EntryAdmin(admin.ModelAdmin):
-    list_display = ('date', 'title', 'balanced', 'has_scan', 'exported')
+    list_display = ('title', 'year', 'date', 'balanced', 'has_scan', 'exported')
     search_fields = ('title', 'transaction__account__title', 'transaction__analytic__title')
     date_hierarchy = 'date'
-    list_filter = (HasScanListFilter, 'journal', 'exported', 'transaction__analytic')
+    list_filter = (HasScanListFilter, 'year', 'journal', 'exported', 'transaction__analytic')
     inlines = (TransactionInline, )
     save_as = True
 
@@ -84,7 +90,8 @@ class TransferOrderAdmin(EntryAdmin):
 
 @admin.register(BankStatement)
 class BankStatementAdmin(admin.ModelAdmin):
-    list_display = ('date', 'number', 'scan', 'balance')
+    list_display = ('date', 'year', 'number', 'scan', 'balance')
+    list_filter = ('year', )
     date_hierarchy = 'date'
 
 

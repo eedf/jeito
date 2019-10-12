@@ -23,7 +23,7 @@
             <tr>
                 <td>{{ row.reconciliation|date:"d/m/y" }}</td>
                 <td>{{ row.entry.date|date:"d/m/y" }}</td>
-                <td><a href="{% url 'accounting:entry' row.entry.pk %}">{{ row.entry.title }}{% if row.title %} - {{ row.title }}{% endif %}</a></td>
+                <td><a href="{% url 'accounting:entry' row.entry.year.pk row.entry.pk %}">{{ row.entry.title }}{% if row.title %} - {{ row.title }}{% endif %}</a></td>
                 <td align="right">{% if row.expense %}{{ row.expense|floatformat:2 }} €{% endif %}</td>
                 <td align="right">{% if row.revenue %}{{ row.revenue|floatformat:2 }} €{% endif %}</td>
                 <td align="right">{% if row.balance %}{{ row.balance }} €{% endif %}</td>

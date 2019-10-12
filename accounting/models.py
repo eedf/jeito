@@ -8,6 +8,19 @@ from django.urls import reverse
 from localflavor.generic.models import IBANField, BICField
 
 
+class Year(models.Model):
+    title = models.CharField(verbose_name="Intitulé", max_length=100)
+    start = models.DateField(verbose_name="Début")
+    end = models.DateField(verbose_name="Fin")
+
+    class Meta:
+        verbose_name = "Exercice"
+        ordering = ('start', 'end')
+
+    def __str__(self):
+        return self.title
+
+
 class Journal(models.Model):
     number = models.CharField(verbose_name="Numéro", max_length=2, unique=True)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
@@ -85,6 +98,7 @@ class EntryManager(models.Manager):
 
 
 class Entry(models.Model):
+    year = models.ForeignKey(Year, verbose_name="Exercice", on_delete=models.PROTECT)
     date = models.DateField(verbose_name="Date", default=datetime.date.today)
     journal = models.ForeignKey(Journal, verbose_name="Journal", on_delete=models.PROTECT)
     title = models.CharField(verbose_name="Intitulé", max_length=100)
@@ -227,6 +241,7 @@ class Transaction(models.Model):
 
 
 class BankStatement(models.Model):
+    year = models.ForeignKey(Year, verbose_name="Exercice", on_delete=models.PROTECT)
     date = models.DateField()
     number = models.PositiveIntegerField(verbose_name="Numéro", blank=True, null=True)
     scan = models.FileField(upload_to='releves')
@@ -239,7 +254,8 @@ class BankStatement(models.Model):
 
     @property
     def entries_balance(self):
-        transactions = Transaction.objects.filter(account__number='5120000', reconciliation__lte=self.date)
+        transactions = Transaction.objects.filter(account__number='5120000') \
+            .filter(entry__year=self.year, reconciliation__lte=self.date)
         sums = transactions.aggregate(expense=models.Sum('expense'), revenue=models.Sum('revenue'))
         return sums['expense'] - sums['revenue']
 

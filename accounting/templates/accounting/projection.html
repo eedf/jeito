@@ -1,13 +1,10 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
 
 {% block content %}
 
 <div class="container">
 
-    <h1>Projection</h1>
-
-    {% crispy filter.form %}
+    <h1>Projection {{ year }}</h1>
 
     <table class="table table-striped table-hover">
         <tr>
@@ -15,10 +12,10 @@
             <th>Compte analytique</th>
             <th class="text-right">Montant</th>
         </tr>
-        {% for row in data %}
+        {% for row in object_list %}
             <tr>
-                <td><a href="{% url 'accounting:account' %}?account={{ row.account__id }}&year={{ filter.form.cleaned_data.year }}">{{ row.account__number }} {{ row.account__title }}</a></td>
-                <td><a href="{% url 'accounting:account' %}?analytic={{ row.analytic__id }}&year={{ filter.form.cleaned_data.year }}">{{ row.analytic__title }}</a></td>
+                <td><a href="{% url 'accounting:account' year.pk %}?account={{ row.account_id }}">{{ row.account__number }} {{ row.account__title }}</a></td>
+                <td><a href="{% url 'accounting:account' year.pk %}?analytic={{ row.analytic_id }}">{{ row.analytic__title }}</a></td>
                 <td class="text-right">{% if row.solde %}{{ row.solde|floatformat:2 }} €{% endif %}</td>
             </tr>
         {% endfor %}
@@ -31,14 +28,3 @@
 </div>
 
 {% endblock content %}
-
-
-{% block js %}
-
-    {{ block.super }}
-
-    <script>
-        $('select, :checkbox').change(function() {$('#filter').submit()});
-    </script>
-
-{% endblock js %}

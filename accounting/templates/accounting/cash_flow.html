@@ -6,7 +6,7 @@
 
     <div class="container">
 
-        <h1>Cash flow</h1>
+        <h1>Cash flow {{ year }}</h1>
 
         {#{% crispy form %}#}
 
@@ -61,7 +61,7 @@
             params = $('form').serialize();
             state = {};
             $('select').each(function() { state[$(this).attr('id')] = $(this).val(); });
-            $.getJSON("{% url 'accounting:cash_flow_data' %}?" + params, function(data) {
+            $.getJSON("{% url 'accounting:cash_flow_data' year.pk %}?" + params, function(data) {
                 new Chartist.Line('.ct-chart', data, options);
                 $('#comment').html(data['comment']);
                 if (updateHistory) {
