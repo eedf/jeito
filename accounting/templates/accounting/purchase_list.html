@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container accounting">
+
+    <h1>Achats {{ year }}</h1>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Date</th>
+            <th>Intitulé</th>
+            <th>Labels</th>
+            <th class="text-right">Débit</th>
+        </tr>
+        {% for purchase in object_list %}
+            <tr>
+                <td>{{ purchase.date|date:"d/m/y" }}</td>
+                <td><a href="{% url 'accounting:purchase_detail' year.pk purchase.pk %}">{{ purchase.title }}</a></td>
+                <td>
+                    {% if purchase.exported %}<span class="label label-success">Exporté</span>{% endif %}
+                    {% if not purchase.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
+                </td>
+                <td class="text-right text-nowrap">{% if purchase.expense %}{{ purchase.expense|floatformat:2 }} €{% endif %}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td></td>
+            <td><strong>Total</strong></td>
+            <td></td>
+            <td class="text-right text-nowrap"><strong>{{ expense|floatformat:2 }} €</strong></td>
+        </tr>
+    </table>
+
+</div>
+
+{% endblock content %}

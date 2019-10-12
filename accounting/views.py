@@ -297,14 +297,14 @@ class CashFlowJsonView(UserMixin, YearMixin, View):
         return JsonResponse(data)
 
 
-class TransferOrderDownloadView(DetailView):
+class TransferOrderDownloadView(UserMixin, YearMixin, DetailView):
     model = TransferOrder
 
     def render_to_response(self, context, **response_kwargs):
         return HttpResponse(self.object.sepa(), content_type='application/xml')
 
 
-class ThirdPartyCsvView(ListView):
+class ThirdPartyCsvView(UserMixin, YearMixin, ListView):
     model = ThirdParty
     fields = ('number', 'title', 'type', 'account_number', 'iban', 'bic')
 
@@ -317,7 +317,7 @@ class ThirdPartyCsvView(ListView):
         return response
 
 
-class EntryCsvView(ListView):
+class EntryCsvView(UserMixin, YearMixin, ListView):
     fields = (
         'journal_number', 'date_dmy', 'account_number', 'entry_id',
         'thirdparty_number', '__str__', 'expense', 'revenue'
@@ -325,7 +325,7 @@ class EntryCsvView(ListView):
 
     def get_queryset(self):
         return Transaction.objects \
-            .filter(entry__date__year=self.kwargs['year'], entry__exported=False) \
+            .filter(entry__year=self.year, entry__exported=False) \
             .order_by('entry__id', 'id') \
             .select_related('entry', 'entry__journal', 'account', 'thirdparty')
 
@@ -358,6 +358,37 @@ class ChecksView(UserMixin, YearMixin, TemplateView):
         return context
 
 
+class PurchaseListView(UserMixin, YearMixin, ListView):
+    template_name = 'accounting/purchase_list.html'
+
+    def get_queryset(self):
+        return PurchaseInvoice.objects.filter(year=self.year).order_by('date', 'pk')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        expense = 0
+        for entry in self.object_list:
+            expense += entry.expense
+        context['expense'] = expense
+        return context
+
+
+class PurchaseDetailView(UserMixin, YearMixin, DetailView):
+    template_name = 'accounting/purchase_detail.html'
+    context_object_name = 'purchase'
+
+    def get_queryset(self):
+        return Entry.objects.filter(year=self.year, journal__number='HA')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['revenue'] = self.object.transaction_set.get(account__number='4010000')
+        expenses = self.object.transaction_set.filter(account__number__startswith='6') \
+            .order_by('account__number', 'analytic__title')
+        context['expenses'] = expenses
+        return context
+
+
 class PurchaseCreateView(UserMixin, YearMixin, TemplateView):
     template_name = 'accounting/purchase_form.html'
 
@@ -384,7 +415,7 @@ class PurchaseUpdateView(UserMixin, YearMixin, SingleObjectMixin, TemplateView):
     model = PurchaseInvoice
 
     def get_queryset(self):
-        return PurchaseInvoice.objects.filter(date__year=self.kwargs['year'])
+        return PurchaseInvoice.objects.filter(year=self.year)
 
     def get_context_data(self, **kwargs):
         if 'form' not in kwargs:

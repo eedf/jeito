@@ -3,7 +3,8 @@ from .views import (BalanceView, ThirdPartyBalanceView, AnalyticBalanceView,
                     BankStatementView, AccountView, ReconciliationView, ThirdPartyCsvView,
                     NextReconciliationView, ProjectionView, EntryView, EntryListView,
                     CashFlowView, CashFlowJsonView, TransferOrderDownloadView, EntryCsvView,
-                    ChecksView, PurchaseCreateView, PurchaseUpdateView)
+                    ChecksView, PurchaseListView, PurchaseDetailView, PurchaseCreateView,
+                    PurchaseUpdateView)
 
 
 app_name = 'accounting'
@@ -23,8 +24,11 @@ urlpatterns = [
     url(r'^(?P<year_pk>\d+)/reconciliation/(?P<pk>\d+)/$', ReconciliationView.as_view(), name='reconciliation'),
     url(r'^(?P<year_pk>\d+)/cash-flow/$', CashFlowView.as_view(), name='cash-flow'),
     url(r'^(?P<year_pk>\d+)/cash-flow/data/$', CashFlowJsonView.as_view(), name='cash_flow_data'),
-    url(r'^(?P<year_pk>\d+)/transfer-order/(?P<pk>\d+)/download/$', TransferOrderDownloadView.as_view(), name='transfer_order_download'),
+    url(r'^(?P<year_pk>\d+)/transfer-order/(?P<pk>\d+)/download/$', TransferOrderDownloadView.as_view(),
+        name='transfer_order_download'),
     url(r'^(?P<year_pk>\d+)/checks/$', ChecksView.as_view(), name='checks'),
+    url(r'^(?P<year_pk>\d+)/purchase/$', PurchaseListView.as_view(), name='purchase_list'),
+    url(r'^(?P<year_pk>\d+)/purchase/(?P<pk>\d+)/$', PurchaseDetailView.as_view(), name='purchase_detail'),
     url(r'^(?P<year_pk>\d+)/purchase/create/$', PurchaseCreateView.as_view(), name='purchase_create'),
     url(r'^(?P<year_pk>\d+)/purchase/(?P<pk>\d+)/update/$', PurchaseUpdateView.as_view(), name='purchase_update'),
 ]
