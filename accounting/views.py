@@ -3,18 +3,16 @@ from collections import OrderedDict
 from datetime import date, timedelta
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.core.exceptions import ImproperlyConfigured
 from django.db.models import F, Q, Sum
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.formats import date_format
 from django.views.generic import ListView, DetailView, TemplateView, View
-from django.views.generic.base import ContextMixin, TemplateResponseMixin
+from django.views.generic.detail import SingleObjectMixin
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, EntryFilter, ProjectionFilter, BankStatementFilter
 from .forms import PurchaseForm, PurchaseFormSet
-from .models import (BankStatement, Transaction, Entry, TransferOrder, ThirdParty,
-                     Letter, PurchaseInvoice, Journal, Account)
+from .models import BankStatement, Transaction, Entry, TransferOrder, ThirdParty, Letter, PurchaseInvoice
 
 
 class UserMixin(UserPassesTestMixin):
@@ -325,131 +323,49 @@ class ChecksView(TemplateView):
         return context
 
 
-class FormsMixin(ContextMixin):
-    """Provide a way to show and handle multiple forms in a request."""
-    initials = None
-    form_classes = None
-    success_url = None
-    prefixes = None
-
-    def get_initials(self):
-        """Return the initial data to use for forms on this view."""
-        if self.initials is None:
-            return [{} for form in self.get_form_classes()]
-        return [initial.copy() for initial in self.initials]
-
-    def get_prefixes(self):
-        """Return the prefixes to use for forms."""
-        if self.prefixes is None:
-            return [None for form in self.get_form_classes()]
-        return self.prefixes
-
-    def get_form_classes(self):
-        """Return the form classes to use."""
-        return self.form_classes
-
-    def get_forms(self, form_classes=None):
-        """Return an instance of each form to be used in this view."""
-        if form_classes is None:
-            form_classes = self.get_form_classes()
-        return [cls(**kwargs) for cls, kwargs in zip(form_classes, self.get_forms_kwargs())]
-
-    def get_forms_kwargs(self):
-        """Return the keyword arguments for instantiating the forms."""
-        kwargs_list = []
-        for initial, prefix in zip(self.get_initials(), self.get_prefixes()):
-            kwargs = {
-                'initial': initial,
-                'prefix': prefix,
-            }
-
-            if self.request.method in ('POST', 'PUT'):
-                kwargs.update({
-                    'data': self.request.POST,
-                    'files': self.request.FILES,
-                })
-            kwargs_list.append(kwargs)
-        return kwargs_list
-
-    def get_success_url(self):
-        """Return the URL to redirect to after processing a valid form."""
-        if not self.success_url:
-            raise ImproperlyConfigured("No URL to redirect to. Provide a success_url.")
-        return str(self.success_url)  # success_url may be lazy
-
-    def forms_valid(self, forms):
-        """If the forms are valid, redirect to the supplied URL."""
-        return HttpResponseRedirect(self.get_success_url())
-
-    def forms_invalid(self, forms):
-        """If the forms are invalid, render the invalid forms."""
-        return self.render_to_response(self.get_context_data(forms=forms))
+class PurchaseCreateView(UserMixin, TemplateView):
+    template_name = 'accounting/purchase_form.html'
 
     def get_context_data(self, **kwargs):
-        """Insert the forms into the context dict."""
-        if 'forms' not in kwargs:
-            kwargs['forms'] = self.get_forms()
-        return super().get_context_data(**kwargs)
-
-
-class ProcessFormsView(View):
-    """Render forms on GET and processes it on POST."""
-    def get(self, request, *args, **kwargs):
-        """Handle GET requests: instantiate a blank version of the forms."""
-        return self.render_to_response(self.get_context_data())
+        if 'form' not in kwargs:
+            kwargs['form'] = PurchaseForm()
+        if 'formset' not in kwargs:
+            kwargs['formset'] = PurchaseFormSet()
+        return kwargs
 
     def post(self, request, *args, **kwargs):
-        """
-        Handle POST requests: instantiate form instances with the passed
-        POST variables and then check if it's valid.
-        """
-        forms = self.get_forms()
-        if all([form.is_valid() for form in forms]):
-            return self.forms_valid(forms)
+        form = PurchaseForm(data=self.request.POST)
+        formset = PurchaseFormSet(instance=form.instance, data=self.request.POST)
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            return HttpResponseRedirect(reverse_lazy('accounting:entry_list'))
         else:
-            return self.forms_invalid(forms)
-
-    # PUT is a valid HTTP verb for creating (with a known URL) or editing an
-    # object, note that browsers only support POST for now.
-    def put(self, *args, **kwargs):
-        return self.post(*args, **kwargs)
+            return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
-class BaseFormsView(FormsMixin, ProcessFormsView):
-    """A base view for displaying forms."""
-
-
-class FormsView(TemplateResponseMixin, BaseFormsView):
-    """A view for displaying forms and rendering a template response."""
-
-
-class PurchaseCreateView(UserMixin, FormsView):
+class PurchaseUpdateView(UserMixin, SingleObjectMixin, TemplateView):
     template_name = 'accounting/purchase_form.html'
-    form_classes = [PurchaseForm, PurchaseFormSet]
-    success_url = reverse_lazy('accounting:entry_list')
+    model = PurchaseInvoice
 
-    def forms_valid(self, forms):
-        purchase = PurchaseInvoice.objects.create(
-            date=forms[0].cleaned_data['date'],
-            title=forms[0].cleaned_data['title'],
-            journal=Journal.objects.get(number="HA"),
-            scan=forms[0].cleaned_data['document'],
-            deadline=forms[0].cleaned_data['deadline'],
-            number=forms[0].cleaned_data['number'],
-        )
-        for form in forms[1]:
-            if not form.cleaned_data:
-                continue
-            Transaction.objects.create(
-                entry=purchase,
-                account=form.cleaned_data['account'],
-                analytic=form.cleaned_data['analytic'],
-                expense=form.cleaned_data['amount'],
-            )
-        Transaction.objects.create(
-            entry=purchase,
-            account=Account.objects.get(number='4010000'),
-            thirdparty=forms[0].cleaned_data['provider'],
-            revenue=forms[0].cleaned_data['amount'],
-        )
-        return super().forms_valid(forms)
+    def get_context_data(self, **kwargs):
+        if 'form' not in kwargs:
+            kwargs['form'] = PurchaseForm(instance=self.object)
+        if 'formset' not in kwargs:
+            kwargs['formset'] = PurchaseFormSet(instance=self.object)
+        return super().get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = PurchaseForm(instance=self.object, data=self.request.POST)
+        formset = PurchaseFormSet(instance=self.object, data=self.request.POST)
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            return HttpResponseRedirect(reverse_lazy('accounting:entry_list'))
+        else:
+            return self.render_to_response(self.get_context_data(form=form, formset=formset))

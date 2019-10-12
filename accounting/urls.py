@@ -3,7 +3,7 @@ from .views import (BalanceView, ThirdPartyBalanceView, AnalyticBalanceView,
                     BankStatementView, AccountView, ReconciliationView, ThirdPartyCsvView,
                     NextReconciliationView, ProjectionView, EntryView, EntryListView,
                     CashFlowView, CashFlowJsonView, TransferOrderDownloadView, EntryCsvView,
-                    ChecksView, PurchaseCreateView)
+                    ChecksView, PurchaseCreateView, PurchaseUpdateView)
 
 
 app_name = 'accounting'
@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^transfer-order/(?P<pk>\d+)/download/$', TransferOrderDownloadView.as_view(), name='transfer_order_download'),
     url(r'^checks/$', ChecksView.as_view(), name='checks'),
     url(r'^purchase/create/$', PurchaseCreateView.as_view(), name='purchase_create'),
+    url(r'^purchase/(?P<pk>\d+)/update/$', PurchaseUpdateView.as_view(), name='purchase_update'),
 ]
