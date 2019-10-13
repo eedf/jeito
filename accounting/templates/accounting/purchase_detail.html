@@ -17,7 +17,7 @@
     <p><b>Montant</b> : {{ revenue.revenue }}</p>
     <p><b>Numéro</b> : {{ purchase.number|default:"-" }}</p>
     <p><b>Date limite</b> : {{ purchase.deadline|default:"comptant" }}</p>
-    <p><b>Scan</b> : <a href="{{ purchase.scan.url }}">télécharger</a></p>
+    <p><b>Scan</b> : {% if purchase.scan %}<a href="{{ purchase.scan.url }}">télécharger</a>{% else %}-{% endif %}</p>
     <p><b>Ventilation :</b></p>
 
     <table class="table table-striped table-hover">

@@ -5,7 +5,7 @@
 
 <div class="container">
 
-    <h1>{% if form.instance %}Modifier l'achat{% else %}Nouvel achat{% endif %}</h1>
+    <h1>{% if form.instance.pk %}Modifier l'achat {{ purchase }}{% else %}Ajouter un achat{% endif %}</h1>
 
     <form method="POST">
         {% crispy form %}
@@ -16,7 +16,7 @@
             <div class="col-md-4"><label>Montant*</label></div>
         </div>
         {% crispy formset %}
-        <input type="submit" name="create" value="{% if form.instance %}Modifier{% else %}Ajouter{% endif %}" class="btn btn-primary">
+        <input type="submit" name="create" value="Enregistrer" class="btn btn-primary">
     </form>
 
 </div>

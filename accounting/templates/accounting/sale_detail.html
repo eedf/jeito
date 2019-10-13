@@ -18,7 +18,7 @@
     <p><b>Arrhes versées</b> : {{ deposit_transaction.expense|floatformat:2 }}</p>
     <p><b>Solde à payer</b> : {{ client_transaction.expense|floatformat:2 }}</p>
     <p><b>Numéro</b> : {{ sale.number|default:"-" }}</p>
-    <p><b>Scan</b> : <a href="{{ sale.scan.url }}">télécharger</a></p>
+    <p><b>Scan</b> : {% if sale.scan %}<a href="{{ sale.scan.url }}">télécharger</a>{% else %}-{% endif %}</p>
     <p><b>Ventilation :</b></p>
 
     <table class="table table-striped table-hover">

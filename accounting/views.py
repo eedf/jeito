@@ -395,14 +395,14 @@ class PurchaseCreateView(UserMixin, YearMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         if 'form' not in kwargs:
-            kwargs['form'] = PurchaseForm()
+            kwargs['form'] = PurchaseForm(self.year)
         if 'formset' not in kwargs:
             kwargs['formset'] = PurchaseFormSet()
         return kwargs
 
     def post(self, request, *args, **kwargs):
-        form = PurchaseForm(data=self.request.POST)
-        formset = PurchaseFormSet(instance=form.instance, data=self.request.POST)
+        form = PurchaseForm(self.year, data=self.request.POST, files=self.request.FILES)
+        formset = PurchaseFormSet(instance=form.instance, data=self.request.POST, files=self.request.FILES)
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()
@@ -420,7 +420,7 @@ class PurchaseUpdateView(UserMixin, YearMixin, SingleObjectMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         if 'form' not in kwargs:
-            kwargs['form'] = PurchaseForm(instance=self.object)
+            kwargs['form'] = PurchaseForm(self.year, instance=self.object)
         if 'formset' not in kwargs:
             kwargs['formset'] = PurchaseFormSet(instance=self.object)
         return super().get_context_data(**kwargs)
@@ -431,8 +431,8 @@ class PurchaseUpdateView(UserMixin, YearMixin, SingleObjectMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        form = PurchaseForm(instance=self.object, data=self.request.POST)
-        formset = PurchaseFormSet(instance=self.object, data=self.request.POST)
+        form = PurchaseForm(self.year, instance=self.object, data=self.request.POST, files=self.request.FILES)
+        formset = PurchaseFormSet(instance=self.object, data=self.request.POST, files=self.request.FILES)
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()
@@ -483,14 +483,14 @@ class SaleCreateView(UserMixin, YearMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         if 'form' not in kwargs:
-            kwargs['form'] = SaleForm()
+            kwargs['form'] = SaleForm(self.year)
         if 'formset' not in kwargs:
             kwargs['formset'] = SaleFormSet()
         return kwargs
 
     def post(self, request, *args, **kwargs):
-        form = SaleForm(data=self.request.POST)
-        formset = SaleFormSet(instance=form.instance, data=self.request.POST)
+        form = SaleForm(self.year, data=self.request.POST, files=self.request.FILES)
+        formset = SaleFormSet(instance=form.instance, data=self.request.POST, files=self.request.FILES)
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()
@@ -508,7 +508,7 @@ class SaleUpdateView(UserMixin, YearMixin, SingleObjectMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         if 'form' not in kwargs:
-            kwargs['form'] = SaleForm(instance=self.object)
+            kwargs['form'] = SaleForm(self.year, instance=self.object)
         if 'formset' not in kwargs:
             kwargs['formset'] = SaleFormSet(instance=self.object)
         return super().get_context_data(**kwargs)
@@ -519,8 +519,8 @@ class SaleUpdateView(UserMixin, YearMixin, SingleObjectMixin, TemplateView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        form = SaleForm(instance=self.object, data=self.request.POST)
-        formset = SaleFormSet(instance=self.object, data=self.request.POST)
+        form = SaleForm(self.year, instance=self.object, data=self.request.POST, files=self.request.FILES)
+        formset = SaleFormSet(instance=self.object, data=self.request.POST, files=self.request.FILES)
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()

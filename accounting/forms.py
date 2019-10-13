@@ -12,14 +12,18 @@ class PurchaseForm(forms.ModelForm):
         model = Purchase
         fields = ('title', 'date', 'thirdparty', 'number', 'deadline', 'scan', 'amount')
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, year, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.year = year
         purchase = kwargs.get('instance')
         if purchase:
+            assert purchase.year == year
             assert purchase.journal.number == 'HA'
             self.provider_transaction = purchase.transaction_set.get(account__number__startswith='4')
             self.fields['thirdparty'].initial = self.provider_transaction.thirdparty
             self.fields['amount'].initial = self.provider_transaction.revenue
+        else:
+            self.provider_transaction = None
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -47,6 +51,7 @@ class PurchaseForm(forms.ModelForm):
 
         # Save purchase entry
         purchase = super().save(commit=False)
+        purchase.year = self.year
         purchase.journal = Journal.objects.get(number="HA")
         purchase.save()
 
@@ -110,20 +115,25 @@ class SaleForm(forms.ModelForm):
         model = Sale
         fields = ('title', 'date', 'thirdparty', 'number', 'scan', 'amount')
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, year, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        purchase = kwargs.get('instance')
-        if purchase:
-            assert purchase.journal.number == 'VT'
+        self.year = year
+        sale = kwargs.get('instance')
+        if sale:
+            assert self.year == year
+            assert sale.journal.number == 'VT'
             try:
-                self.deposit_transaction = purchase.transaction_set.get(account__number='4190000')
+                self.deposit_transaction = sale.transaction_set.get(account__number='4190000')
                 self.fields['deposit'].initial = self.deposit_transaction.expense
             except Transaction.DoesNotExist:
                 self.deposit_transaction = None
-            self.client_transaction = purchase.transaction_set \
+            self.client_transaction = sale.transaction_set \
                 .get(account__number__in=('4110000', '4500000', '4670000'))
             self.fields['thirdparty'].initial = self.client_transaction.thirdparty
             self.fields['amount'].initial = self.client_transaction.expense + self.deposit_transaction.expense
+        else:
+            self.deposit_transaction = None
+            self.client_transaction = None
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
@@ -150,10 +160,11 @@ class SaleForm(forms.ModelForm):
         amount = self.cleaned_data['amount']
         deposit = self.cleaned_data['deposit']
 
-        # Save purchase entry
-        purchase = super().save(commit=False)
-        purchase.journal = Journal.objects.get(number="VT")
-        purchase.save()
+        # Save sale entry
+        sale = super().save(commit=False)
+        sale.year = self.year
+        sale.journal = Journal.objects.get(number="VT")
+        sale.save()
 
         # Save client transaction
         if not self.client_transaction:
@@ -173,7 +184,7 @@ class SaleForm(forms.ModelForm):
         else:
             if self.deposit_transaction:
                 self.deposit_transaction.delete()
-        return purchase
+        return sale
 
 
 class SaleTransactionForm(forms.ModelForm):
