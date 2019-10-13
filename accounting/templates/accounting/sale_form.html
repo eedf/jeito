@@ -7,7 +7,7 @@
 
     <h1>{% if form.instance.pk %}Modifier la vente {{ sale }}{% else %}Ajouter une vente{% endif %}</h1>
 
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         {% crispy form %}
         <p><b>Ventilation :</b></p>
         <div class="row">
