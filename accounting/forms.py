@@ -15,8 +15,8 @@ class PurchaseForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         purchase = kwargs.get('instance')
-        assert purchase.journal.number == 'HA'
         if purchase:
+            assert purchase.journal.number == 'HA'
             self.provider_transaction = purchase.transaction_set.get(account__number__startswith='4')
             self.fields['thirdparty'].initial = self.provider_transaction.thirdparty
             self.fields['amount'].initial = self.provider_transaction.revenue
@@ -113,8 +113,8 @@ class SaleForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         purchase = kwargs.get('instance')
-        assert purchase.journal.number == 'VT'
         if purchase:
+            assert purchase.journal.number == 'VT'
             try:
                 self.deposit_transaction = purchase.transaction_set.get(account__number='4190000')
                 self.fields['deposit'].initial = self.deposit_transaction.expense
