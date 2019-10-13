@@ -10,8 +10,8 @@ env:
   - CFLAGS=-O0
 install:
   - pip install -U pip wheel
-  - pip install coveralls
   - pip install -r requirements.txt
+  - pip install coverage
 before_script:
   - psql -c "create user jeito password 'jeito' createdb;" -U postgres
   - psql -c "create database jeito owner jeito;" -U postgres
@@ -21,4 +21,5 @@ script:
   - flake8
   - coverage run manage.py test --settings=jeito.test_settings
 after_success:
+  - pip install coveralls
   - coveralls

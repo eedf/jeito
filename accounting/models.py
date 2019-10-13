@@ -4,6 +4,7 @@ fintech.register()  # noqa
 from fintech import sepa
 from django.conf import settings
 from django.db import models
+from django.db.models.functions import Coalesce
 from django.urls import reverse
 from localflavor.generic.models import IBANField, BICField
 
@@ -90,8 +91,8 @@ class EntryManager(models.Manager):
     def get_queryset(self):
         qs = super().get_queryset()
         qs = qs.annotate(
-            revenue=models.Sum('transaction__revenue'),
-            expense=models.Sum('transaction__expense'),
+            revenue=Coalesce(models.Sum('transaction__revenue'), 0),
+            expense=Coalesce(models.Sum('transaction__expense'), 0),
             balance=models.Sum('transaction__revenue') - models.Sum('transaction__expense')
         )
         return qs
