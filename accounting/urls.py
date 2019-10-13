@@ -1,10 +1,12 @@
 from django.conf.urls import url
-from .views import (BalanceView, ThirdPartyBalanceView, AnalyticBalanceView,
-                    BankStatementView, AccountView, ReconciliationView, ThirdPartyCsvView,
-                    NextReconciliationView, ProjectionView, EntryView, EntryListView,
-                    CashFlowView, CashFlowJsonView, TransferOrderDownloadView, EntryCsvView,
-                    ChecksView, PurchaseListView, PurchaseDetailView, PurchaseCreateView,
-                    PurchaseUpdateView)
+from .views import (
+    BalanceView, ThirdPartyBalanceView, AnalyticBalanceView, ChecksView,
+    BankStatementView, AccountView, ReconciliationView, ThirdPartyCsvView,
+    NextReconciliationView, ProjectionView, EntryView, EntryListView,
+    CashFlowView, CashFlowJsonView, TransferOrderDownloadView, EntryCsvView,
+    PurchaseListView, PurchaseDetailView, PurchaseCreateView, PurchaseUpdateView,
+    SaleListView, SaleDetailView, SaleCreateView, SaleUpdateView,
+)
 
 
 app_name = 'accounting'
@@ -31,4 +33,8 @@ urlpatterns = [
     url(r'^(?P<year_pk>\d+)/purchase/(?P<pk>\d+)/$', PurchaseDetailView.as_view(), name='purchase_detail'),
     url(r'^(?P<year_pk>\d+)/purchase/create/$', PurchaseCreateView.as_view(), name='purchase_create'),
     url(r'^(?P<year_pk>\d+)/purchase/(?P<pk>\d+)/update/$', PurchaseUpdateView.as_view(), name='purchase_update'),
+    url(r'^(?P<year_pk>\d+)/sale/$', SaleListView.as_view(), name='sale_list'),
+    url(r'^(?P<year_pk>\d+)/sale/(?P<pk>\d+)/$', SaleDetailView.as_view(), name='sale_detail'),
+    url(r'^(?P<year_pk>\d+)/sale/create/$', SaleCreateView.as_view(), name='sale_create'),
+    url(r'^(?P<year_pk>\d+)/sale/(?P<pk>\d+)/update/$', SaleUpdateView.as_view(), name='sale_update'),
 ]

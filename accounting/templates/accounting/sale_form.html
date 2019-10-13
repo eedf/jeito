@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>{% if form.instance %}Modifier la vente{% else %}Nouvelle vente{% endif %}</h1>
+
+    <form method="POST">
+        {% crispy form %}
+        <p><b>Ventilation :</b></p>
+        <div class="row">
+            <div class="col-md-4"><label>Compte*</label></div>
+            <div class="col-md-4"><label>Analytique*</label></div>
+            <div class="col-md-4"><label>Montant*</label></div>
+        </div>
+        {% crispy formset %}
+        <input type="submit" name="create" value="{% if form.instance %}Modifier{% else %}Ajouter{% endif %}" class="btn btn-primary">
+    </form>
+
+</div>
+
+{% endblock content %}

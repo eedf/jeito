@@ -15,8 +15,8 @@
     <p><b>Date</b> : {{ purchase.date|date:"d/m/y" }}</p>
     <p><b>Fournisseur</b> : {{ revenue.thirdparty }}</p>
     <p><b>Montant</b> : {{ revenue.revenue }}</p>
-    <p><b>Numéro</b> : {{ purchase.number }}</p>
-    <p><b>Date limite</b> : {{ purchase.deadline }}</p>
+    <p><b>Numéro</b> : {{ purchase.number|default:"-" }}</p>
+    <p><b>Date limite</b> : {{ purchase.deadline|default:"comptant" }}</p>
     <p><b>Scan</b> : <a href="{{ purchase.scan.url }}">télécharger</a></p>
     <p><b>Ventilation :</b></p>
 

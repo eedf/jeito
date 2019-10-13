@@ -12,8 +12,9 @@ from django.views.generic import ListView, DetailView, TemplateView, View
 from django.views.generic.detail import SingleObjectMixin
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter
-from .forms import PurchaseForm, PurchaseFormSet
-from .models import BankStatement, Transaction, Entry, TransferOrder, ThirdParty, Letter, Purchase, Year
+from .forms import PurchaseForm, PurchaseFormSet, SaleForm, SaleFormSet
+from .models import (BankStatement, Transaction, Entry, TransferOrder, ThirdParty,
+                     Letter, Purchase, Year, Sale)
 
 
 class UserMixin(UserPassesTestMixin):
@@ -378,11 +379,11 @@ class PurchaseDetailView(UserMixin, YearMixin, DetailView):
     context_object_name = 'purchase'
 
     def get_queryset(self):
-        return Entry.objects.filter(year=self.year, journal__number='HA')
+        return Purchase.objects.filter(year=self.year)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['revenue'] = self.object.transaction_set.get(account__number='4010000')
+        context['revenue'] = self.object.transaction_set.get(account__number__startswith='4')
         expenses = self.object.transaction_set.filter(account__number__startswith='6') \
             .order_by('account__number', 'analytic__title')
         context['expenses'] = expenses
@@ -405,7 +406,7 @@ class PurchaseCreateView(UserMixin, YearMixin, TemplateView):
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()
-            return HttpResponseRedirect(reverse_lazy('accounting:entry_list'))
+            return HttpResponseRedirect(reverse_lazy('accounting:purchase_list', args=[self.year.pk]))
         else:
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
@@ -435,6 +436,94 @@ class PurchaseUpdateView(UserMixin, YearMixin, SingleObjectMixin, TemplateView):
         if form.is_valid() and formset.is_valid():
             form.save()
             formset.save()
-            return HttpResponseRedirect(reverse_lazy('accounting:entry_list'))
+            return HttpResponseRedirect(reverse_lazy('accounting:purchase_list', args=[self.year.pk]))
+        else:
+            return self.render_to_response(self.get_context_data(form=form, formset=formset))
+
+
+class SaleListView(UserMixin, YearMixin, ListView):
+    template_name = 'accounting/sale_list.html'
+
+    def get_queryset(self):
+        return Sale.objects.filter(year=self.year).order_by('-date', '-pk')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        revenue = 0
+        for entry in self.object_list:
+            revenue += entry.revenue
+        context['revenue'] = revenue
+        return context
+
+
+class SaleDetailView(UserMixin, YearMixin, DetailView):
+    template_name = 'accounting/sale_detail.html'
+    context_object_name = 'sale'
+
+    def get_queryset(self):
+        return Sale.objects.filter(year=self.year)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['client_transaction'] = self.object.transaction_set \
+            .get(account__number__in=('4110000', '4500000', '4670000'))
+        try:
+            context['deposit_transaction'] = self.object.transaction_set.get(account__number='4190000')
+            context['amount'] = context['client_transaction'].expense + context['deposit_transaction'].expense
+        except Transaction.DoesNotExist:
+            context['amount'] = context['client_transaction'].expense
+        profit_transactions = self.object.transaction_set.filter(account__number__startswith='7') \
+            .order_by('account__number', 'analytic__title')
+        context['profit_transactions'] = profit_transactions
+        return context
+
+
+class SaleCreateView(UserMixin, YearMixin, TemplateView):
+    template_name = 'accounting/sale_form.html'
+
+    def get_context_data(self, **kwargs):
+        if 'form' not in kwargs:
+            kwargs['form'] = SaleForm()
+        if 'formset' not in kwargs:
+            kwargs['formset'] = SaleFormSet()
+        return kwargs
+
+    def post(self, request, *args, **kwargs):
+        form = SaleForm(data=self.request.POST)
+        formset = SaleFormSet(instance=form.instance, data=self.request.POST)
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            return HttpResponseRedirect(reverse_lazy('accounting:sale_list', args=[self.year.pk]))
+        else:
+            return self.render_to_response(self.get_context_data(form=form, formset=formset))
+
+
+class SaleUpdateView(UserMixin, YearMixin, SingleObjectMixin, TemplateView):
+    template_name = 'accounting/sale_form.html'
+    model = Sale
+
+    def get_queryset(self):
+        return Sale.objects.filter(year=self.year)
+
+    def get_context_data(self, **kwargs):
+        if 'form' not in kwargs:
+            kwargs['form'] = SaleForm(instance=self.object)
+        if 'formset' not in kwargs:
+            kwargs['formset'] = SaleFormSet(instance=self.object)
+        return super().get_context_data(**kwargs)
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = SaleForm(instance=self.object, data=self.request.POST)
+        formset = SaleFormSet(instance=self.object, data=self.request.POST)
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            return HttpResponseRedirect(reverse_lazy('accounting:sale_list', args=[self.year.pk]))
         else:
             return self.render_to_response(self.get_context_data(form=form, formset=formset))

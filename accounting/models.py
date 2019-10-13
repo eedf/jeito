@@ -132,8 +132,16 @@ class Purchase(Entry):
     number = models.CharField(verbose_name="Numéro", max_length=100, blank=True)
 
     class Meta:
-        verbose_name = "Facture d'achat"
-        verbose_name_plural = "Factures d'achat"
+        verbose_name = "Achat"
+        verbose_name_plural = "Achats"
+
+
+class Sale(Entry):
+    number = models.CharField(verbose_name="Numéro", max_length=100, blank=True)
+
+    class Meta:
+        verbose_name = "Vente"
+        verbose_name_plural = "Ventes"
 
 
 class TransferOrder(Entry):

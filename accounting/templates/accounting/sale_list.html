@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container accounting">
+
+    <h1>Ventes {{ year }}</h1>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Date</th>
+            <th>Intitulé</th>
+            <th>Labels</th>
+            <th class="text-right">Crédit</th>
+        </tr>
+        {% for sale in object_list %}
+            <tr>
+                <td>{{ sale.date|date:"d/m/y" }}</td>
+                <td><a href="{% url 'accounting:sale_detail' year.pk sale.pk %}">{{ sale.title }}</a></td>
+                <td>
+                    {% if sale.exported %}<span class="label label-success">Exporté</span>{% endif %}
+                    {% if not sale.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
+                </td>
+                <td class="text-right text-nowrap">{% if sale.revenue %}{{ sale.revenue|floatformat:2 }} €{% endif %}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td></td>
+            <td><strong>Total</strong></td>
+            <td></td>
+            <td class="text-right text-nowrap"><strong>{{ revenue|floatformat:2 }} €</strong></td>
+        </tr>
+    </table>
+
+</div>
+
+{% endblock content %}

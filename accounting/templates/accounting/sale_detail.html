@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container accounting">
+
+    <h1>{{ sale.title }}</h1>
+
+    <p>
+        {% if sale.exported %}<span class="label label-success">Exporté</span>{% endif %}
+        {% if not sale.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
+    </p>
+
+    <p><b>Date</b> : {{ sale.date|date:"d/m/y" }}</p>
+    <p><b>Client</b> : {{ client_transaction.thirdparty }}</p>
+    <p><b>Montant</b> : {{ amount|floatformat:2 }}</p>
+    <p><b>Arrhes versées</b> : {{ deposit_transaction.expense|floatformat:2 }}</p>
+    <p><b>Solde à payer</b> : {{ client_transaction.expense|floatformat:2 }}</p>
+    <p><b>Numéro</b> : {{ sale.number|default:"-" }}</p>
+    <p><b>Scan</b> : <a href="{{ sale.scan.url }}">télécharger</a></p>
+    <p><b>Ventilation :</b></p>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Intitulé</th>
+            <th>Compte</th>
+            <th>Analytique</th>
+            <th class="text-right">Crédit</th>
+        </tr>
+        {% for profit in profit_transactions %}
+            <tr>
+                <td>{{ profit.title }}</td>
+                <td><a href="{% url 'accounting:account' year.pk %}?account={{ profit.account_id }}">{{ profit.account.number }} - {{ profit.account.title }}</a></td>
+                <td><a href="{% url 'accounting:account' year.pk %}?analytic={{ profit.analytic_id }}">{{ profit.analytic.number }} - {{ profit.analytic.title }}</a></td>
+                <td class="text-right">{% if profit.revenue %}{{ profit.revenue|floatformat:2 }} €{% endif %}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td><strong>Total</strong></td>
+            <td></td>
+            <td></td>
+            <td class="text-right {% if not sale.balanced %}text-danger{% endif %}"><strong>{{ amount|floatformat:2 }} €</strong></td>
+        </tr>
+    </table>
+
+    <p>
+        {% if perms.accounting.change_sale %}
+            <a href="{% url 'accounting:sale_update' year.pk sale.pk %}" class="btn btn-primary">
+                <span class="glyphicon glyphicon-edit"></span>
+                Modifier
+            </a>
+        {% endif %}
+    </p>
+
+</div>
+
+{% endblock content %}
