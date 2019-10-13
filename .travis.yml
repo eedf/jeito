@@ -13,8 +13,8 @@ install:
   - pip install coveralls
   - pip install -r requirements.txt
 before_script:
-  - psql -c 'create user jeito createdb;' -U postgres
-  - psql -c 'create database jeito owner jeito;' -U postgres
+  - psql -c "create user jeito password 'jeito' createdb;" -U postgres
+  - psql -c "create database jeito owner jeito;" -U postgres
   - cp client_id.json.test client_id.json
   - ./manage.py collectstatic --settings=jeito.test_settings --noinput
 script:
