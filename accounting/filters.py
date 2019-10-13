@@ -1,11 +1,9 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from django import forms
-from django.conf import settings
 from django.db.models import Sum
-from django.http import QueryDict
 import django_filters
-from .models import Analytic, Account, ThirdParty, Transaction, Entry, BankStatement
+from .models import Analytic, Account, ThirdParty, Transaction
 
 
 class BaseFilterForm(forms.Form):
