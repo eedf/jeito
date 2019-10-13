@@ -142,7 +142,7 @@ class Command(BaseCommand):
                     function_id=nomination[1],
                     main=nomination[2],
                 )
-        except:
+        except Exception:
             self.stdout.write("failed to create {}".format(cols))
             raise
 

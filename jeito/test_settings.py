@@ -10,7 +10,7 @@ DATABASES = {
         'HOST': 'localhost',
         'NAME': 'jeito',
         'USER': 'jeito',
-        'PASSWORD': '',
+        'PASSWORD': 'jeito',
     }
 }
 

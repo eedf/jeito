@@ -10,7 +10,10 @@ def thirdpartyaccount2thirdparty(apps, schema_editor):
     ThirdParty = apps.get_model('accounting', 'ThirdParty')
     Transaction = apps.get_model('accounting', 'Transaction')
     for generic_number in ('4010000', '4110000', '4500000', '4670000'):
-        generic_account = Account.objects.get(number=generic_number)
+        try:
+            generic_account = Account.objects.get(number=generic_number)
+        except Account.DoesNotExist:
+            continue
         accounts = Account.objects \
             .filter(number__startswith=generic_number[:3]) \
             .exclude(number=generic_number)
