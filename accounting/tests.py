@@ -113,7 +113,7 @@ class LoggedInViewsTests(TestCase):
             'transaction_set-INITIAL_FORMS': '1',
             'transaction_set-0-account': AccountFactory.create(prefix=6000000).pk,
             'transaction_set-0-analytic': AnalyticFactory.create().pk,
-            # missing 'transaction_set-0-expense',
+            # missing 'transaction_set-0-expense'
             'transaction_set-0-id': purchase.transaction_set.get(account__number__startswith='6').pk,
         }
         response = self.client.post('/accounting/{}/purchase/{}/update/'.format(purchase.year.pk, purchase.pk), data)
@@ -145,3 +145,34 @@ class LoggedInViewsTests(TestCase):
             ["<Transaction: Nouvel intitulé>", "<Transaction: Nouvel intitulé>"],
             ordered=False
         )
+
+    def test_purchase_create_form_invalid(self):
+        year = YearFactory.create()
+        data = {
+            'title': "Nouvel intitulé",
+            'date': '2010-06-18',
+            'thirdparty': ThirdPartyFactory.create(type=1).pk,
+            # missing 'amount'
+            'transaction_set-TOTAL_FORMS': '1',
+            'transaction_set-INITIAL_FORMS': '0',
+            'transaction_set-0-account': AccountFactory.create(prefix=6000000).pk,
+            'transaction_set-0-analytic': AnalyticFactory.create().pk,
+        }
+        response = self.client.post('/accounting/{}/purchase/create/'.format(year.pk), data)
+        self.assertContains(response, "Ce champ est obligatoire")
+
+    def test_purchase_create_formset_invalid(self):
+        year = YearFactory.create()
+        data = {
+            'title': "Nouvel intitulé",
+            'date': '2010-06-18',
+            'thirdparty': ThirdPartyFactory.create(type=1).pk,
+            'amount': '1.42',
+            'transaction_set-TOTAL_FORMS': '1',
+            'transaction_set-INITIAL_FORMS': '0',
+            'transaction_set-0-account': AccountFactory.create(prefix=6000000).pk,
+            'transaction_set-0-analytic': AnalyticFactory.create().pk,
+            # missing 'transaction_set-0-expense'
+        }
+        response = self.client.post('/accounting/{}/purchase/create/'.format(year.pk), data)
+        self.assertContains(response, "Ce champ est obligatoire")
