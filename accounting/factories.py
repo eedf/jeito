@@ -58,9 +58,9 @@ class PurchaseFactory(EntryFactory):
     journal = LazyFunction(lambda: Journal.objects.get(number='HA'))
 
     @post_generation
-    def transaction_set(self, create, extracted, **kwargs):
-        self.transaction_set.add(TransactionFactory(entry=self, account__prefix=6000000))
-        self.transaction_set.add(TransactionFactory(entry=self, account__prefix=4010000))
+    def transactions(self, create, extracted, amount=1234.56, **kwargs):
+        self.transaction_set.add(TransactionFactory(entry=self, account__prefix=6000000, expense=amount))
+        self.transaction_set.add(TransactionFactory(entry=self, account__prefix=4010000, revenue=amount))
 
 
 class TransactionFactory(DjangoModelFactory):
