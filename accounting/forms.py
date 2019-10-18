@@ -5,7 +5,7 @@ from .models import Account, Journal, Purchase, ThirdParty, Transaction, Sale
 
 
 class PurchaseForm(forms.ModelForm):
-    thirdparty = forms.ModelChoiceField(label="Fournisseur", queryset=ThirdParty.objects.filter(type=1))
+    thirdparty = forms.ModelChoiceField(label="Fournisseur", queryset=ThirdParty.objects.all())
     amount = forms.DecimalField(label="Montant total", max_digits=8, decimal_places=2)
 
     class Meta:
@@ -107,7 +107,7 @@ class PurchaseFormSet(forms.BaseInlineFormSet):
 
 
 class SaleForm(forms.ModelForm):
-    thirdparty = forms.ModelChoiceField(label="Client", queryset=ThirdParty.objects.filter(type=0))
+    thirdparty = forms.ModelChoiceField(label="Client", queryset=ThirdParty.objects.all())
     amount = forms.DecimalField(label="Montant total", max_digits=8, decimal_places=2)
     deposit = forms.DecimalField(label="Acompte versé", max_digits=8, decimal_places=2, required=False)
 
