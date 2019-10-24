@@ -43,11 +43,13 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'localflavor',
+    'mptt',
     'dashboard',
     'members',
     # 'docs',
     'booking',
     'accounting',
+    'upkeep',
     'todo',
 ]
 
