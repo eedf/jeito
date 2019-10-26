@@ -45,7 +45,7 @@
     </table>
 
     <p>
-        {% if perms.accounting.change_sale %}
+        {% if user.is_becours_treasurer %}
             <a href="{% url 'accounting:sale_update' year.pk sale.pk %}" class="btn btn-primary">
                 <span class="glyphicon glyphicon-edit"></span>
                 Modifier

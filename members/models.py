@@ -219,6 +219,13 @@ class Person(PermissionsMixin, AbstractBaseUser):
             return True
         return self.adhesion and self.adhesion.nominations.filter(structure__number='2700000500').exists()
 
+    @property
+    def is_becours_treasurer(self):
+        if self.is_superuser:
+            return True
+        return self.adhesion \
+            and self.adhesion.nominations.filter(structure__number='2700000500', function__code='TRCPN').exists()
+
 
 class Adhesion(models.Model):
     person = models.ForeignKey(Person, related_name='adhesions', on_delete=models.PROTECT)

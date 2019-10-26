@@ -17,9 +17,14 @@ from .models import (BankStatement, Transaction, Entry, TransferOrder, ThirdPart
                      Letter, Purchase, Year, Sale)
 
 
-class UserMixin(UserPassesTestMixin):
+class ReadMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_authenticated and self.request.user.is_becours
+
+
+class WriteMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.is_authenticated and self.request.user.is_becours_treasurer
 
 
 class YearMixin():
@@ -32,7 +37,7 @@ class YearMixin():
         return super().get_context_data(**kwargs)
 
 
-class ProjectionView(UserMixin, YearMixin, ListView):
+class ProjectionView(ReadMixin, YearMixin, ListView):
     template_name = "accounting/projection.html"
 
     def get_queryset(self):
@@ -50,7 +55,7 @@ class ProjectionView(UserMixin, YearMixin, ListView):
         return context
 
 
-class AnalyticBalanceView(UserMixin, YearMixin, FilterView):
+class AnalyticBalanceView(ReadMixin, YearMixin, FilterView):
     template_name = "accounting/analytic_balance.html"
     filterset_class = BalanceFilter
 
@@ -71,7 +76,7 @@ class AnalyticBalanceView(UserMixin, YearMixin, FilterView):
         return context
 
 
-class ThirdPartyBalanceView(UserMixin, YearMixin, FilterView):
+class ThirdPartyBalanceView(ReadMixin, YearMixin, FilterView):
     template_name = "accounting/thirdparty_balance.html"
     filterset_class = BalanceFilter
 
@@ -92,7 +97,7 @@ class ThirdPartyBalanceView(UserMixin, YearMixin, FilterView):
         return context
 
 
-class BalanceView(UserMixin, YearMixin, FilterView):
+class BalanceView(ReadMixin, YearMixin, FilterView):
     template_name = "accounting/balance.html"
     filterset_class = BalanceFilter
 
@@ -113,7 +118,7 @@ class BalanceView(UserMixin, YearMixin, FilterView):
         return context
 
 
-class AccountView(UserMixin, YearMixin, FilterView):
+class AccountView(ReadMixin, YearMixin, FilterView):
     template_name = "accounting/account.html"
     filterset_class = AccountFilter
 
@@ -154,7 +159,7 @@ class AccountView(UserMixin, YearMixin, FilterView):
         return HttpResponseRedirect(request.get_full_path())
 
 
-class EntryListView(UserMixin, YearMixin, ListView):
+class EntryListView(ReadMixin, YearMixin, ListView):
     template_name = "accounting/entry_list.html"
     model = Entry
 
@@ -176,7 +181,7 @@ class EntryListView(UserMixin, YearMixin, ListView):
         return context
 
 
-class BankStatementView(UserMixin, YearMixin, ListView):
+class BankStatementView(ReadMixin, YearMixin, ListView):
     model = BankStatement
     template_name = "accounting/bankstatement_list.html"
 
@@ -184,7 +189,7 @@ class BankStatementView(UserMixin, YearMixin, ListView):
         return BankStatement.objects.filter(year=self.year)
 
 
-class ReconciliationView(UserMixin, YearMixin, DetailView):
+class ReconciliationView(ReadMixin, YearMixin, DetailView):
     template_name = 'accounting/reconciliation.html'
     model = BankStatement
 
@@ -208,7 +213,7 @@ class ReconciliationView(UserMixin, YearMixin, DetailView):
         return context
 
 
-class NextReconciliationView(UserMixin, YearMixin, ListView):
+class NextReconciliationView(ReadMixin, YearMixin, ListView):
     template_name = 'accounting/next_reconciliation.html'
 
     def get_queryset(self):
@@ -232,7 +237,7 @@ class NextReconciliationView(UserMixin, YearMixin, ListView):
         return context
 
 
-class EntryView(UserMixin, YearMixin, DetailView):
+class EntryView(ReadMixin, YearMixin, DetailView):
     model = Entry
 
     def get_context_data(self, **kwargs):
@@ -241,11 +246,11 @@ class EntryView(UserMixin, YearMixin, DetailView):
         return context
 
 
-class CashFlowView(UserMixin, YearMixin, TemplateView):
+class CashFlowView(ReadMixin, YearMixin, TemplateView):
     template_name = 'accounting/cash_flow.html'
 
 
-class CashFlowJsonView(UserMixin, YearMixin, View):
+class CashFlowJsonView(ReadMixin, YearMixin, View):
     def serie(self, year):
         self.today = (settings.NOW() - timedelta(days=1)).date()
         start = year.start
@@ -298,14 +303,14 @@ class CashFlowJsonView(UserMixin, YearMixin, View):
         return JsonResponse(data)
 
 
-class TransferOrderDownloadView(UserMixin, YearMixin, DetailView):
+class TransferOrderDownloadView(ReadMixin, YearMixin, DetailView):
     model = TransferOrder
 
     def render_to_response(self, context, **response_kwargs):
         return HttpResponse(self.object.sepa(), content_type='application/xml')
 
 
-class ThirdPartyCsvView(UserMixin, YearMixin, ListView):
+class ThirdPartyCsvView(ReadMixin, YearMixin, ListView):
     model = ThirdParty
     fields = ('number', 'title', 'type', 'account_number', 'iban', 'bic')
 
@@ -318,7 +323,7 @@ class ThirdPartyCsvView(UserMixin, YearMixin, ListView):
         return response
 
 
-class EntryCsvView(UserMixin, YearMixin, ListView):
+class EntryCsvView(ReadMixin, YearMixin, ListView):
     fields = (
         'journal_number', 'date_dmy', 'account_number', 'entry_id',
         'thirdparty_number', '__str__', 'expense', 'revenue'
@@ -346,7 +351,7 @@ class EntryCsvView(UserMixin, YearMixin, ListView):
         return response
 
 
-class ChecksView(UserMixin, YearMixin, TemplateView):
+class ChecksView(ReadMixin, YearMixin, TemplateView):
     template_name = 'accounting/checks.html'
 
     def get_context_data(self, **kwargs):
@@ -359,7 +364,7 @@ class ChecksView(UserMixin, YearMixin, TemplateView):
         return context
 
 
-class PurchaseListView(UserMixin, YearMixin, ListView):
+class PurchaseListView(ReadMixin, YearMixin, ListView):
     template_name = 'accounting/purchase_list.html'
 
     def get_queryset(self):
@@ -374,7 +379,7 @@ class PurchaseListView(UserMixin, YearMixin, ListView):
         return context
 
 
-class PurchaseDetailView(UserMixin, YearMixin, DetailView):
+class PurchaseDetailView(ReadMixin, YearMixin, DetailView):
     template_name = 'accounting/purchase_detail.html'
     context_object_name = 'purchase'
 
@@ -390,7 +395,7 @@ class PurchaseDetailView(UserMixin, YearMixin, DetailView):
         return context
 
 
-class PurchaseCreateView(UserMixin, YearMixin, TemplateView):
+class PurchaseCreateView(WriteMixin, YearMixin, TemplateView):
     template_name = 'accounting/purchase_form.html'
 
     def get_context_data(self, **kwargs):
@@ -411,7 +416,7 @@ class PurchaseCreateView(UserMixin, YearMixin, TemplateView):
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
-class PurchaseUpdateView(UserMixin, YearMixin, SingleObjectMixin, TemplateView):
+class PurchaseUpdateView(WriteMixin, YearMixin, SingleObjectMixin, TemplateView):
     template_name = 'accounting/purchase_form.html'
     model = Purchase
 
@@ -441,7 +446,7 @@ class PurchaseUpdateView(UserMixin, YearMixin, SingleObjectMixin, TemplateView):
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
-class SaleListView(UserMixin, YearMixin, ListView):
+class SaleListView(ReadMixin, YearMixin, ListView):
     template_name = 'accounting/sale_list.html'
 
     def get_queryset(self):
@@ -456,7 +461,7 @@ class SaleListView(UserMixin, YearMixin, ListView):
         return context
 
 
-class SaleDetailView(UserMixin, YearMixin, DetailView):
+class SaleDetailView(ReadMixin, YearMixin, DetailView):
     template_name = 'accounting/sale_detail.html'
     context_object_name = 'sale'
 
@@ -478,7 +483,7 @@ class SaleDetailView(UserMixin, YearMixin, DetailView):
         return context
 
 
-class SaleCreateView(UserMixin, YearMixin, TemplateView):
+class SaleCreateView(WriteMixin, YearMixin, TemplateView):
     template_name = 'accounting/sale_form.html'
 
     def get_context_data(self, **kwargs):
@@ -499,7 +504,7 @@ class SaleCreateView(UserMixin, YearMixin, TemplateView):
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
-class SaleUpdateView(UserMixin, YearMixin, SingleObjectMixin, TemplateView):
+class SaleUpdateView(WriteMixin, YearMixin, SingleObjectMixin, TemplateView):
     template_name = 'accounting/sale_form.html'
     model = Sale
 

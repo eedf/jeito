@@ -5,7 +5,7 @@
 
 <div class="container accounting">
 
-    {% if perms.purchase.create %}
+    {% if user.is_becours_treasurer %}
         <a href="{% url 'accounting:purchase_create' year.pk %}" class="btn btn-primary title-action">Ajouter</a>
     {% endif %}
     <h1>Achats {{ year }}</h1>
