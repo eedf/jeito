@@ -109,7 +109,7 @@ class PurchaseFormSet(forms.BaseInlineFormSet):
 class SaleForm(forms.ModelForm):
     thirdparty = forms.ModelChoiceField(label="Client", queryset=ThirdParty.objects.all())
     amount = forms.DecimalField(label="Montant total", max_digits=8, decimal_places=2)
-    deposit = forms.DecimalField(label="Acompte versé", max_digits=8, decimal_places=2, required=False)
+    deposit = forms.DecimalField(label="Acompte versé", max_digits=8, decimal_places=2, initial=0)
 
     class Meta:
         model = Sale
@@ -130,7 +130,9 @@ class SaleForm(forms.ModelForm):
             self.client_transaction = sale.transaction_set \
                 .get(account__number__in=('4110000', '4500000', '4670000'))
             self.fields['thirdparty'].initial = self.client_transaction.thirdparty
-            self.fields['amount'].initial = self.client_transaction.expense + self.deposit_transaction.expense
+            self.fields['amount'].initial = self.client_transaction.expense
+            if self.deposit_transaction:
+                self.fields['amount'].initial += self.deposit_transaction.expense
         else:
             self.deposit_transaction = None
             self.client_transaction = None
