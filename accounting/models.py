@@ -149,6 +149,30 @@ class Sale(Entry):
         verbose_name_plural = "Ventes"
 
 
+class Income(Entry):
+    objects = EntryManager()
+
+    class Meta:
+        verbose_name = "Recette"
+        verbose_name_plural = "Recettes"
+
+
+class Expenditure(Entry):
+    objects = EntryManager()
+
+    class Meta:
+        verbose_name = "Dépense"
+        verbose_name_plural = "Dépenses"
+
+
+class Cashing(Entry):
+    objects = EntryManager()
+
+    class Meta:
+        verbose_name = "Encaissement"
+        verbose_name_plural = "Encaissements"
+
+
 class TransferOrder(Entry):
     class Meta:
         verbose_name = "Ordre de virement"

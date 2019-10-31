@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.db.models import Q
 from .models import (Account, Analytic, Entry, BankStatement, Transaction,
-                     ThirdParty, Purchase, Sale, TransferOrder, Journal, Year)
+                     ThirdParty, Purchase, Sale, TransferOrder, Journal, Year,
+                     Income, Expenditure, Cashing)
 
 
 class HasScanListFilter(admin.SimpleListFilter):
@@ -90,6 +91,21 @@ class SaleAdmin(EntryAdmin):
     date_hierarchy = 'date'
     inlines = (TransactionInline, )
     save_as = True
+
+
+@admin.register(Cashing)
+class CashingAdmin(EntryAdmin):
+    pass
+
+
+@admin.register(Income)
+class IncomeAdmin(EntryAdmin):
+    pass
+
+
+@admin.register(Expenditure)
+class ExpenditureAdmin(EntryAdmin):
+    pass
 
 
 @admin.register(TransferOrder)

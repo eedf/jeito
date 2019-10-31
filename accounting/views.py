@@ -532,3 +532,18 @@ class SaleUpdateView(WriteMixin, YearMixin, SingleObjectMixin, TemplateView):
             return HttpResponseRedirect(reverse_lazy('accounting:sale_list', args=[self.year.pk]))
         else:
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
+
+
+class CashingListView(ReadMixin, YearMixin, ListView):
+    template_name = 'accounting/cashing_list.html'
+
+    def get_queryset(self):
+        return Sale.objects.filter(year=self.year).order_by('-date', '-pk')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        revenue = 0
+        for entry in self.object_list:
+            revenue += entry.revenue
+        context['revenue'] = revenue
+        return context
