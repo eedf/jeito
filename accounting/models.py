@@ -324,8 +324,9 @@ class BankStatement(models.Model):
 
     @property
     def entries_balance(self):
-        transactions = Transaction.objects.filter(account__number='5120000') \
-            .filter(entry__year=self.year, reconciliation__lte=self.date)
+        transactions = Transaction.objects \
+            .filter(account__number='5120000') \
+            .filter(reconciliation__lte=self.date)
         sums = transactions.aggregate(expense=models.Sum('expense'), revenue=models.Sum('revenue'))
         return sums['expense'] - sums['revenue']
 
