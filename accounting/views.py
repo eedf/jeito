@@ -8,13 +8,14 @@ from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.formats import date_format
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, DetailView, TemplateView, View
+from django.views.generic import ListView, DetailView, TemplateView, View, CreateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter
-from .forms import PurchaseForm, PurchaseFormSet, SaleForm, SaleFormSet
+from .forms import (PurchaseForm, PurchaseFormSet, SaleForm, SaleFormSet,
+                    IncomeForm, ExpenditureForm, CashingForm)
 from .models import (BankStatement, Transaction, Entry, TransferOrder, ThirdParty,
-                     Letter, Purchase, Year, Sale)
+                     Letter, Purchase, Year, Sale, Income, Expenditure, Cashing)
 
 
 class ReadMixin(UserPassesTestMixin):
@@ -534,16 +535,53 @@ class SaleUpdateView(WriteMixin, YearMixin, SingleObjectMixin, TemplateView):
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
-class CashingListView(ReadMixin, YearMixin, ListView):
-    template_name = 'accounting/cashing_list.html'
+class IncomeListView(ReadMixin, YearMixin, ListView):
+    template_name = 'accounting/income_list.html'
 
     def get_queryset(self):
-        return Sale.objects.filter(year=self.year).order_by('-date', '-pk')
+        return Income.objects.filter(year=self.year).order_by('-date', '-pk')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        revenue = 0
+        expense = 0
         for entry in self.object_list:
-            revenue += entry.revenue
-        context['revenue'] = revenue
+            expense += entry.expense
+        context['expense'] = expense
         return context
+
+
+class IncomeDetailView(ReadMixin, YearMixin, DetailView):
+    template_name = 'accounting/income_detail.html'
+    context_object_name = 'income'
+
+    def get_queryset(self):
+        return Income.objects.filter(year=self.year)
+
+
+class IncomeCreateView(WriteMixin, YearMixin, CreateView):
+    template_name = 'accounting/income_form.html'
+    form_class = IncomeForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['year'] = self.year
+        return kwargs
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:income_list', args=[self.year.pk])
+
+
+class IncomeUpdateView(WriteMixin, YearMixin, UpdateView):
+    template_name = 'accounting/income_form.html'
+    form_class = IncomeForm
+
+    def get_queryset(self):
+        return Income.objects.filter(year=self.year)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['year'] = self.year
+        return kwargs
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:income_list', args=[self.year.pk])

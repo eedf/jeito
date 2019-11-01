@@ -151,10 +151,43 @@ class Sale(Entry):
 
 class Income(Entry):
     objects = EntryManager()
+    METHOD_CHOICES = (
+        ('5112000', "Chèque"),
+        ('5115000', "ANCV"),
+        ('5120000', "Virement"),
+        ('5170000', "Carte"),
+        ('5300000', "Espèces"),
+    )
 
     class Meta:
         verbose_name = "Recette"
         verbose_name_plural = "Recettes"
+
+    @property
+    def client_transaction(self):
+        try:
+            return self.transaction_set.get(account__number__startswith='4')
+        except Transaction.DoesNotExist:
+            return None
+
+    @property
+    def cash_transaction(self):
+        try:
+            return self.transaction_set.get(account__number__startswith='5')
+        except Transaction.DoesNotExist:
+            return None
+
+    @property
+    def deposit(self):
+        if not self.client_transaction:
+            return None
+        return self.client_transaction.account.number == '4190000'
+
+    @property
+    def method(self):
+        if not self.cash_transaction:
+            return None
+        return dict(self.METHOD_CHOICES)[self.cash_transaction.account.number]
 
 
 class Expenditure(Entry):

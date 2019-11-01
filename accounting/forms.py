@@ -1,7 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
 from django import forms
-from .models import Account, Journal, Purchase, ThirdParty, Transaction, Sale
+from .models import Account, Journal, Purchase, ThirdParty, Transaction, Sale, Income, Expenditure, Cashing
 
 
 class PurchaseForm(forms.ModelForm):
@@ -228,3 +228,83 @@ class SaleFormSet(forms.BaseInlineFormSet):
             HTML('</div></div>'),
         )
         return formset
+
+
+class IncomeForm(forms.ModelForm):
+    thirdparty = forms.ModelChoiceField(label="Client", queryset=ThirdParty.objects.all())
+    amount = forms.DecimalField(label="Montant", max_digits=8, decimal_places=2)
+    method = forms.ChoiceField(label="Moyen de paiement", choices=Income.METHOD_CHOICES)
+    deposit = forms.BooleanField(label="Acompte", required=False)
+
+    class Meta:
+        model = Income
+        fields = ('title', 'date', 'thirdparty', 'scan', 'amount', 'method', 'deposit')
+
+    def __init__(self, year, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.year = year
+        income = kwargs.get('instance')
+        if income:
+            assert self.year == year
+            assert income.journal.number in ('BQ', 'CA')
+            self.fields['deposit'].initial = income.deposit
+            if income.client_transaction:
+                self.fields['thirdparty'].initial = income.client_transaction.thirdparty
+                self.fields['amount'].initial = income.client_transaction.revenue
+            if income.cash_transaction:
+                self.fields['method'].initial = income.cash_transaction.account.number
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'title',
+            HTML('<div class="row"><div class="col-md-4">'),
+            'amount',
+            HTML('</div><div class="col-md-4">'),
+            'date',
+            HTML('</div><div class="col-md-4">'),
+            'scan',
+            HTML('</div></div>'),
+            HTML('<div class="row"><div class="col-md-4">'),
+            'thirdparty',
+            HTML('</div><div class="col-md-4">'),
+            'method',
+            HTML('</div><div class="col-md-4">'),
+            'deposit',
+            HTML('</div></div>'),
+        )
+
+    def save(self):
+        # Get values
+        thirdparty = self.cleaned_data['thirdparty']
+        amount = self.cleaned_data['amount']
+        deposit = self.cleaned_data['deposit']
+        method = self.cleaned_data['method']
+
+        # Save income entry
+        income = super().save(commit=False)
+        income.year = self.year
+        income.journal = Journal.objects.get(number="CA" if method == '5300000' else 'BQ')
+        income.save()
+
+        # Save client transaction
+        client_transaction = self.instance.client_transaction or Transaction(entry=self.instance)
+        client_transaction.account = Account.objects.get(number='4190000') if deposit else thirdparty.account
+        client_transaction.thirdparty = thirdparty
+        client_transaction.revenue = amount
+        client_transaction.save()
+
+        # Save cash transaction
+        cash_transaction = self.instance.cash_transaction or Transaction(entry=self.instance)
+        cash_transaction.account = Account.objects.get(number=method)
+        cash_transaction.expense = amount
+        cash_transaction.save()
+
+        return income
+
+
+class ExpenditureForm:
+    pass
+
+
+class CashingForm:
+    pass

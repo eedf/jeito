@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container accounting">
+
+    <h1>{{ income.title }}</h1>
+
+    <p>
+        {% if income.exported %}<span class="label label-success">Exporté</span>{% endif %}
+        {% if not income.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
+    </p>
+
+    <p><b>Date</b> : {{ income.date|date:"d/m/y" }}</p>
+    <p><b>Client</b> : {{ income.client_transaction.thirdparty }}</p>
+	<p><b>Moyen de paiement</b>: {{ income.method }}</p>
+	<p><b>Accompte</b>: {{ income.deposit|yesno:"oui,non" }}</p>
+    <p><b>Montant</b> : {{ income.client_transaction.revenue|floatformat:2 }}</p>
+    <p><b>Scan</b> : {% if income.scan %}<a href="{{ income.scan.url }}">télécharger</a>{% else %}-{% endif %}</p>
+
+    <p>
+        {% if user.is_becours_treasurer %}
+            <a href="{% url 'accounting:income_update' year.pk income.pk %}" class="btn btn-primary">
+                <span class="glyphicon glyphicon-edit"></span>
+                Modifier
+            </a>
+        {% endif %}
+    </p>
+
+</div>
+
+{% endblock content %}
