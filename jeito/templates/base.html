@@ -96,13 +96,16 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="{% url 'accounting:purchase_list' 4 %}">Achats</a>
+                            <a href="{% url 'accounting:purchase_list' 4 %}">Factures fournisseur</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:sale_list' 4 %}">Ventes</a>
+                            <a href="{% url 'accounting:sale_list' 4 %}">Factures client</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:income_list' 4 %}">Recettes</a>
+                            <a href="{% url 'accounting:expenditure_list' 4 %}">Réglements fournisseur</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'accounting:income_list' 4 %}">Réglements client</a>
                         </li>
                         <li>
                             <a href="{% url 'accounting:entry_list' 4 %}">Écritures</a>

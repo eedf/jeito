@@ -585,3 +585,55 @@ class IncomeUpdateView(WriteMixin, YearMixin, UpdateView):
 
     def get_success_url(self):
         return reverse_lazy('accounting:income_list', args=[self.year.pk])
+
+
+class ExpenditureListView(ReadMixin, YearMixin, ListView):
+    template_name = 'accounting/expenditure_list.html'
+
+    def get_queryset(self):
+        return Expenditure.objects.filter(year=self.year).order_by('-date', '-pk')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        revenue = 0
+        for entry in self.object_list:
+            revenue += entry.revenue
+        context['revenue'] = revenue
+        return context
+
+
+class ExpenditureDetailView(ReadMixin, YearMixin, DetailView):
+    template_name = 'accounting/expenditure_detail.html'
+    context_object_name = 'expenditure'
+
+    def get_queryset(self):
+        return Expenditure.objects.filter(year=self.year)
+
+
+class ExpenditureCreateView(WriteMixin, YearMixin, CreateView):
+    template_name = 'accounting/expenditure_form.html'
+    form_class = ExpenditureForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['year'] = self.year
+        return kwargs
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:expenditure_list', args=[self.year.pk])
+
+
+class ExpenditureUpdateView(WriteMixin, YearMixin, UpdateView):
+    template_name = 'accounting/expenditure_form.html'
+    form_class = ExpenditureForm
+
+    def get_queryset(self):
+        return Expenditure.objects.filter(year=self.year)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['year'] = self.year
+        return kwargs
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:expenditure_list', args=[self.year.pk])

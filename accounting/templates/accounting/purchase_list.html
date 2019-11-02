@@ -8,7 +8,7 @@
     {% if user.is_becours_treasurer %}
         <a href="{% url 'accounting:purchase_create' year.pk %}" class="btn btn-primary title-action">Ajouter</a>
     {% endif %}
-    <h1>Achats {{ year }}</h1>
+    <h1>Factures fournisseur {{ year }}</h1>
 
     <table class="table table-striped table-hover">
         <tr>

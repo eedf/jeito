@@ -135,8 +135,8 @@ class Purchase(Entry):
     objects = EntryManager()
 
     class Meta:
-        verbose_name = "Achat"
-        verbose_name_plural = "Achats"
+        verbose_name = "Facture fournisseur"
+        verbose_name_plural = "Factures fournisseur"
 
 
 class Sale(Entry):
@@ -145,8 +145,8 @@ class Sale(Entry):
     objects = EntryManager()
 
     class Meta:
-        verbose_name = "Vente"
-        verbose_name_plural = "Ventes"
+        verbose_name = "Facture client"
+        verbose_name_plural = "Factures client"
 
 
 class Income(Entry):
@@ -192,10 +192,40 @@ class Income(Entry):
 
 class Expenditure(Entry):
     objects = EntryManager()
+    METHOD_CHOICES = (
+        ('5120000', "Chèque"),
+        ('5300000', "Espèces"),
+    )
 
     class Meta:
         verbose_name = "Dépense"
         verbose_name_plural = "Dépenses"
+
+    @property
+    def provider_transaction(self):
+        try:
+            return self.transaction_set.get(account__number__startswith='4')
+        except Transaction.DoesNotExist:
+            return None
+
+    @property
+    def cash_transaction(self):
+        try:
+            return self.transaction_set.get(account__number__startswith='5')
+        except Transaction.DoesNotExist:
+            return None
+
+    @property
+    def deposit(self):
+        if not self.provider_transaction:
+            return None
+        return self.provider_transaction.account.number == '4090000'
+
+    @property
+    def method(self):
+        if not self.cash_transaction:
+            return None
+        return dict(self.METHOD_CHOICES)[self.cash_transaction.account.number]
 
 
 class Cashing(Entry):

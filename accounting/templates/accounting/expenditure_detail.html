@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container accounting">
+
+    <h1>{{ expenditure.title }}</h1>
+
+    <p>
+        {% if expenditure.exported %}<span class="label label-success">Exporté</span>{% endif %}
+        {% if not expenditure.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
+    </p>
+
+    <p><b>Date</b> : {{ expenditure.date|date:"d/m/y" }}</p>
+    <p><b>Fournisseur</b> : {{ expenditure.provider_transaction.thirdparty }}</p>
+	<p><b>Moyen de paiement</b>: {{ expenditure.method }}</p>
+	<p><b>Accompte</b>: {{ expenditure.deposit|yesno:"oui,non" }}</p>
+    <p><b>Montant</b> : {{ expenditure.provider_transaction.expense|floatformat:2 }}</p>
+    <p><b>Scan</b> : {% if expenditure.scan %}<a href="{{ expenditure.scan.url }}">télécharger</a>{% else %}-{% endif %}</p>
+
+    <p>
+        {% if user.is_becours_treasurer %}
+            <a href="{% url 'accounting:expenditure_update' year.pk expenditure.pk %}" class="btn btn-primary">
+                <span class="glyphicon glyphicon-edit"></span>
+                Modifier
+            </a>
+        {% endif %}
+    </p>
+
+</div>
+
+{% endblock content %}

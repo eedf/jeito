@@ -7,6 +7,7 @@ from .views import (
     PurchaseListView, PurchaseDetailView, PurchaseCreateView, PurchaseUpdateView,
     SaleListView, SaleDetailView, SaleCreateView, SaleUpdateView,
     IncomeListView, IncomeDetailView, IncomeCreateView, IncomeUpdateView,
+    ExpenditureListView, ExpenditureDetailView, ExpenditureCreateView, ExpenditureUpdateView,
 )
 
 
@@ -42,4 +43,9 @@ urlpatterns = [
     url(r'^(?P<year_pk>\d+)/income/(?P<pk>\d+)/$', IncomeDetailView.as_view(), name='income_detail'),
     url(r'^(?P<year_pk>\d+)/income/create/$', IncomeCreateView.as_view(), name='income_create'),
     url(r'^(?P<year_pk>\d+)/income/(?P<pk>\d+)/update/$', IncomeUpdateView.as_view(), name='income_update'),
+    url(r'^(?P<year_pk>\d+)/expenditure/$', ExpenditureListView.as_view(), name='expenditure_list'),
+    url(r'^(?P<year_pk>\d+)/expenditure/(?P<pk>\d+)/$', ExpenditureDetailView.as_view(), name='expenditure_detail'),
+    url(r'^(?P<year_pk>\d+)/expenditure/create/$', ExpenditureCreateView.as_view(), name='expenditure_create'),
+    url(r'^(?P<year_pk>\d+)/expenditure/(?P<pk>\d+)/update/$', ExpenditureUpdateView.as_view(),
+        name='expenditure_update'),
 ]

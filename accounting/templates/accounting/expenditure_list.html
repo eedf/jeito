@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container accounting">
+
+    {% if user.is_becours_treasurer %}
+        <a href="{% url 'accounting:expenditure_create' year.pk %}" class="btn btn-primary title-action">Ajouter</a>
+    {% endif %}
+    <h1>Réglements fournisseur {{ year }}</h1>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Date</th>
+            <th>Intitulé</th>
+            <th>Labels</th>
+            <th class="text-right">Montant</th>
+        </tr>
+        {% for expenditure in object_list %}
+            <tr>
+                <td>{{ expenditure.date|date:"d/m/y" }}</td>
+                <td><a href="{% url 'accounting:expenditure_detail' year.pk expenditure.pk %}">{{ expenditure.title }}</a></td>
+                <td>
+                    {% if expenditure.exported %}<span class="label label-success">Exporté</span>{% endif %}
+                    {% if not expenditure.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
+                </td>
+                <td class="text-right text-nowrap">{% if expenditure.revenue %}{{ expenditure.revenue|floatformat:2 }} €{% endif %}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td></td>
+            <td><strong>Total</strong></td>
+            <td></td>
+            <td class="text-right text-nowrap"><strong>{{ revenue|floatformat:2 }} €</strong></td>
+        </tr>
+    </table>
+
+</div>
+
+{% endblock content %}
