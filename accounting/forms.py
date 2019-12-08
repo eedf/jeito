@@ -309,14 +309,11 @@ class IncomeForm(forms.ModelForm):
 
 
 class ExpenditureForm(forms.ModelForm):
-    thirdparty = forms.ModelChoiceField(label="Fournisseur", queryset=ThirdParty.objects.all())
-    amount = forms.DecimalField(label="Montant", max_digits=8, decimal_places=2)
     method = forms.ChoiceField(label="Moyen de paiement", choices=Expenditure.METHOD_CHOICES)
-    deposit = forms.BooleanField(label="Acompte", required=False)
 
     class Meta:
         model = Expenditure
-        fields = ('title', 'date', 'thirdparty', 'scan', 'amount', 'method', 'deposit')
+        fields = ('title', 'date', 'scan', 'method')
 
     def __init__(self, year, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -325,63 +322,88 @@ class ExpenditureForm(forms.ModelForm):
         if expenditure:
             assert self.year == year
             assert expenditure.journal.number in ('BQ', 'CA')
-            self.fields['deposit'].initial = expenditure.deposit
-            if expenditure.provider_transaction:
-                self.fields['thirdparty'].initial = expenditure.provider_transaction.thirdparty
-                self.fields['amount'].initial = expenditure.provider_transaction.expense
-            if expenditure.cash_transaction:
-                self.fields['method'].initial = expenditure.cash_transaction.account.number
         self.helper = FormHelper()
         self.helper.form_tag = False
         self.helper.layout = Layout(
             'title',
             HTML('<div class="row"><div class="col-md-4">'),
-            'amount',
-            HTML('</div><div class="col-md-4">'),
             'date',
-            HTML('</div><div class="col-md-4">'),
-            'scan',
-            HTML('</div></div>'),
-            HTML('<div class="row"><div class="col-md-4">'),
-            'thirdparty',
             HTML('</div><div class="col-md-4">'),
             'method',
             HTML('</div><div class="col-md-4">'),
-            'deposit',
+            'scan',
             HTML('</div></div>'),
         )
 
-    def save(self):
-        # Get values
-        thirdparty = self.cleaned_data['thirdparty']
-        amount = self.cleaned_data['amount']
-        deposit = self.cleaned_data['deposit']
-        method = self.cleaned_data['method']
-
+    def save(self, formset):
         # Save expenditure entry
         expenditure = super().save(commit=False)
         expenditure.year = self.year
-        expenditure.journal = Journal.objects.get(number="CA" if method == '5300000' else 'BQ')
+        expenditure.journal = Journal.objects.get(number="CA" if expenditure.method == 3 else 'BQ')
         expenditure.save()
-
-        # Save client transaction
-        provider_transaction = self.instance.provider_transaction or Transaction(entry=self.instance)
-        provider_transaction.account = Account.objects.get(number='4090000') if deposit else thirdparty.account
-        provider_transaction.thirdparty = thirdparty
-        provider_transaction.expense = amount
-        provider_transaction.save()
 
         # Save cash transaction
         cash_transaction = self.instance.cash_transaction or Transaction(entry=self.instance)
-        cash_transaction.account = Account.objects.get(number=method)
-        cash_transaction.revenue = amount
+        cash_transaction.account = Account.objects.get(number='5300000' if expenditure.method == 3 else '5120000')
+        cash_transaction.revenue = sum([form.cleaned_data['expense'] for form in formset if form.cleaned_data])
         cash_transaction.save()
 
         return expenditure
 
 
-class CashingForm(forms.ModelForm):
-    pass
+class ExpenditureTransactionForm(forms.ModelForm):
+    thirdparty = forms.ModelChoiceField(label="Fournisseur", queryset=ThirdParty.objects.all())
+    deposit = forms.BooleanField(label="Acompte", required=False)
+
+    class Meta:
+        model = Transaction
+        fields = ('thirdparty', 'expense', 'deposit')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        try:
+            self.fields['deposit'].initial = self.instance.account.number == '4090000'
+        except Account.DoesNotExist:
+            self.fields['deposit'].initial = False
+
+    def save(self, commit=True):
+        transaction = super().save(commit=False)
+        if self.cleaned_data['deposit']:
+            transaction.account = Account.objects.get(number='4090000')
+        else:
+            transaction.account = transaction.thirdparty.account
+        if commit:
+            transaction.save()
+        return transaction
+
+
+class ExpenditureFormSet(forms.BaseInlineFormSet):
+    def __new__(cls, *args, **kwargs):
+        formset_class = forms.inlineformset_factory(
+            Expenditure,
+            Transaction,
+            form=ExpenditureTransactionForm,
+            can_delete=False,
+            extra=3,
+        )
+        formset = formset_class(
+            *args,
+            queryset=Transaction.objects.filter(account__number__startswith='4'),
+            **kwargs
+        )
+        formset.helper = FormHelper()
+        formset.helper.form_tag = False
+        formset.helper.form_show_labels = False
+        formset.helper.layout = Layout(
+            HTML('<div class="row"><div class="col-md-4">'),
+            'thirdparty',
+            HTML('</div><div class="col-md-4">'),
+            'expense',
+            HTML('</div><div class="col-md-4">'),
+            'deposit',
+            HTML('</div></div>'),
+        )
+        return formset
 
 
 class ThirdPartyForm(forms.ModelForm):

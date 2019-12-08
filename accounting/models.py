@@ -191,22 +191,25 @@ class Income(Entry):
 
 
 class Expenditure(Entry):
-    objects = EntryManager()
     METHOD_CHOICES = (
-        ('5120000', "Chèque"),
-        ('5300000', "Espèces"),
+        (1, "Carte bancaire"),
+        (2, "Chèque"),
+        (3, "Espèces"),
+        (4, "Prélèvement"),
+        (5, "Virement"),
     )
+
+    method = models.IntegerField(choices=METHOD_CHOICES)
+
+    objects = EntryManager()
 
     class Meta:
         verbose_name = "Dépense"
         verbose_name_plural = "Dépenses"
 
     @property
-    def provider_transaction(self):
-        try:
-            return self.transaction_set.get(account__number__startswith='4')
-        except Transaction.DoesNotExist:
-            return None
+    def provider_transactions(self):
+        return self.transaction_set.filter(account__number__startswith='4')
 
     @property
     def cash_transaction(self):
@@ -214,18 +217,6 @@ class Expenditure(Entry):
             return self.transaction_set.get(account__number__startswith='5')
         except Transaction.DoesNotExist:
             return None
-
-    @property
-    def deposit(self):
-        if not self.provider_transaction:
-            return None
-        return self.provider_transaction.account.number == '4090000'
-
-    @property
-    def method(self):
-        if not self.cash_transaction:
-            return None
-        return dict(self.METHOD_CHOICES)[self.cash_transaction.account.number]
 
 
 class Cashing(Entry):

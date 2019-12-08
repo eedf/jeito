@@ -13,12 +13,28 @@
     </p>
 
     <p><b>Date</b> : {{ expenditure.date|date:"d/m/y" }}</p>
-    <p><b>Fournisseur</b> : {{ expenditure.provider_transaction.thirdparty }}</p>
-	<p><b>Moyen de paiement</b>: {{ expenditure.method }}</p>
-	<p><b>Accompte</b>: {{ expenditure.deposit|yesno:"oui,non" }}</p>
-    <p><b>Montant</b> : {{ expenditure.provider_transaction.expense|floatformat:2 }}</p>
+	<p><b>Moyen de paiement</b>: {{ expenditure.get_method_display }}</p>
     <p><b>Scan</b> : {% if expenditure.scan %}<a href="{{ expenditure.scan.url }}">télécharger</a>{% else %}-{% endif %}</p>
 
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Tiers</th>
+            <th class="text-right">Montant</th>
+            <th>Accompte</th>
+        </tr>
+        {% for transaction in provider_transactions %}
+            <tr>
+                <td><a href="{% url 'accounting:thirdparty_detail' year.pk transaction.thirdparty.pk %}">{{ transaction.thirdparty }}</a></td>
+                <td class="text-right">{{ transaction.expense }}</a></td>
+                <td>{% if transaction.account.number == '4090000' %}X{% endif %}</a></td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td><strong>Total</strong></td>
+            <td class="text-right"><strong>{{ expenditure.cash_transaction.revenue|floatformat:2 }}</strong></td>
+            <td></td>
+        </tr>
+    </table>
     <p>
         {% if user.is_becours_treasurer %}
             <a href="{% url 'accounting:expenditure_update' year.pk expenditure.pk %}" class="btn btn-primary">

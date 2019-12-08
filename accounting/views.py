@@ -14,7 +14,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, ThirdPartyFilter
 from .forms import (PurchaseForm, PurchaseFormSet, SaleForm, SaleFormSet,
-                    IncomeForm, ExpenditureForm, ThirdPartyForm)
+                    IncomeForm, ExpenditureForm, ExpenditureFormSet, ThirdPartyForm)
 from .models import (BankStatement, Transaction, Entry, TransferOrder, ThirdParty,
                      Letter, Purchase, Year, Sale, Income, Expenditure)
 
@@ -656,18 +656,33 @@ class ExpenditureDetailView(ReadMixin, YearMixin, DetailView):
     def get_queryset(self):
         return Expenditure.objects.filter(year=self.year)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        provider_transactions = self.object.provider_transactions.order_by('thirdparty__number')
+        context['provider_transactions'] = provider_transactions
+        return context
+
 
 class ExpenditureCreateView(WriteMixin, YearMixin, CreateView):
     template_name = 'accounting/expenditure_form.html'
     form_class = ExpenditureForm
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['year'] = self.year
+    def get_context_data(self, **kwargs):
+        if 'form' not in kwargs:
+            kwargs['form'] = ExpenditureForm(self.year)
+        if 'formset' not in kwargs:
+            kwargs['formset'] = ExpenditureFormSet()
         return kwargs
 
-    def get_success_url(self):
-        return reverse_lazy('accounting:expenditure_list', args=[self.year.pk])
+    def post(self, request, *args, **kwargs):
+        form = ExpenditureForm(self.year, data=self.request.POST, files=self.request.FILES)
+        formset = ExpenditureFormSet(instance=form.instance, data=self.request.POST, files=self.request.FILES)
+        if form.is_valid() and formset.is_valid():
+            form.save(formset)
+            formset.save()
+            return HttpResponseRedirect(reverse_lazy('accounting:expenditure_list', args=[self.year.pk]))
+        else:
+            return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
 class ExpenditureUpdateView(WriteMixin, YearMixin, UpdateView):
@@ -677,10 +692,24 @@ class ExpenditureUpdateView(WriteMixin, YearMixin, UpdateView):
     def get_queryset(self):
         return Expenditure.objects.filter(year=self.year)
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['year'] = self.year
-        return kwargs
+    def get_context_data(self, **kwargs):
+        if 'form' not in kwargs:
+            kwargs['form'] = ExpenditureForm(self.year, instance=self.object)
+        if 'formset' not in kwargs:
+            kwargs['formset'] = ExpenditureFormSet(instance=self.object)
+        return super().get_context_data(**kwargs)
 
-    def get_success_url(self):
-        return reverse_lazy('accounting:expenditure_list', args=[self.year.pk])
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = ExpenditureForm(self.year, instance=self.object, data=self.request.POST, files=self.request.FILES)
+        formset = ExpenditureFormSet(instance=self.object, data=self.request.POST, files=self.request.FILES)
+        if form.is_valid() and formset.is_valid():
+            form.save(formset)
+            formset.save()
+            return HttpResponseRedirect(reverse_lazy('accounting:expenditure_list', args=[self.year.pk]))
+        else:
+            return self.render_to_response(self.get_context_data(form=form, formset=formset))
