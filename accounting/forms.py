@@ -169,14 +169,19 @@ class SaleForm(forms.ModelForm):
         sale.save()
 
         # Save client transaction
-        if not self.client_transaction:
-            self.client_transaction = Transaction(entry=self.instance, account=thirdparty.account)
-        self.client_transaction.thirdparty = thirdparty
-        self.client_transaction.expense = amount - deposit
-        self.client_transaction.save()
+        expense = amount - deposit
+        if expense != 0:
+            if not self.client_transaction:
+                self.client_transaction = Transaction(entry=self.instance, account=thirdparty.account)
+            self.client_transaction.thirdparty = thirdparty
+            self.client_transaction.expense = expense
+            self.client_transaction.save()
+        else:
+            if self.client_transaction:
+                self.client_transaction.delete()
 
         # Save deposit transaction
-        if deposit:
+        if deposit != 0:
             if not self.deposit_transaction:
                 account = Account.objects.get(number='4190000')
                 self.deposit_transaction = Transaction(entry=self.instance, account=account)
@@ -186,6 +191,7 @@ class SaleForm(forms.ModelForm):
         else:
             if self.deposit_transaction:
                 self.deposit_transaction.delete()
+
         return sale
 
 
