@@ -28,9 +28,9 @@
                 <td>{{ thirdparty.title }}</td>
                 <td>{{ thirdparty.get_type_display }}</td>
                 <td>{{ thirdparty.iban }}</td>
-                <td class="text-right text-nowrap">{{ thirdparty.expense|default:0|floatformat:2 }} €</td>
-                <td class="text-right text-nowrap">{{ thirdparty.revenue|default:0|floatformat:2 }} €</td>
-                <td class="text-right text-nowrap">{{ thirdparty.balance|default:0|floatformat:2 }} €</td>
+                <td class="text-right text-nowrap">{{ thirdparty.expense|floatformat:2 }} €</td>
+                <td class="text-right text-nowrap">{{ thirdparty.revenue|floatformat:2 }} €</td>
+                <td class="text-right text-nowrap">{{ thirdparty.balance|floatformat:2 }} €</td>
             </tr>
         {% endfor %}
         <tr>
@@ -38,9 +38,9 @@
             <td></td>
             <td></td>
             <td><strong>Total</strong></td>
-            <td class="text-right text-nowrap"><strong>{{ expense|default:0|floatformat:2 }} €</strong></td>
-            <td class="text-right text-nowrap"><strong>{{ revenue|default:0|floatformat:2 }} €</strong></td>
-            <td class="text-right text-nowrap"><strong>{{ balance|default:0|floatformat:2 }} €</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ expense|floatformat:2 }} €</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ revenue|floatformat:2 }} €</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ balance|floatformat:2 }} €</strong></td>
         </tr>
     </table>
 

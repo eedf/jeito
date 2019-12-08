@@ -3,7 +3,8 @@ from collections import OrderedDict
 from datetime import date, timedelta
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.db.models import F, Q, Sum
+from django.db.models import F, Q, Sum, Value
+from django.db.models.functions import Coalesce
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.formats import date_format
@@ -82,19 +83,24 @@ class ThirdPartyListView(ReadMixin, YearMixin, FilterView):
     filterset_class = ThirdPartyFilter
 
     def get_queryset(self):
+        year_q = Q(transaction__entry__year=self.year)
         qs = ThirdParty.objects.order_by('number')
         qs = qs.annotate(
-            revenue=Sum('transaction__revenue'),
-            expense=Sum('transaction__expense'),
-            balance=Sum('transaction__revenue') - Sum('transaction__expense'),
+            revenue=Coalesce(Sum('transaction__revenue', filter=year_q), Value(0)),
+            expense=Coalesce(Sum('transaction__expense', filter=year_q), Value(0)),
+            balance=Coalesce(
+                Sum('transaction__revenue', filter=year_q)
+                - Sum('transaction__expense', filter=year_q),
+                Value(0)
+            ),
         )
         return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['revenue'] = sum([thirdparty.revenue or 0 for thirdparty in self.object_list])
-        context['expense'] = sum([thirdparty.expense or 0 for thirdparty in self.object_list])
-        context['balance'] = sum([thirdparty.balance or 0 for thirdparty in self.object_list])
+        context['revenue'] = sum([thirdparty.revenue for thirdparty in self.object_list])
+        context['expense'] = sum([thirdparty.expense for thirdparty in self.object_list])
+        context['balance'] = sum([thirdparty.balance for thirdparty in self.object_list])
         return context
 
 
@@ -106,10 +112,18 @@ class ThirdPartyDetailView(ReadMixin, YearMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         transactions = self.object.transaction_set.filter(entry__year=self.year)
+        balance = 0
+        revenue = 0
+        expense = 0
+        for transaction in transactions:
+            balance += transaction.revenue - transaction.expense
+            transaction.accumulator = balance
+            revenue += transaction.revenue
+            expense += transaction.expense
         context['transactions'] = transactions
-        context['revenue'] = sum([transaction.revenue for transaction in transactions])
-        context['expense'] = sum([transaction.expense for transaction in transactions])
-        context['balance'] = sum([transaction.balance for transaction in transactions])
+        context['revenue'] = revenue
+        context['expense'] = expense
+        context['balance'] = balance
         return context
 
 

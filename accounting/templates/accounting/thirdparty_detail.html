@@ -23,7 +23,7 @@
             <th>Analytique</th>
             <th class="text-right">Débit</th>
             <th class="text-right">Crédit</th>
-            <th class="text-right">Solde</th>
+            <th class="text-right">Solde cumulé</th>
         </tr>
         {% for transaction in transactions %}
             <tr>
@@ -33,7 +33,7 @@
 				<td><a href="{% url 'accounting:account' year.pk %}?analytic={{ transaction.analytic_id }}{% if filter.form.cleaned_data.account %}&account={{ transaction.account_id }}{% endif %}{% if filter.form.cleaned_data.thirdparty %}&thirdparty={{ transaction.thirdparty_id }}{% endif %}">{{ transaction.analytic.number }}</a></td>
                 <td class="text-right text-nowrap">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
                 <td class="text-right text-nowrap">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
-                <td class="text-right text-nowrap">{{ transaction.balance|floatformat:2 }} €</td>
+                <td class="text-right text-nowrap">{{ transaction.accumulator|floatformat:2 }} €</td>
             </tr>
         {% endfor %}
         <tr>
