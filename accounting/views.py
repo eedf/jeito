@@ -11,11 +11,11 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView, View, CreateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 from django_filters.views import FilterView
-from .filters import BalanceFilter, AccountFilter
+from .filters import BalanceFilter, AccountFilter, ThirdPartyFilter
 from .forms import (PurchaseForm, PurchaseFormSet, SaleForm, SaleFormSet,
-                    IncomeForm, ExpenditureForm, CashingForm)
+                    IncomeForm, ExpenditureForm, ThirdPartyForm)
 from .models import (BankStatement, Transaction, Entry, TransferOrder, ThirdParty,
-                     Letter, Purchase, Year, Sale, Income, Expenditure, Cashing)
+                     Letter, Purchase, Year, Sale, Income, Expenditure)
 
 
 class ReadMixin(UserPassesTestMixin):
@@ -77,25 +77,58 @@ class AnalyticBalanceView(ReadMixin, YearMixin, FilterView):
         return context
 
 
-class ThirdPartyBalanceView(ReadMixin, YearMixin, FilterView):
-    template_name = "accounting/thirdparty_balance.html"
-    filterset_class = BalanceFilter
+class ThirdPartyListView(ReadMixin, YearMixin, FilterView):
+    template_name = "accounting/thirdparty_list.html"
+    filterset_class = ThirdPartyFilter
 
     def get_queryset(self):
-        return Transaction.objects.filter(entry__year=self.year)
-
-    def get_filterset_kwargs(self, filterset_class):
-        kwargs = super().get_filterset_kwargs(filterset_class)
-        kwargs['aggregate'] = 'thirdparty'
-        return kwargs
+        qs = ThirdParty.objects.order_by('number')
+        qs = qs.annotate(
+            revenue=Sum('transaction__revenue'),
+            expense=Sum('transaction__expense'),
+            balance=Sum('transaction__revenue') - Sum('transaction__expense'),
+        )
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['data'] = self.object_list
-        context['revenues'] = sum([thirdparty['revenues'] for thirdparty in self.object_list])
-        context['expenses'] = sum([thirdparty['expenses'] for thirdparty in self.object_list])
-        context['balance'] = sum([thirdparty['balance'] for thirdparty in self.object_list])
+        context['revenue'] = sum([thirdparty.revenue or 0 for thirdparty in self.object_list])
+        context['expense'] = sum([thirdparty.expense or 0 for thirdparty in self.object_list])
+        context['balance'] = sum([thirdparty.balance or 0 for thirdparty in self.object_list])
         return context
+
+
+class ThirdPartyDetailView(ReadMixin, YearMixin, DetailView):
+    template_name = 'accounting/thirdparty_detail.html'
+    context_object_name = 'thirdparty'
+    model = ThirdParty
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        transactions = self.object.transaction_set.filter(entry__year=self.year)
+        context['transactions'] = transactions
+        context['revenue'] = sum([transaction.revenue for transaction in transactions])
+        context['expense'] = sum([transaction.expense for transaction in transactions])
+        context['balance'] = sum([transaction.balance for transaction in transactions])
+        return context
+
+
+class ThirdPartyCreateView(WriteMixin, YearMixin, CreateView):
+    template_name = 'accounting/thirdparty_form.html'
+    form_class = ThirdPartyForm
+    model = ThirdParty
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:thirdparty_list', args=[self.year.pk])
+
+
+class ThirdPartyUpdateView(WriteMixin, YearMixin, UpdateView):
+    template_name = 'accounting/thirdparty_form.html'
+    form_class = ThirdPartyForm
+    model = ThirdParty
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:thirdparty_list', args=[self.year.pk])
 
 
 class BalanceView(ReadMixin, YearMixin, FilterView):

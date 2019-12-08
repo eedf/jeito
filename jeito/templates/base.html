@@ -96,6 +96,9 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li>
+                            <a href="{% url 'accounting:thirdparty_list' 4 %}">Tiers</a>
+                        </li>
+                        <li>
                             <a href="{% url 'accounting:purchase_list' 4 %}">Factures fournisseur</a>
                         </li>
                         <li>
@@ -115,9 +118,6 @@
                         </li>
                         <li>
                             <a href="{% url 'accounting:balance' 4 %}">Balance</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'accounting:thirdparty-balance' 4 %}">Balance des Tiers</a>
                         </li>
                         <li>
                             <a href="{% url 'accounting:analytic-balance' 4 %}">Balance Analytique</a>

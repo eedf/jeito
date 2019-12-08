@@ -53,6 +53,41 @@ class BalanceFilter(django_filters.FilterSet):
         return qs
 
 
+class ThirdPartyFilterForm(BaseFilterForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper.layout = Layout(
+            'type',
+            'balance',
+        )
+
+
+class ThirdPartyFilter(django_filters.FilterSet):
+    BALANCE_CHOICES = (
+        ('C', "Créditeur"),
+        ('D', "Débiteur"),
+        ('N', "Non nul"),
+        ('Z', "Nul"),
+    )
+    balance = django_filters.ChoiceFilter(label="Solde", choices=BALANCE_CHOICES, method='filter_balance')
+
+    class Meta:
+        model = ThirdParty
+        fields = ('type', 'balance', )
+        form = ThirdPartyFilterForm
+
+    def filter_balance(self, qs, name, value):
+        if value == 'C':
+            return qs.filter(balance__gt=0)
+        if value == 'D':
+            return qs.filter(balance__lt=0)
+        if value == 'N':
+            return qs.exclude(balance=0)
+        if value == 'Z':
+            return qs.filter(balance=0)
+        return qs
+
+
 class AccountFilterForm(BaseFilterForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

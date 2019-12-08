@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>{% if form.instance.pk %}Modifier le tiers {{ sale }}{% else %}Ajouter un tiers{% endif %}</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% crispy form %}
+        <input type="submit" name="create" value="Enregistrer" class="btn btn-primary">
+    </form>
+
+</div>
+
+{% endblock content %}

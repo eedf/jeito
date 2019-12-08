@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from .views import (
-    BalanceView, ThirdPartyBalanceView, AnalyticBalanceView, ChecksView,
+    BalanceView, AnalyticBalanceView, ChecksView,
     BankStatementView, AccountView, ReconciliationView, ThirdPartyCsvView,
     NextReconciliationView, ProjectionView, EntryView, EntryListView,
     CashFlowView, CashFlowJsonView, TransferOrderDownloadView, EntryCsvView,
@@ -8,6 +8,7 @@ from .views import (
     SaleListView, SaleDetailView, SaleCreateView, SaleUpdateView,
     IncomeListView, IncomeDetailView, IncomeCreateView, IncomeUpdateView,
     ExpenditureListView, ExpenditureDetailView, ExpenditureCreateView, ExpenditureUpdateView,
+    ThirdPartyListView, ThirdPartyDetailView, ThirdPartyCreateView, ThirdPartyUpdateView,
 )
 
 
@@ -20,7 +21,10 @@ urlpatterns = [
     url(r'^(?P<year_pk>\d+)/projection/$', ProjectionView.as_view(), name='projection'),
     url(r'^(?P<year_pk>\d+)/balance/$', BalanceView.as_view(), name='balance'),
     url(r'^(?P<year_pk>\d+)/account/$', AccountView.as_view(), name='account'),
-    url(r'^(?P<year_pk>\d+)/thirdparty-balance/$', ThirdPartyBalanceView.as_view(), name='thirdparty-balance'),
+    url(r'^(?P<year_pk>\d+)/thirdparty/$', ThirdPartyListView.as_view(), name='thirdparty_list'),
+    url(r'^(?P<year_pk>\d+)/thirdparty/(?P<pk>\d+)/$', ThirdPartyDetailView.as_view(), name='thirdparty_detail'),
+    url(r'^(?P<year_pk>\d+)/thirdparty/create/$', ThirdPartyCreateView.as_view(), name='thirdparty_create'),
+    url(r'^(?P<year_pk>\d+)/thirdparty/(?P<pk>\d+)/update/$', ThirdPartyUpdateView.as_view(), name='thirdparty_update'),
     url(r'^(?P<year_pk>\d+)/thirdparty.csv$', ThirdPartyCsvView.as_view(), name='thirdparty-csv'),
     url(r'^(?P<year_pk>\d+)/analytic-balance/$', AnalyticBalanceView.as_view(), name='analytic-balance'),
     url(r'^(?P<year_pk>\d+)/bank-statement/$', BankStatementView.as_view(), name='bank-statement'),

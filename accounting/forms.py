@@ -1,7 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
 from django import forms
-from .models import Account, Journal, Purchase, ThirdParty, Transaction, Sale, Income, Expenditure, Cashing
+from .models import Account, Journal, Purchase, ThirdParty, Transaction, Sale, Income, Expenditure
 
 
 class PurchaseForm(forms.ModelForm):
@@ -376,3 +376,32 @@ class ExpenditureForm(forms.ModelForm):
 
 class CashingForm(forms.ModelForm):
     pass
+
+
+class ThirdPartyForm(forms.ModelForm):
+    class Meta:
+        model = ThirdParty
+        fields = ('number', 'title', 'iban', 'bic', 'client_number', 'account', 'type')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'title',
+            HTML('<div class="row"><div class="col-md-6">'),
+            'type',
+            HTML('</div><div class="col-md-6">'),
+            'account',
+            HTML('</div></div>'),
+            HTML('<div class="row"><div class="col-md-6">'),
+            'number',
+            HTML('</div><div class="col-md-6">'),
+            'client_number',
+            HTML('</div></div>'),
+            HTML('<div class="row"><div class="col-md-6">'),
+            'iban',
+            HTML('</div><div class="col-md-6">'),
+            'bic',
+            HTML('</div></div>'),
+        )

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container">
+
+    <h1>Tiers {{ thirdparty }} {{ year }}</h1>
+
+	<p><b>Numéro</b> : {{ thirdparty.number }}</p>
+	<p><b>Intitulé</b> : {{ thirdparty.title }}</p>
+	<p><b>Type</b> : {{ thirdparty.get_type_display }}</p>
+	<p><b>IBAN</b> : {{ thirdparty.iban }}</p>
+	<p><b>BIC</b> : {{ thirdparty.bic }}</p>
+	<p><b>Numéro client</b> : {{ thirdparty.client_number }}</p>
+	<p><b>Compte principal</b> : {{ thirdparty.account }}</p>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Date</th>
+            <th>Intitulé</th>
+            <th>Compte</th>
+            <th>Analytique</th>
+            <th class="text-right">Débit</th>
+            <th class="text-right">Crédit</th>
+            <th class="text-right">Solde</th>
+        </tr>
+        {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.entry.date|date:"d/m/y" }}</td>
+                <td><a href="{% url 'accounting:entry' year.pk transaction.entry.pk %}">{{ transaction.entry.title }}{% if transaction.title %} - {{ transaction.title }}{% endif %}</a></td>
+				<td><a href="{% url 'accounting:account' year.pk %}?account={{ transaction.account_id }}{% if filter.form.cleaned_data.analytic %}&analytic={{ transaction.analytic_id }}{% endif %}{% if filter.form.cleaned_data.thirdparty %}&thirdparty={{ transaction.thirdparty_id }}{% endif %}" title="{{ transaction.account.title }}">{{ transaction.account.number }}</a></td>
+				<td><a href="{% url 'accounting:account' year.pk %}?analytic={{ transaction.analytic_id }}{% if filter.form.cleaned_data.account %}&account={{ transaction.account_id }}{% endif %}{% if filter.form.cleaned_data.thirdparty %}&thirdparty={{ transaction.thirdparty_id }}{% endif %}">{{ transaction.analytic.number }}</a></td>
+                <td class="text-right text-nowrap">{% if transaction.expense %}{{ transaction.expense|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right text-nowrap">{% if transaction.revenue %}{{ transaction.revenue|floatformat:2 }} €{% endif %}</td>
+                <td class="text-right text-nowrap">{{ transaction.balance|floatformat:2 }} €</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><strong>Total</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ expense|floatformat:2 }} €</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ revenue|floatformat:2 }} €</strong></td>
+            <td class="text-right text-nowrap"><strong>{{ balance|floatformat:2 }} €</strong></td>
+        </tr>
+    </table>
+
+    <p>
+        {% if user.is_becours_treasurer %}
+            <a href="{% url 'accounting:thirdparty_update' year.pk thirdparty.pk %}" class="btn btn-primary">
+                <span class="glyphicon glyphicon-edit"></span>
+                Modifier
+            </a>
+        {% endif %}
+    </p>
+
+</div>
+
+{% endblock content %}
