@@ -218,20 +218,6 @@ class Expenditure(Entry):
         except Transaction.DoesNotExist:
             return None
 
-
-class Cashing(Entry):
-    objects = EntryManager()
-
-    class Meta:
-        verbose_name = "Encaissement"
-        verbose_name_plural = "Encaissements"
-
-
-class TransferOrder(Entry):
-    class Meta:
-        verbose_name = "Ordre de virement"
-        verbose_name_plural = "Ordres de virement"
-
     def sepa(self):
         # Create the debtor account from an IBAN
         debtor = sepa.Account(settings.IBAN, settings.HOLDER)
@@ -240,22 +226,27 @@ class TransferOrder(Entry):
         for transaction in self.transaction_set.filter(expense__gt=0):
             thirdparty = transaction.thirdparty
             if not thirdparty:
-                return "No third party for {}".format(transaction)
+                raise Exception("No third party for {}".format(transaction))
             # Create the creditor account from a tuple (IBAN, BIC)
             try:
                 creditor = sepa.Account(thirdparty.iban, thirdparty.title)
             except ValueError as e:
-                return "{} for thirdparty {}".format(e, thirdparty)
+                raise Exception("{} for thirdparty {}".format(e, thirdparty))
             # Add the transaction
             sct.add_transaction(
                 creditor,
                 sepa.Amount(transaction.expense, 'EUR'),
                 transaction.title
             )
-        try:
-            return sct.render().decode('ascii')
-        except RuntimeError as e:
-            return str(e)
+        return sct.render().decode('ascii')
+
+
+class Cashing(Entry):
+    objects = EntryManager()
+
+    class Meta:
+        verbose_name = "Encaissement"
+        verbose_name_plural = "Encaissements"
 
 
 class Letter(models.Model):

@@ -15,7 +15,7 @@ from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, ThirdPartyFilter
 from .forms import (PurchaseForm, PurchaseFormSet, SaleForm, SaleFormSet,
                     IncomeForm, ExpenditureForm, ExpenditureFormSet, ThirdPartyForm)
-from .models import (BankStatement, Transaction, Entry, TransferOrder, ThirdParty,
+from .models import (BankStatement, Transaction, Entry, ThirdParty,
                      Letter, Purchase, Year, Sale, Income, Expenditure)
 
 
@@ -352,10 +352,18 @@ class CashFlowJsonView(ReadMixin, YearMixin, View):
 
 
 class TransferOrderDownloadView(ReadMixin, YearMixin, DetailView):
-    model = TransferOrder
+    model = Expenditure
 
     def render_to_response(self, context, **response_kwargs):
-        return HttpResponse(self.object.sepa(), content_type='application/xml')
+        assert self.object.method == 5
+        try:
+            content = self.object.sepa()
+        except Exception as e:
+            return HttpResponse(str(e), status=500)
+        filename = 'Virements_Becours_{}.xml'.format(self.object.date.strftime('%d-%m-%Y'))
+        response = HttpResponse(content, content_type='application/xml')
+        response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
+        return response
 
 
 class ThirdPartyCsvView(ReadMixin, YearMixin, ListView):

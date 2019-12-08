@@ -36,6 +36,12 @@
         </tr>
     </table>
     <p>
+        {% if expenditure.method == 5 %}
+            <a href="{% url 'accounting:transfer_order_download' year.pk expenditure.pk %}" class="btn btn-primary">
+                <span class="glyphicon glyphicon-download"></span>
+                Fichier SEPA
+            </a>
+        {% endif %}
         {% if user.is_becours_treasurer %}
             <a href="{% url 'accounting:expenditure_update' year.pk expenditure.pk %}" class="btn btn-primary">
                 <span class="glyphicon glyphicon-edit"></span>

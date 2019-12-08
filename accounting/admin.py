@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Q
 from .models import (Account, Analytic, Entry, BankStatement, Transaction,
-                     ThirdParty, Purchase, Sale, TransferOrder, Journal, Year,
+                     ThirdParty, Purchase, Sale, Journal, Year,
                      Income, Expenditure, Cashing)
 
 
@@ -105,11 +105,6 @@ class IncomeAdmin(EntryAdmin):
 
 @admin.register(Expenditure)
 class ExpenditureAdmin(EntryAdmin):
-    pass
-
-
-@admin.register(TransferOrder)
-class TransferOrderAdmin(EntryAdmin):
     pass
 
 
