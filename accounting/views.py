@@ -111,7 +111,7 @@ class ThirdPartyDetailView(ReadMixin, YearMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        transactions = self.object.transaction_set.filter(entry__year=self.year)
+        transactions = self.object.transaction_set.filter(entry__year=self.year).order_by('entry__date')
         balance = 0
         revenue = 0
         expense = 0
