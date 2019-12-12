@@ -45,6 +45,10 @@
 
     <p>
         {% if user.is_becours_treasurer %}
+            <a href="{% url 'accounting:purchase_delete' year.pk purchase.pk %}" class="btn btn-danger">
+                <span class="glyphicon glyphicon-trash"></span>
+                Supprimer
+            </a>
             <a href="{% url 'accounting:purchase_update' year.pk purchase.pk %}" class="btn btn-primary">
                 <span class="glyphicon glyphicon-edit"></span>
                 Modifier

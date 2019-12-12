@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container">
+
+	<h1>Supprimer le tiers {{ thirdparty }} ?</h1>
+	
+	{% if thirdparty.transaction_set.count %}
+		<p>
+			Il est impossible de supprimer le tiers {{ thirdparty }} car il est lié à
+			{{ thirdparty.transaction_set.count }} transaction{{ thirdparty.transaction_set.count|pluralize }}.
+		</p>
+		<a href="{% url 'accounting:thirdparty_list' year.pk %}" class="btn btn-primary">Annuler</a>
+	{% else %}
+		<p>Oui, je suis sûr de vouloir supprimer le tiers {{ thirdparty }}</p>
+		<form method="POST" enctype="multipart/form-data">
+			{% csrf_token %}
+			<a href="{% url 'accounting:thirdparty_list' year.pk %}" class="btn btn-primary">Annuler</a>
+			<input type="submit" value="Supprimer" class="btn btn-danger">
+		</form>
+	{% endif %}
+
+</div>
+
+{% endblock content %}

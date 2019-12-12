@@ -55,6 +55,10 @@
             </a>
         {% endif %}
         {% if user.is_becours_treasurer %}
+            <a href="{% url 'accounting:expenditure_delete' year.pk expenditure.pk %}" class="btn btn-danger">
+                <span class="glyphicon glyphicon-trash"></span>
+                Supprimer
+            </a>
             <a href="{% url 'accounting:expenditure_update' year.pk expenditure.pk %}" class="btn btn-primary">
                 <span class="glyphicon glyphicon-edit"></span>
                 Modifier

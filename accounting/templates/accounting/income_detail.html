@@ -21,6 +21,10 @@
 
     <p>
         {% if user.is_becours_treasurer %}
+            <a href="{% url 'accounting:income_delete' year.pk income.pk %}" class="btn btn-danger">
+                <span class="glyphicon glyphicon-trash"></span>
+                Supprimer
+            </a>
             <a href="{% url 'accounting:income_update' year.pk income.pk %}" class="btn btn-primary">
                 <span class="glyphicon glyphicon-edit"></span>
                 Modifier

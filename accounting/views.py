@@ -9,7 +9,7 @@ from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.formats import date_format
 from django.shortcuts import get_object_or_404
-from django.views.generic import ListView, DetailView, TemplateView, View, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, TemplateView, View, CreateView, UpdateView, DeleteView
 from django.views.generic.detail import SingleObjectMixin
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, ThirdPartyFilter
@@ -105,7 +105,6 @@ class ThirdPartyListView(ReadMixin, YearMixin, FilterView):
 
 
 class ThirdPartyDetailView(ReadMixin, YearMixin, DetailView):
-    template_name = 'accounting/thirdparty_detail.html'
     context_object_name = 'thirdparty'
     model = ThirdParty
 
@@ -128,7 +127,6 @@ class ThirdPartyDetailView(ReadMixin, YearMixin, DetailView):
 
 
 class ThirdPartyCreateView(WriteMixin, YearMixin, CreateView):
-    template_name = 'accounting/thirdparty_form.html'
     form_class = ThirdPartyForm
     model = ThirdParty
 
@@ -137,8 +135,14 @@ class ThirdPartyCreateView(WriteMixin, YearMixin, CreateView):
 
 
 class ThirdPartyUpdateView(WriteMixin, YearMixin, UpdateView):
-    template_name = 'accounting/thirdparty_form.html'
     form_class = ThirdPartyForm
+    model = ThirdParty
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:thirdparty_list', args=[self.year.pk])
+
+
+class ThirdPartyDeleteView(WriteMixin, YearMixin, DeleteView):
     model = ThirdParty
 
     def get_success_url(self):
@@ -502,6 +506,13 @@ class PurchaseUpdateView(WriteMixin, YearMixin, SingleObjectMixin, TemplateView)
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
+class PurchaseDeleteView(WriteMixin, YearMixin, DeleteView):
+    model = Purchase
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:purchase_list', args=[self.year.pk])
+
+
 class SaleListView(ReadMixin, YearMixin, ListView):
     template_name = 'accounting/sale_list.html'
 
@@ -590,6 +601,13 @@ class SaleUpdateView(WriteMixin, YearMixin, SingleObjectMixin, TemplateView):
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
+class SaleDeleteView(WriteMixin, YearMixin, DeleteView):
+    model = Sale
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:sale_list', args=[self.year.pk])
+
+
 class IncomeListView(ReadMixin, YearMixin, ListView):
     template_name = 'accounting/income_list.html'
 
@@ -637,6 +655,13 @@ class IncomeUpdateView(WriteMixin, YearMixin, UpdateView):
         kwargs = super().get_form_kwargs()
         kwargs['year'] = self.year
         return kwargs
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:income_list', args=[self.year.pk])
+
+
+class IncomeDeleteView(WriteMixin, YearMixin, DeleteView):
+    model = Income
 
     def get_success_url(self):
         return reverse_lazy('accounting:income_list', args=[self.year.pk])
@@ -721,3 +746,10 @@ class ExpenditureUpdateView(WriteMixin, YearMixin, UpdateView):
             return HttpResponseRedirect(reverse_lazy('accounting:expenditure_list', args=[self.year.pk]))
         else:
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
+
+
+class ExpenditureDeleteView(WriteMixin, YearMixin, DeleteView):
+    model = Expenditure
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:expenditure_list', args=[self.year.pk])
