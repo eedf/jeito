@@ -217,7 +217,13 @@ class Person(PermissionsMixin, AbstractBaseUser):
     def is_becours(self):
         if self.is_superuser:
             return True
-        return self.adhesion and self.adhesion.nominations.filter(structure__number='2700000500').exists()
+        if not self.adhesion:
+            return False
+        if self.adhesion.nominations.filter(structure__number='2700000500').exists():
+            return True
+        if self.adhesion.nominations.filter(structure__number='0000200700', function__code='RAFT1').exists():
+            return True
+        return False
 
     @property
     def is_becours_treasurer(self):
