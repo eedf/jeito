@@ -19,20 +19,32 @@
     <table class="table table-striped table-hover">
         <tr>
             <th>Tiers</th>
-            <th class="text-right">Montant</th>
+            {% if expenditure.method == 5 %}
+                <th>IBAN</th>
+            {% endif %}
+            <th>Intitulé</th>
             <th>Accompte</th>
+            <th class="text-right">Montant</th>
         </tr>
         {% for transaction in provider_transactions %}
             <tr>
                 <td><a href="{% url 'accounting:thirdparty_detail' year.pk transaction.thirdparty.pk %}">{{ transaction.thirdparty }}</a></td>
-                <td class="text-right">{{ transaction.expense }}</a></td>
+                {% if expenditure.method == 5 %}
+                    <td>{{ transaction.thirdparty.iban|default:'<span color="red">Requis</span>' }}</td>
+                {% endif %}
+                <td>{{ transaction.title }}</a></td>
                 <td>{% if transaction.account.number == '4090000' %}X{% endif %}</a></td>
+                <td class="text-right">{{ transaction.expense }}</a></td>
             </tr>
         {% endfor %}
         <tr>
             <td><strong>Total</strong></td>
-            <td class="text-right"><strong>{{ expenditure.cash_transaction.revenue|floatformat:2 }}</strong></td>
+            {% if expenditure.method == 5 %}
+                <td></td>
+            {% endif %}
             <td></td>
+            <td></td>
+            <td class="text-right"><strong>{{ expenditure.cash_transaction.revenue|floatformat:2 }}</strong></td>
         </tr>
     </table>
     <p>

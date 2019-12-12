@@ -22,16 +22,16 @@
 
     <table class="table table-striped table-hover">
         <tr>
-            <th>Intitulé</th>
             <th>Compte</th>
             <th>Analytique</th>
+            <th>Intitulé</th>
             <th class="text-right">Débit</th>
         </tr>
         {% for expense in expenses %}
             <tr>
-                <td>{{ expense.title }}</td>
                 <td><a href="{% url 'accounting:account' year.pk %}?account={{ expense.account_id }}">{{ expense.account.number }} - {{ expense.account.title }}</a></td>
                 <td><a href="{% url 'accounting:account' year.pk %}?analytic={{ expense.analytic_id }}">{{ expense.analytic.number }} - {{ expense.analytic.title }}</a></td>
+                <td>{{ expense.title }}</td>
                 <td class="text-right">{% if expense.expense %}{{ expense.expense|floatformat:2 }} €{% endif %}</td>
             </tr>
         {% endfor %}

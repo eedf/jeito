@@ -68,7 +68,7 @@ class PurchaseForm(forms.ModelForm):
 class PurchaseTransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = ('account', 'analytic', 'expense')
+        fields = ('account', 'analytic', 'title', 'expense')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -97,9 +97,11 @@ class PurchaseFormSet(forms.BaseInlineFormSet):
         formset.helper.layout = Layout(
             HTML('<div class="row"><div class="col-md-4">'),
             'account',
-            HTML('</div><div class="col-md-4">'),
+            HTML('</div><div class="col-md-3">'),
             'analytic',
-            HTML('</div><div class="col-md-4">'),
+            HTML('</div><div class="col-md-3">'),
+            'title',
+            HTML('</div><div class="col-md-2">'),
             'expense',
             HTML('</div></div>'),
         )
@@ -198,7 +200,7 @@ class SaleForm(forms.ModelForm):
 class SaleTransactionForm(forms.ModelForm):
     class Meta:
         model = Transaction
-        fields = ('account', 'analytic', 'revenue')
+        fields = ('account', 'analytic', 'title', 'revenue')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -227,9 +229,11 @@ class SaleFormSet(forms.BaseInlineFormSet):
         formset.helper.layout = Layout(
             HTML('<div class="row"><div class="col-md-4">'),
             'account',
-            HTML('</div><div class="col-md-4">'),
+            HTML('</div><div class="col-md-3">'),
             'analytic',
-            HTML('</div><div class="col-md-4">'),
+            HTML('</div><div class="col-md-3">'),
+            'title',
+            HTML('</div><div class="col-md-2">'),
             'revenue',
             HTML('</div></div>'),
         )
@@ -357,7 +361,7 @@ class ExpenditureTransactionForm(forms.ModelForm):
 
     class Meta:
         model = Transaction
-        fields = ('thirdparty', 'expense', 'deposit')
+        fields = ('thirdparty', 'title', 'expense', 'deposit')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -398,9 +402,11 @@ class ExpenditureFormSet(forms.BaseInlineFormSet):
             HTML('<div class="row"><div class="col-md-4">'),
             'thirdparty',
             HTML('</div><div class="col-md-4">'),
-            'expense',
-            HTML('</div><div class="col-md-4">'),
+            'title',
+            HTML('</div><div class="col-md-2">'),
             'deposit',
+            HTML('</div><div class="col-md-2">'),
+            'expense',
             HTML('</div></div>'),
         )
         return formset

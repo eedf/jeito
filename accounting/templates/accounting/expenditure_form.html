@@ -11,8 +11,9 @@
         {% crispy form %}
         <div class="row">
             <div class="col-md-4"><label>Tiers*</label></div>
-            <div class="col-md-4"><label>Montant*</label></div>
-            <div class="col-md-4"><label>Accompte*</label></div>
+            <div class="col-md-4"><label>Intitulé</label></div>
+            <div class="col-md-2"><label>Accompte*</label></div>
+            <div class="col-md-2"><label>Montant*</label></div>
         </div>
         {% crispy formset %}
         <input type="submit" name="create" value="Enregistrer" class="btn btn-primary">

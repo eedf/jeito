@@ -23,16 +23,16 @@
 
     <table class="table table-striped table-hover">
         <tr>
-            <th>Intitulé</th>
             <th>Compte</th>
             <th>Analytique</th>
+            <th>Intitulé</th>
             <th class="text-right">Crédit</th>
         </tr>
         {% for profit in profit_transactions %}
             <tr>
-                <td>{{ profit.title }}</td>
                 <td><a href="{% url 'accounting:account' year.pk %}?account={{ profit.account_id }}">{{ profit.account.number }} - {{ profit.account.title }}</a></td>
                 <td><a href="{% url 'accounting:account' year.pk %}?analytic={{ profit.analytic_id }}">{{ profit.analytic.number }} - {{ profit.analytic.title }}</a></td>
+                <td>{{ profit.title }}</td>
                 <td class="text-right">{% if profit.revenue %}{{ profit.revenue|floatformat:2 }} €{% endif %}</td>
             </tr>
         {% endfor %}
