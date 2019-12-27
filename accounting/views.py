@@ -423,14 +423,14 @@ class ChecksView(ReadMixin, YearMixin, TemplateView):
         context['extra_thirdparty'] = transactions.filter(account__number__regex=r'^[^4]', thirdparty__isnull=False)
         context['unbalanced_letters'] = Letter.objects.annotate(
             balance=Sum('transaction__revenue') - Sum('transaction__expense'),
-            account_min=Min('transaction__account'),
-            account_max=Max('transaction__account'),
-            analytic_min=Min('transaction__analytic'),
-            analytic_max=Max('transaction__analytic'),
+            account_min=Min(Coalesce('transaction__account_id', 0)),
+            account_max=Max(Coalesce('transaction__account_id', 0)),
+            thirdparty_min=Min(Coalesce('transaction__thirdparty_id', 0)),
+            thirdparty_max=Max(Coalesce('transaction__thirdparty_id', 0)),
         ).exclude(
             balance=0,
             account_min=F('account_max'),
-            analytic_min=F('analytic_max')
+            thirdparty_min=F('thirdparty_max')
         )
         return context
 
