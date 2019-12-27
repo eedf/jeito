@@ -418,7 +418,9 @@ class ChecksView(ReadMixin, YearMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         transactions = Transaction.objects.filter(entry__year=self.year)
         context['missing_analytic'] = transactions.filter(account__number__regex=r'^[67]', analytic__isnull=True)
-        context['extraneous_analytic'] = transactions.filter(account__number__regex=r'^[^67]', analytic__isnull=False)
+        context['extra_analytic'] = transactions.filter(account__number__regex=r'^[^67]', analytic__isnull=False)
+        context['missing_thirdparty'] = transactions.filter(account__number__regex=r'^[4]', thirdparty__isnull=True)
+        context['extra_thirdparty'] = transactions.filter(account__number__regex=r'^[^4]', thirdparty__isnull=False)
         context['unbalanced_letters'] = Letter.objects.annotate(
             balance=Sum('transaction__revenue') - Sum('transaction__expense'),
             account_min=Min('transaction__account'),
