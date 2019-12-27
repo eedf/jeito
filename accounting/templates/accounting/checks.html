@@ -69,8 +69,7 @@
             <th>Lettrage</th>
         </tr>
         {% for letter in unbalanced_letters %}
-            <tr><td>{{ letter }}</td></tr>
-            {% for transaction in letter.transaction.all %}
+            {% for transaction in letter.transaction_set.all %}
                 <tr>
                     <td><a href="{% url 'accounting:entry' transaction.entry.year.pk transaction.entry.pk %}">{{ transaction.title|default:transaction.entry.title }}</a></td>
                     <td><a href="{% url 'accounting:account' transaction.entry.year.pk %}?account={{ transaction.account_id }}">{{ transaction.account.number }} - {{ transaction.account.title }}</a></td>

@@ -3,7 +3,7 @@ from collections import OrderedDict
 from datetime import date, timedelta
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.db.models import F, Q, Sum, Value
+from django.db.models import F, Q, Min, Max, Sum, Value
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.urls import reverse_lazy
@@ -419,8 +419,17 @@ class ChecksView(ReadMixin, YearMixin, TemplateView):
         transactions = Transaction.objects.filter(entry__year=self.year)
         context['missing_analytic'] = transactions.filter(account__number__regex=r'^[67]', analytic__isnull=True)
         context['extraneous_analytic'] = transactions.filter(account__number__regex=r'^[^67]', analytic__isnull=False)
-        letters = Letter.objects.annotate(balance=Sum('transaction__revenue') - Sum('transaction__expense'))
-        context['unbalanced_letters'] = letters.exclude(balance=0)
+        context['unbalanced_letters'] = Letter.objects.annotate(
+            balance=Sum('transaction__revenue') - Sum('transaction__expense'),
+            account_min=Min('transaction__account'),
+            account_max=Max('transaction__account'),
+            analytic_min=Min('transaction__analytic'),
+            analytic_max=Max('transaction__analytic'),
+        ).exclude(
+            balance=0,
+            account_min=F('account_max'),
+            analytic_min=F('analytic_max')
+        )
         return context
 
 
