@@ -111,7 +111,7 @@ class PurchaseFormSet(forms.BaseInlineFormSet):
 class SaleForm(forms.ModelForm):
     thirdparty = forms.ModelChoiceField(label="Client", queryset=ThirdParty.objects.all())
     amount = forms.DecimalField(label="Montant total", max_digits=8, decimal_places=2)
-    deposit = forms.DecimalField(label="Acompte versé", max_digits=8, decimal_places=2, initial=0)
+    deposit = forms.DecimalField(label="Avance versée", max_digits=8, decimal_places=2, initial=0)
 
     class Meta:
         model = Sale
@@ -244,7 +244,7 @@ class IncomeForm(forms.ModelForm):
     thirdparty = forms.ModelChoiceField(label="Client", queryset=ThirdParty.objects.all())
     amount = forms.DecimalField(label="Montant", max_digits=8, decimal_places=2)
     method = forms.ChoiceField(label="Moyen de paiement", choices=Income.METHOD_CHOICES)
-    deposit = forms.BooleanField(label="Acompte", required=False)
+    deposit = forms.BooleanField(label="Avance", required=False)
 
     class Meta:
         model = Income
@@ -357,7 +357,7 @@ class ExpenditureForm(forms.ModelForm):
 
 class ExpenditureTransactionForm(forms.ModelForm):
     thirdparty = forms.ModelChoiceField(label="Fournisseur", queryset=ThirdParty.objects.all())
-    deposit = forms.BooleanField(label="Acompte", required=False)
+    deposit = forms.BooleanField(label="Avance", required=False)
 
     class Meta:
         model = Transaction

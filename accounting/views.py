@@ -84,6 +84,7 @@ class ThirdPartyListView(ReadMixin, YearMixin, FilterView):
 
     def get_queryset(self):
         year_q = Q(transaction__entry__year=self.year)
+        year_qx = year_q & ~Q(transaction__account__number__in=('4090000', '4190000'))
         qs = ThirdParty.objects.order_by('number')
         qs = qs.annotate(
             revenue=Coalesce(Sum('transaction__revenue', filter=year_q), Value(0)),
@@ -91,6 +92,11 @@ class ThirdPartyListView(ReadMixin, YearMixin, FilterView):
             balance=Coalesce(
                 Sum('transaction__revenue', filter=year_q)
                 - Sum('transaction__expense', filter=year_q),
+                Value(0)
+            ),
+            balancex=Coalesce(
+                Sum('transaction__revenue', filter=year_qx)
+                - Sum('transaction__expense', filter=year_qx),
                 Value(0)
             ),
         )

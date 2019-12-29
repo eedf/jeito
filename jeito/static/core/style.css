@@ -130,3 +130,19 @@ tr.total td {
 th {
     white-space: nowrap;
 }
+
+.table-striped > tbody > tr:nth-of-type(odd).balance_neg {
+    background-color: #ffc0c0;
+}
+
+.table-striped > tbody > tr:nth-of-type(even).balance_neg {
+    background-color: #f0c0c0;
+}
+
+.table-striped > tbody > tr:nth-of-type(odd).balance_pos {
+    background-color: #c0ffc0;
+}
+
+.table-striped > tbody > tr:nth-of-type(even).balance_pos {
+    background-color: #c0f0c0;
+}
