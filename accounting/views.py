@@ -26,7 +26,7 @@ class ReadMixin(UserPassesTestMixin):
 
 class WriteMixin(UserPassesTestMixin):
     def test_func(self):
-        return self.request.user.is_authenticated and self.request.user.is_becours_treasurer
+        return self.request.user.is_authenticated and self.request.user.is_becours_treasurer and self.year.opened
 
 
 class YearMixin():
@@ -39,7 +39,7 @@ class YearMixin():
         return super().get_context_data(**kwargs)
 
 
-class ProjectionView(ReadMixin, YearMixin, ListView):
+class ProjectionView(YearMixin, ReadMixin, ListView):
     template_name = "accounting/projection.html"
 
     def get_queryset(self):
@@ -57,7 +57,7 @@ class ProjectionView(ReadMixin, YearMixin, ListView):
         return context
 
 
-class AnalyticBalanceView(ReadMixin, YearMixin, FilterView):
+class AnalyticBalanceView(YearMixin, ReadMixin, FilterView):
     template_name = "accounting/analytic_balance.html"
     filterset_class = BalanceFilter
 
@@ -78,7 +78,7 @@ class AnalyticBalanceView(ReadMixin, YearMixin, FilterView):
         return context
 
 
-class ThirdPartyListView(ReadMixin, YearMixin, FilterView):
+class ThirdPartyListView(YearMixin, ReadMixin, FilterView):
     template_name = "accounting/thirdparty_list.html"
     filterset_class = ThirdPartyFilter
 
@@ -110,7 +110,7 @@ class ThirdPartyListView(ReadMixin, YearMixin, FilterView):
         return context
 
 
-class ThirdPartyDetailView(ReadMixin, YearMixin, DetailView):
+class ThirdPartyDetailView(YearMixin, ReadMixin, DetailView):
     context_object_name = 'thirdparty'
     model = ThirdParty
 
@@ -132,7 +132,7 @@ class ThirdPartyDetailView(ReadMixin, YearMixin, DetailView):
         return context
 
 
-class ThirdPartyCreateView(WriteMixin, YearMixin, CreateView):
+class ThirdPartyCreateView(YearMixin, WriteMixin, CreateView):
     form_class = ThirdPartyForm
     model = ThirdParty
 
@@ -140,7 +140,7 @@ class ThirdPartyCreateView(WriteMixin, YearMixin, CreateView):
         return reverse_lazy('accounting:thirdparty_list', args=[self.year.pk])
 
 
-class ThirdPartyUpdateView(WriteMixin, YearMixin, UpdateView):
+class ThirdPartyUpdateView(YearMixin, WriteMixin, UpdateView):
     form_class = ThirdPartyForm
     model = ThirdParty
 
@@ -148,14 +148,14 @@ class ThirdPartyUpdateView(WriteMixin, YearMixin, UpdateView):
         return reverse_lazy('accounting:thirdparty_list', args=[self.year.pk])
 
 
-class ThirdPartyDeleteView(WriteMixin, YearMixin, DeleteView):
+class ThirdPartyDeleteView(YearMixin, WriteMixin, DeleteView):
     model = ThirdParty
 
     def get_success_url(self):
         return reverse_lazy('accounting:thirdparty_list', args=[self.year.pk])
 
 
-class BalanceView(ReadMixin, YearMixin, FilterView):
+class BalanceView(YearMixin, ReadMixin, FilterView):
     template_name = "accounting/balance.html"
     filterset_class = BalanceFilter
 
@@ -176,7 +176,7 @@ class BalanceView(ReadMixin, YearMixin, FilterView):
         return context
 
 
-class AccountView(ReadMixin, YearMixin, FilterView):
+class AccountView(YearMixin, ReadMixin, FilterView):
     template_name = "accounting/account.html"
     filterset_class = AccountFilter
 
@@ -217,7 +217,7 @@ class AccountView(ReadMixin, YearMixin, FilterView):
         return HttpResponseRedirect(request.get_full_path())
 
 
-class EntryListView(ReadMixin, YearMixin, ListView):
+class EntryListView(YearMixin, ReadMixin, ListView):
     template_name = "accounting/entry_list.html"
     model = Entry
 
@@ -239,7 +239,7 @@ class EntryListView(ReadMixin, YearMixin, ListView):
         return context
 
 
-class BankStatementView(ReadMixin, YearMixin, ListView):
+class BankStatementView(YearMixin, ReadMixin, ListView):
     model = BankStatement
     template_name = "accounting/bankstatement_list.html"
 
@@ -247,7 +247,7 @@ class BankStatementView(ReadMixin, YearMixin, ListView):
         return BankStatement.objects.filter(year=self.year)
 
 
-class ReconciliationView(ReadMixin, YearMixin, DetailView):
+class ReconciliationView(YearMixin, ReadMixin, DetailView):
     template_name = 'accounting/reconciliation.html'
     model = BankStatement
 
@@ -271,7 +271,7 @@ class ReconciliationView(ReadMixin, YearMixin, DetailView):
         return context
 
 
-class NextReconciliationView(ReadMixin, YearMixin, ListView):
+class NextReconciliationView(YearMixin, ReadMixin, ListView):
     template_name = 'accounting/next_reconciliation.html'
 
     def get_queryset(self):
@@ -295,7 +295,7 @@ class NextReconciliationView(ReadMixin, YearMixin, ListView):
         return context
 
 
-class EntryView(ReadMixin, YearMixin, DetailView):
+class EntryView(YearMixin, ReadMixin, DetailView):
     model = Entry
 
     def get_context_data(self, **kwargs):
@@ -304,11 +304,11 @@ class EntryView(ReadMixin, YearMixin, DetailView):
         return context
 
 
-class CashFlowView(ReadMixin, YearMixin, TemplateView):
+class CashFlowView(YearMixin, ReadMixin, TemplateView):
     template_name = 'accounting/cash_flow.html'
 
 
-class CashFlowJsonView(ReadMixin, YearMixin, View):
+class CashFlowJsonView(YearMixin, ReadMixin, View):
     def serie(self, year):
         self.today = (settings.NOW() - timedelta(days=1)).date()
         start = year.start
@@ -361,7 +361,7 @@ class CashFlowJsonView(ReadMixin, YearMixin, View):
         return JsonResponse(data)
 
 
-class TransferOrderDownloadView(ReadMixin, YearMixin, DetailView):
+class TransferOrderDownloadView(YearMixin, ReadMixin, DetailView):
     model = Expenditure
 
     def render_to_response(self, context, **response_kwargs):
@@ -376,7 +376,7 @@ class TransferOrderDownloadView(ReadMixin, YearMixin, DetailView):
         return response
 
 
-class ThirdPartyCsvView(ReadMixin, YearMixin, ListView):
+class ThirdPartyCsvView(YearMixin, ReadMixin, ListView):
     model = ThirdParty
     fields = ('number', 'title', 'type', 'account_number', 'iban', 'bic')
 
@@ -389,7 +389,7 @@ class ThirdPartyCsvView(ReadMixin, YearMixin, ListView):
         return response
 
 
-class EntryCsvView(ReadMixin, YearMixin, ListView):
+class EntryCsvView(YearMixin, ReadMixin, ListView):
     fields = (
         'journal_number', 'date_dmy', 'account_number', 'entry_id',
         'thirdparty_number', '__str__', 'expense', 'revenue'
@@ -417,7 +417,7 @@ class EntryCsvView(ReadMixin, YearMixin, ListView):
         return response
 
 
-class ChecksView(ReadMixin, YearMixin, TemplateView):
+class ChecksView(YearMixin, ReadMixin, TemplateView):
     template_name = 'accounting/checks.html'
 
     def get_context_data(self, **kwargs):
@@ -441,7 +441,7 @@ class ChecksView(ReadMixin, YearMixin, TemplateView):
         return context
 
 
-class PurchaseListView(ReadMixin, YearMixin, ListView):
+class PurchaseListView(YearMixin, ReadMixin, ListView):
     template_name = 'accounting/purchase_list.html'
 
     def get_queryset(self):
@@ -456,7 +456,7 @@ class PurchaseListView(ReadMixin, YearMixin, ListView):
         return context
 
 
-class PurchaseDetailView(ReadMixin, YearMixin, DetailView):
+class PurchaseDetailView(YearMixin, ReadMixin, DetailView):
     template_name = 'accounting/purchase_detail.html'
     context_object_name = 'purchase'
 
@@ -472,7 +472,7 @@ class PurchaseDetailView(ReadMixin, YearMixin, DetailView):
         return context
 
 
-class PurchaseCreateView(WriteMixin, YearMixin, TemplateView):
+class PurchaseCreateView(YearMixin, WriteMixin, TemplateView):
     template_name = 'accounting/purchase_form.html'
 
     def get_context_data(self, **kwargs):
@@ -493,7 +493,7 @@ class PurchaseCreateView(WriteMixin, YearMixin, TemplateView):
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
-class PurchaseUpdateView(WriteMixin, YearMixin, SingleObjectMixin, TemplateView):
+class PurchaseUpdateView(YearMixin, WriteMixin, SingleObjectMixin, TemplateView):
     template_name = 'accounting/purchase_form.html'
     model = Purchase
 
@@ -523,14 +523,14 @@ class PurchaseUpdateView(WriteMixin, YearMixin, SingleObjectMixin, TemplateView)
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
-class PurchaseDeleteView(WriteMixin, YearMixin, DeleteView):
+class PurchaseDeleteView(YearMixin, WriteMixin, DeleteView):
     model = Purchase
 
     def get_success_url(self):
         return reverse_lazy('accounting:purchase_list', args=[self.year.pk])
 
 
-class SaleListView(ReadMixin, YearMixin, ListView):
+class SaleListView(YearMixin, ReadMixin, ListView):
     template_name = 'accounting/sale_list.html'
 
     def get_queryset(self):
@@ -545,7 +545,7 @@ class SaleListView(ReadMixin, YearMixin, ListView):
         return context
 
 
-class SaleDetailView(ReadMixin, YearMixin, DetailView):
+class SaleDetailView(YearMixin, ReadMixin, DetailView):
     template_name = 'accounting/sale_detail.html'
     context_object_name = 'sale'
 
@@ -567,7 +567,7 @@ class SaleDetailView(ReadMixin, YearMixin, DetailView):
         return context
 
 
-class SaleCreateView(WriteMixin, YearMixin, TemplateView):
+class SaleCreateView(YearMixin, WriteMixin, TemplateView):
     template_name = 'accounting/sale_form.html'
 
     def get_context_data(self, **kwargs):
@@ -588,7 +588,7 @@ class SaleCreateView(WriteMixin, YearMixin, TemplateView):
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
-class SaleUpdateView(WriteMixin, YearMixin, SingleObjectMixin, TemplateView):
+class SaleUpdateView(YearMixin, WriteMixin, SingleObjectMixin, TemplateView):
     template_name = 'accounting/sale_form.html'
     model = Sale
 
@@ -618,14 +618,14 @@ class SaleUpdateView(WriteMixin, YearMixin, SingleObjectMixin, TemplateView):
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
-class SaleDeleteView(WriteMixin, YearMixin, DeleteView):
+class SaleDeleteView(YearMixin, WriteMixin, DeleteView):
     model = Sale
 
     def get_success_url(self):
         return reverse_lazy('accounting:sale_list', args=[self.year.pk])
 
 
-class IncomeListView(ReadMixin, YearMixin, ListView):
+class IncomeListView(YearMixin, ReadMixin, ListView):
     template_name = 'accounting/income_list.html'
 
     def get_queryset(self):
@@ -640,7 +640,7 @@ class IncomeListView(ReadMixin, YearMixin, ListView):
         return context
 
 
-class IncomeDetailView(ReadMixin, YearMixin, DetailView):
+class IncomeDetailView(YearMixin, ReadMixin, DetailView):
     template_name = 'accounting/income_detail.html'
     context_object_name = 'income'
 
@@ -648,7 +648,7 @@ class IncomeDetailView(ReadMixin, YearMixin, DetailView):
         return Income.objects.filter(year=self.year)
 
 
-class IncomeCreateView(WriteMixin, YearMixin, CreateView):
+class IncomeCreateView(YearMixin, WriteMixin, CreateView):
     template_name = 'accounting/income_form.html'
     form_class = IncomeForm
 
@@ -661,7 +661,7 @@ class IncomeCreateView(WriteMixin, YearMixin, CreateView):
         return reverse_lazy('accounting:income_list', args=[self.year.pk])
 
 
-class IncomeUpdateView(WriteMixin, YearMixin, UpdateView):
+class IncomeUpdateView(YearMixin, WriteMixin, UpdateView):
     template_name = 'accounting/income_form.html'
     form_class = IncomeForm
 
@@ -677,14 +677,14 @@ class IncomeUpdateView(WriteMixin, YearMixin, UpdateView):
         return reverse_lazy('accounting:income_list', args=[self.year.pk])
 
 
-class IncomeDeleteView(WriteMixin, YearMixin, DeleteView):
+class IncomeDeleteView(YearMixin, WriteMixin, DeleteView):
     model = Income
 
     def get_success_url(self):
         return reverse_lazy('accounting:income_list', args=[self.year.pk])
 
 
-class ExpenditureListView(ReadMixin, YearMixin, ListView):
+class ExpenditureListView(YearMixin, ReadMixin, ListView):
     template_name = 'accounting/expenditure_list.html'
 
     def get_queryset(self):
@@ -699,7 +699,7 @@ class ExpenditureListView(ReadMixin, YearMixin, ListView):
         return context
 
 
-class ExpenditureDetailView(ReadMixin, YearMixin, DetailView):
+class ExpenditureDetailView(YearMixin, ReadMixin, DetailView):
     template_name = 'accounting/expenditure_detail.html'
     context_object_name = 'expenditure'
 
@@ -713,7 +713,7 @@ class ExpenditureDetailView(ReadMixin, YearMixin, DetailView):
         return context
 
 
-class ExpenditureCreateView(WriteMixin, YearMixin, CreateView):
+class ExpenditureCreateView(YearMixin, WriteMixin, CreateView):
     template_name = 'accounting/expenditure_form.html'
     form_class = ExpenditureForm
 
@@ -735,7 +735,7 @@ class ExpenditureCreateView(WriteMixin, YearMixin, CreateView):
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
-class ExpenditureUpdateView(WriteMixin, YearMixin, UpdateView):
+class ExpenditureUpdateView(YearMixin, WriteMixin, UpdateView):
     template_name = 'accounting/expenditure_form.html'
     form_class = ExpenditureForm
 
@@ -765,7 +765,7 @@ class ExpenditureUpdateView(WriteMixin, YearMixin, UpdateView):
             return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
 
-class ExpenditureDeleteView(WriteMixin, YearMixin, DeleteView):
+class ExpenditureDeleteView(YearMixin, WriteMixin, DeleteView):
     model = Expenditure
 
     def get_success_url(self):

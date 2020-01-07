@@ -20,7 +20,7 @@
     <p><b>Scan</b> : {% if income.scan %}<a href="{{ income.scan.url }}">télécharger</a>{% else %}-{% endif %}</p>
 
     <p>
-        {% if user.is_becours_treasurer %}
+        {% if user.is_becours_treasurer and year.opened %}
             <a href="{% url 'accounting:income_delete' year.pk income.pk %}" class="btn btn-danger">
                 <span class="glyphicon glyphicon-trash"></span>
                 Supprimer

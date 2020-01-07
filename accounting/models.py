@@ -13,6 +13,7 @@ class Year(models.Model):
     title = models.CharField(verbose_name="Intitulé", max_length=100)
     start = models.DateField(verbose_name="Début")
     end = models.DateField(verbose_name="Fin")
+    opened = models.BooleanField(verbose_name="Ouvert", default=False)
 
     class Meta:
         verbose_name = "Exercice"

@@ -48,7 +48,7 @@
     </table>
 
     <p>
-        {% if user.is_becours_treasurer %}
+        {% if user.is_becours_treasurer and year.opened %}
             <a href="{% url 'accounting:thirdparty_delete' year.pk thirdparty.pk %}" class="btn btn-danger">
                 <span class="glyphicon glyphicon-trash"></span>
                 Supprimer

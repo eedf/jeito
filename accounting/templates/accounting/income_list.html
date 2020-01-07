@@ -5,7 +5,7 @@
 
 <div class="container accounting">
 
-    {% if user.is_becours_treasurer %}
+    {% if user.is_becours_treasurer and year.opened %}
         <a href="{% url 'accounting:income_create' year.pk %}" class="btn btn-primary title-action">Ajouter</a>
     {% endif %}
     <h1>Recettes {{ year }}</h1>

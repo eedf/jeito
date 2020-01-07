@@ -45,7 +45,7 @@
     </table>
 
     <p>
-        {% if user.is_becours_treasurer %}
+        {% if user.is_becours_treasurer and year.opened %}
             <a href="{% url 'accounting:sale_delete' year.pk sale.pk %}" class="btn btn-danger">
                 <span class="glyphicon glyphicon-trash"></span>
                 Supprimer

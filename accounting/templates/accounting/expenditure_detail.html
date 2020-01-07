@@ -54,7 +54,7 @@
                 Fichier SEPA
             </a>
         {% endif %}
-        {% if user.is_becours_treasurer %}
+        {% if user.is_becours_treasurer and year.opened %}
             <a href="{% url 'accounting:expenditure_delete' year.pk expenditure.pk %}" class="btn btn-danger">
                 <span class="glyphicon glyphicon-trash"></span>
                 Supprimer

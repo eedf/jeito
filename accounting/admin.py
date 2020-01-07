@@ -25,8 +25,9 @@ class HasScanListFilter(admin.SimpleListFilter):
 
 @admin.register(Year)
 class YearAdmin(admin.ModelAdmin):
-    list_display = ('title', 'start', 'end')
+    list_display = ('title', 'start', 'end', 'opened')
     search_fields = ('title', )
+    list_filter = ('opened', )
 
 
 @admin.register(Journal)
