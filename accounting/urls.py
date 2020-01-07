@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from .views import (
-    BalanceView, AnalyticBalanceView, ChecksView,
+    BalanceView, AnalyticBalanceView, ChecksView, YearListView,
     BankStatementView, AccountView, ReconciliationView, ThirdPartyCsvView,
     NextReconciliationView, ProjectionView, EntryView, EntryListView,
     CashFlowView, CashFlowJsonView, TransferOrderDownloadView, EntryCsvView,
@@ -58,4 +58,5 @@ urlpatterns = [
         name='expenditure_update'),
     url(r'^(?P<year_pk>\d+)/expenditure/(?P<pk>\d+)/delete/$', ExpenditureDeleteView.as_view(),
         name='expenditure_delete'),
+    url(r'^(?P<year_pk>\d+)/year/$', YearListView.as_view(), name='year_list'),
 ]

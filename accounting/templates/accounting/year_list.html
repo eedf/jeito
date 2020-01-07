@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container accounting">
+
+    <h1>Exercice courant : {{ year }}</h1>
+
+	Changer d'exercice:
+	<ul>
+		{% for new_year in year_list %}
+			<li><a href="{% url 'accounting:year_list' new_year.pk %}">{{ new_year }}{% if not new_year.opened %} (clos){% endif %}</a></li>
+		{% endfor %}
+	</ul>
+
+</div>
+
+{% endblock content %}

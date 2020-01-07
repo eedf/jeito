@@ -96,43 +96,46 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="{% url 'accounting:thirdparty_list' 4 %}">Tiers</a>
+                            <a href="{% url 'accounting:thirdparty_list' year.pk|default:5 %}">Tiers</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:purchase_list' 4 %}">Factures fournisseur</a>
+                            <a href="{% url 'accounting:purchase_list' year.pk|default:5 %}">Factures fournisseur</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:sale_list' 4 %}">Factures client</a>
+                            <a href="{% url 'accounting:sale_list' year.pk|default:5 %}">Factures client</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:expenditure_list' 4 %}">Réglements fournisseur</a>
+                            <a href="{% url 'accounting:expenditure_list' year.pk|default:5 %}">Réglements fournisseur</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:income_list' 4 %}">Réglements client</a>
+                            <a href="{% url 'accounting:income_list' year.pk|default:5 %}">Réglements client</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:entry_list' 4 %}">Écritures</a>
+                            <a href="{% url 'accounting:entry_list' year.pk|default:5 %}">Écritures</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:account' 4 %}">Transactions</a>
+                            <a href="{% url 'accounting:account' year.pk|default:5 %}">Transactions</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:balance' 4 %}">Balance</a>
+                            <a href="{% url 'accounting:balance' year.pk|default:5 %}">Balance</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:analytic-balance' 4 %}">Balance Analytique</a>
+                            <a href="{% url 'accounting:analytic-balance' year.pk|default:5 %}">Balance Analytique</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:projection' 4 %}">Projection</a>
+                            <a href="{% url 'accounting:projection' year.pk|default:5 %}">Projection</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:bank-statement' 4 %}">Relevés de compte</a>
+                            <a href="{% url 'accounting:bank-statement' year.pk|default:5 %}">Relevés de compte</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:cash-flow' 4 %}">Trésorerie</a>
+                            <a href="{% url 'accounting:cash-flow' year.pk|default:5 %}">Trésorerie</a>
                         </li>
                         <li>
-                            <a href="{% url 'accounting:checks' 4 %}">Contrôles</a>
+                            <a href="{% url 'accounting:checks' year.pk|default:5 %}">Contrôles</a>
+                        </li>
+                        <li>
+                            <a href="{% url 'accounting:year_list' year.pk|default:5 %}">Exercices</a>
                         </li>
                     </ul>
                 </li>

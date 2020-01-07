@@ -770,3 +770,7 @@ class ExpenditureDeleteView(YearMixin, WriteMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('accounting:expenditure_list', args=[self.year.pk])
+
+
+class YearListView(YearMixin, ReadMixin, ListView):
+    model = Year
