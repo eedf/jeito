@@ -6,7 +6,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.db.models import F, Q, Min, Max, Sum, Value
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.formats import date_format
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView, View, CreateView, UpdateView, DeleteView
@@ -438,7 +438,54 @@ class ChecksView(YearMixin, ReadMixin, TemplateView):
             account_min=F('account_max'),
             thirdparty_min=F('thirdparty_max')
         )
+        context['pure_entries'] = Entry.objects.filter(year=self.year) \
+            .filter(purchase__id=None, sale__id=None, income__id=None, expenditure__id=None)
         return context
+
+
+class EntryToPurchaseView(YearMixin, WriteMixin, DetailView):
+    model = Entry
+
+    def get(self, request, *args, **kwargs):
+        entry = self.get_object()
+        purchase = Purchase(entry_ptr=entry)
+        purchase.__dict__.update(entry.__dict__)
+        purchase.save()
+        return HttpResponseRedirect(reverse('accounting:purchase_detail', args=[self.year.pk, entry.pk]))
+
+
+class EntryToSaleView(YearMixin, WriteMixin, DetailView):
+    model = Entry
+
+    def get(self, request, *args, **kwargs):
+        entry = self.get_object()
+        sale = Sale(entry_ptr=entry)
+        sale.__dict__.update(entry.__dict__)
+        sale.save()
+        return HttpResponseRedirect(reverse('accounting:sale_detail', args=[self.year.pk, entry.pk]))
+
+
+class EntryToIncomeView(YearMixin, WriteMixin, DetailView):
+    model = Entry
+
+    def get(self, request, *args, **kwargs):
+        entry = self.get_object()
+        income = Income(entry_ptr=entry)
+        income.__dict__.update(entry.__dict__)
+        income.save()
+        return HttpResponseRedirect(reverse('accounting:income_detail', args=[self.year.pk, entry.pk]))
+
+
+class EntryToExpenditureView(YearMixin, WriteMixin, DetailView):
+    model = Entry
+
+    def get(self, request, *args, **kwargs):
+        entry = self.get_object()
+        expenditure = Expenditure(entry_ptr=entry)
+        expenditure.__dict__.update(entry.__dict__)
+        expenditure.method = 5
+        expenditure.save()
+        return HttpResponseRedirect(reverse('accounting:expenditure_detail', args=[self.year.pk, entry.pk]))
 
 
 class PurchaseListView(YearMixin, ReadMixin, ListView):

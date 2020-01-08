@@ -9,6 +9,7 @@ from .views import (
     IncomeListView, IncomeDetailView, IncomeCreateView, IncomeUpdateView, IncomeDeleteView,
     ExpenditureListView, ExpenditureDetailView, ExpenditureCreateView, ExpenditureUpdateView, ExpenditureDeleteView,
     ThirdPartyListView, ThirdPartyDetailView, ThirdPartyCreateView, ThirdPartyUpdateView, ThirdPartyDeleteView,
+    EntryToPurchaseView, EntryToSaleView, EntryToIncomeView, EntryToExpenditureView,
 )
 
 
@@ -36,6 +37,11 @@ urlpatterns = [
     url(r'^(?P<year_pk>\d+)/transfer-order/(?P<pk>\d+)/download/$', TransferOrderDownloadView.as_view(),
         name='transfer_order_download'),
     url(r'^(?P<year_pk>\d+)/checks/$', ChecksView.as_view(), name='checks'),
+    url(r'^(?P<year_pk>\d+)/entry/(?P<pk>\d+)/to_purchase/$', EntryToPurchaseView.as_view(), name='entry_to_purchase'),
+    url(r'^(?P<year_pk>\d+)/entry/(?P<pk>\d+)/to_sale/$', EntryToSaleView.as_view(), name='entry_to_sale'),
+    url(r'^(?P<year_pk>\d+)/entry/(?P<pk>\d+)/to_income/$', EntryToIncomeView.as_view(), name='entry_to_income'),
+    url(r'^(?P<year_pk>\d+)/entry/(?P<pk>\d+)/to_expenditure/$', EntryToExpenditureView.as_view(),
+        name='entry_to_expenditure'),
     url(r'^(?P<year_pk>\d+)/purchase/$', PurchaseListView.as_view(), name='purchase_list'),
     url(r'^(?P<year_pk>\d+)/purchase/(?P<pk>\d+)/$', PurchaseDetailView.as_view(), name='purchase_detail'),
     url(r'^(?P<year_pk>\d+)/purchase/create/$', PurchaseCreateView.as_view(), name='purchase_create'),
