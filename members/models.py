@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.core.validators import RegexValidator
@@ -72,6 +72,15 @@ class Structure(MPTTModel):
 
     def __str__(self):
         return self.name
+
+    @property
+    def headcount(self, season=None):
+        season = season or current_season()
+        units = Structure.objects.filter(
+            Q(id=self.id) |
+            Q(parent_id=self.id) & Q(type__in=(1, 2, 7, 12, 13, 14))
+        ).aggregate(headcount=Count('adherents', filter=Q(adherents__season=season)))
+        return units['headcount']
 
     @property
     def region(self):

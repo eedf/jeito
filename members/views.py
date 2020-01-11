@@ -7,13 +7,13 @@ from django.http import JsonResponse
 from django.utils.formats import date_format
 from django.views.generic import View, TemplateView
 import json
-from rest_framework.generics import RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from dashboard import widget
 from .filters import AdhesionFilter
 from .forms import AdhesionsForm
 from .models import Adhesion, Structure, Function, Rate
 from .utils import current_season
-from .serializers import AdhesionSerializer
+from .serializers import AdhesionSerializer, StructureSerializer
 
 
 SVN_NUMBERS = ('0300000200', '0500000100', '1900140100')
@@ -435,3 +435,12 @@ class AdhesionRetrieveAPIView(RetrieveAPIView):
     queryset = Adhesion.objects.select_related('person', 'structure').filter(season=current_season())
     serializer_class = AdhesionSerializer
     lookup_field = 'person__number'
+
+
+class StructureListAPIView(ListAPIView):
+    serializer_class = StructureSerializer
+
+    def get_queryset(self):
+        season = current_season()
+        return Structure.objects.exclude(type__in=(1, 2, 7, 12, 13, 14)) \
+            .filter(adherents__season=season).distinct()

@@ -15,4 +15,5 @@ urlpatterns = [
     url(r'^tableau/structure_type/$', views.TableauStructureTypeView.as_view(), name='structure_type'),
     url(r'^tableau/rate/$', views.TableauRateView.as_view(), name='tableau_rate'),
     url(r'^api/v1/adhesions/(?P<person__number>\d{6})/', views.AdhesionRetrieveAPIView.as_view()),
+    url(r'^api/v1/structures/', views.StructureListAPIView.as_view()),
 ]

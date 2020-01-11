@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from members.models import Adhesion, Nomination
+from members.models import Adhesion, Nomination, Structure
 
 
 class NominationSerializer(serializers.ModelSerializer):
@@ -32,3 +32,12 @@ class AdhesionSerializer(serializers.ModelSerializer):
             'structure', 'structure_type', 'region', 'rate', 'nominations',
             'adhesions_resp_email', 'structure_resp_email',
         )
+
+
+class StructureSerializer(serializers.ModelSerializer):
+    type = serializers.CharField(source='get_type_display')
+    region = serializers.CharField()
+
+    class Meta:
+        model = Structure
+        fields = ('name', 'type', 'region', 'headcount')
