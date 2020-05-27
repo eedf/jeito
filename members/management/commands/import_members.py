@@ -331,7 +331,7 @@ class Command(BaseCommand):
         self.get('Recherche.aspx?type=str&text={0}'.format(number))
         name = self.tree.get_element_by_id('ctl00_ctl00_MainContent_DivsContent__resume__lblNom').text
         type = self.tree.get_element_by_id('ctl00_ctl00_MainContent_DivsContent__resume__lblType').text.rstrip()
-        if type in ("Groupe local", "Service vacances"):
+        if type == "Groupe local":
             type = "Structure locale d'activité"
         if type in ("Départementale fonctionnel", "Délégation départementale"):
             type = "Département"

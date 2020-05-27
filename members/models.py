@@ -48,12 +48,11 @@ class Structure(MPTTModel):
         (13, "Unité Eclé"),
         (14, "Unité Nomade"),
         (15, "Centre permanent national"),
+        (16, "Service vacances"),
     )
     SUBTYPE_CHOICES = (
         (1, "Centre et terrain"),
         (2, "Groupe local"),
-        (3, "Ludotheque"),
-        (4, "Service vacances"),
     )
 
     number = models.CharField(
