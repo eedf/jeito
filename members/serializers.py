@@ -36,8 +36,9 @@ class AdhesionSerializer(serializers.ModelSerializer):
 
 class StructureSerializer(serializers.ModelSerializer):
     type = serializers.CharField(source='get_type_display')
+    subtype = serializers.CharField(source='get_subtype_display')
     region = serializers.CharField()
 
     class Meta:
         model = Structure
-        fields = ('name', 'type', 'region', 'headcount')
+        fields = ('name', 'type', 'subtype', 'region', 'headcount')
