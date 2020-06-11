@@ -129,12 +129,14 @@ class Command(BaseCommand):
                     to_create.append(nomination)
             to_delete = list(set(initial) - set(to_keep))
             for nomination in to_delete:
-                Nomination.objects.get(
+                nomination = Nomination.objects.get(
                     adhesion=adhesion,
                     structure_id=nomination[0],
                     function_id=nomination[1],
                     main=nomination[2],
-                ).delete()
+                )
+                if not nomination.sticky:
+                    nomination.delete()
             for nomination in to_create:
                 Nomination.objects.create(
                     adhesion=adhesion,

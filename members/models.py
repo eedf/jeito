@@ -283,6 +283,8 @@ class Nomination(models.Model):
     structure = models.ForeignKey(Structure, verbose_name="Structure", on_delete=models.PROTECT)
     function = models.ForeignKey(Function, verbose_name="Fonction", on_delete=models.PROTECT)
     main = models.BooleanField(verbose_name="Principale", default=False)
+    sticky = models.BooleanField(verbose_name="Collant", default=False,
+                                 help_text="Non supprimé par l'import du portail")
 
     class Meta:
         unique_together = ('adhesion', 'structure', 'function')
