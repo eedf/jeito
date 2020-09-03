@@ -432,15 +432,18 @@ class GroupsWidget(widget.Widget):
 
 
 class AdhesionRetrieveAPIView(RetrieveAPIView):
-    queryset = Adhesion.objects.select_related('person', 'structure').filter(season=current_season())
     serializer_class = AdhesionSerializer
     lookup_field = 'person__number'
+
+    def get_queryset(self):
+        season = self.request.GET.get('season') or current_season()
+        return Adhesion.objects.select_related('person', 'structure').filter(season=season)
 
 
 class StructureListAPIView(ListAPIView):
     serializer_class = StructureSerializer
 
     def get_queryset(self):
-        season = current_season()
+        season = self.request.GET.get('season') or current_season()
         return Structure.objects.exclude(type__in=(1, 2, 7, 12, 13, 14)) \
             .filter(adherents__season=season).distinct()
