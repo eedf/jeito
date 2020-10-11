@@ -1,6 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
 from django import forms
+from django.db.models import Q
 from .models import Account, Journal, Purchase, ThirdParty, Transaction, Sale, Income, Expenditure
 
 
@@ -72,7 +73,10 @@ class PurchaseTransactionForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['account'].queryset = Account.objects.filter(number__startswith='6')
+        self.fields['account'].queryset = Account.objects.filter(
+            Q(number__startswith='6') |
+            Q(number__startswith='21')
+        )
         self.fields['analytic'].required = True
         self.fields['expense'].required = True
 
@@ -88,7 +92,10 @@ class PurchaseFormSet(forms.BaseInlineFormSet):
         )
         formset = formset_class(
             *args,
-            queryset=Transaction.objects.filter(account__number__startswith='6'),
+            queryset=Transaction.objects.filter(
+                Q(account__number__startswith='6') |
+                Q(account__number__startswith='21')
+            ),
             **kwargs
         )
         formset.helper = FormHelper()
