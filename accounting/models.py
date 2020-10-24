@@ -94,7 +94,7 @@ class EntryManager(models.Manager):
         qs = qs.annotate(
             revenue=Coalesce(models.Sum('transaction__revenue'), 0),
             expense=Coalesce(models.Sum('transaction__expense'), 0),
-            balance=models.Sum('transaction__revenue') - models.Sum('transaction__expense')
+            balance=Coalesce(models.Sum('transaction__revenue') - models.Sum('transaction__expense'), 0)
         )
         return qs
 
