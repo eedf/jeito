@@ -1,5 +1,6 @@
 from datetime import timedelta
 from cuser.middleware import CuserMiddleware
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import Case, ExpressionWrapper, F, Min, Max, Sum, When, Value
 from django.db.models.functions import Cast, Coalesce, ExtractDay, Concat
@@ -307,6 +308,14 @@ class BookingItem(TrackingMixin, models.Model):
 
     def __str__(self):
         return self.title or self.get_product_display()
+
+    def clean(self):
+        if self.begin.year != self.booking.year:
+            raise ValidationError("La réservation doit débuter en {}".format(self.booking.year))
+        if self.end.year not in (self.booking.year, self.booking.year + 1):
+            raise ValidationError(
+                "La réservation doit finir en {} ou en {}".format(self.booking.year, self.booking.year + 1)
+            )
 
 
 class Payment(TrackingMixin, models.Model):
