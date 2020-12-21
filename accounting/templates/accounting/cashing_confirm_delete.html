@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container">
+
+	<h1>Supprimer la remise {{ cashing }} ?</h1>
+	
+	<p>Oui, je suis sûr de vouloir supprimer la remise {{ cashing }}</p>
+	<form method="POST" enctype="multipart/form-data">
+		{% csrf_token %}
+		<a href="{% url 'accounting:cashing_list' year.pk %}" class="btn btn-primary">Annuler</a>
+		<input type="submit" value="Supprimer" class="btn btn-danger">
+	</form>
+
+</div>
+
+{% endblock content %}

@@ -111,6 +111,9 @@
                             <a href="{% url 'accounting:income_list' year.pk|default:5 %}">Réglements client</a>
                         </li>
                         <li>
+                            <a href="{% url 'accounting:cashing_list' year.pk|default:5 %}">Remises</a>
+                        </li>
+                        <li>
                             <a href="{% url 'accounting:entry_list' year.pk|default:5 %}">Écritures</a>
                         </li>
                         <li>

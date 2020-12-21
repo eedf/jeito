@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container accounting">
+
+    <h1>{{ cashing.title }}</h1>
+
+    <p>
+        {% if cashing.exported %}<span class="label label-success">Exporté</span>{% endif %}
+        {% if not cashing.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
+    </p>
+
+    <p><b>Date</b> : {{ cashing.date|date:"d/m/y" }}</p>
+	<p><b>Type</b>: {{ cashing.method }}</p>
+    <p><b>Montant</b> : {{ cashing.cashing_transaction.revenue|floatformat:2 }}</p>
+    <p><b>Scan</b> : {% if cashing.scan %}<a href="{{ cashing.scan.url }}">télécharger</a>{% else %}-{% endif %}</p>
+
+    <p>
+        {% if user.is_becours_treasurer and year.opened %}
+            <a href="{% url 'accounting:cashing_delete' year.pk cashing.pk %}" class="btn btn-danger">
+                <span class="glyphicon glyphicon-trash"></span>
+                Supprimer
+            </a>
+            <a href="{% url 'accounting:cashing_update' year.pk cashing.pk %}" class="btn btn-primary">
+                <span class="glyphicon glyphicon-edit"></span>
+                Modifier
+            </a>
+        {% endif %}
+    </p>
+
+</div>
+
+{% endblock content %}

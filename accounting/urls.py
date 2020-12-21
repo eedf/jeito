@@ -8,6 +8,7 @@ from .views import (
     SaleListView, SaleDetailView, SaleCreateView, SaleUpdateView, SaleDeleteView,
     IncomeListView, IncomeDetailView, IncomeCreateView, IncomeUpdateView, IncomeDeleteView,
     ExpenditureListView, ExpenditureDetailView, ExpenditureCreateView, ExpenditureUpdateView, ExpenditureDeleteView,
+    CashingListView, CashingDetailView, CashingCreateView, CashingUpdateView, CashingDeleteView,
     ThirdPartyListView, ThirdPartyDetailView, ThirdPartyCreateView, ThirdPartyUpdateView, ThirdPartyDeleteView,
     EntryToPurchaseView, EntryToSaleView, EntryToIncomeView, EntryToExpenditureView,
 )
@@ -64,5 +65,10 @@ urlpatterns = [
         name='expenditure_update'),
     url(r'^(?P<year_pk>\d+)/expenditure/(?P<pk>\d+)/delete/$', ExpenditureDeleteView.as_view(),
         name='expenditure_delete'),
+    url(r'^(?P<year_pk>\d+)/cashing/$', CashingListView.as_view(), name='cashing_list'),
+    url(r'^(?P<year_pk>\d+)/cashing/(?P<pk>\d+)/$', CashingDetailView.as_view(), name='cashing_detail'),
+    url(r'^(?P<year_pk>\d+)/cashing/create/$', CashingCreateView.as_view(), name='cashing_create'),
+    url(r'^(?P<year_pk>\d+)/cashing/(?P<pk>\d+)/update/$', CashingUpdateView.as_view(), name='cashing_update'),
+    url(r'^(?P<year_pk>\d+)/cashing/(?P<pk>\d+)/delete/$', CashingDeleteView.as_view(), name='cashing_delete'),
     url(r'^(?P<year_pk>\d+)/year/$', YearListView.as_view(), name='year_list'),
 ]

@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<div class="container accounting">
+
+    {% if user.is_becours_treasurer and year.opened %}
+        <a href="{% url 'accounting:cashing_create' year.pk %}" class="btn btn-primary title-action">Ajouter</a>
+    {% endif %}
+    <h1>Remises {{ year }}</h1>
+
+    <table class="table table-striped table-hover">
+        <tr>
+            <th>Date</th>
+            <th>Intitulé</th>
+            <th>Labels</th>
+            <th class="text-right">Montant</th>
+        </tr>
+        {% for cashing in object_list %}
+            <tr>
+                <td>{{ cashing.date|date:"d/m/y" }}</td>
+                <td><a href="{% url 'accounting:cashing_detail' year.pk cashing.pk %}">{{ cashing.title }}</a></td>
+                <td>
+                    {% if cashing.exported %}<span class="label label-success">Exporté</span>{% endif %}
+                    {% if not cashing.balanced %}<span class="label label-danger">Non équilibré</span>{% endif %}
+                </td>
+                <td class="text-right text-nowrap">{% if cashing.revenue %}{{ cashing.revenue|floatformat:2 }} €{% endif %}</td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td></td>
+            <td><strong>Total</strong></td>
+            <td></td>
+            <td class="text-right text-nowrap"><strong>{{ expense|floatformat:2 }} €</strong></td>
+        </tr>
+    </table>
+
+</div>
+
+{% endblock content %}

@@ -243,11 +243,36 @@ class Expenditure(Entry):
 
 
 class Cashing(Entry):
+    METHOD_CHOICES = (
+        ('5112000', "Chèques"),
+        ('5115000', "ANCV"),
+        ('5170000', "Carte"),
+        ('5300000', "Espèces"),
+    )
+
     objects = EntryManager()
 
     class Meta:
-        verbose_name = "Encaissement"
-        verbose_name_plural = "Encaissements"
+        verbose_name = "Remise"
+        verbose_name_plural = "Remises"
+
+    @property
+    def bank_transaction(self):
+        try:
+            return self.transaction_set.get(account__number='5120000')
+        except Transaction.DoesNotExist:
+            return None
+
+    @property
+    def cashing_transaction(self):
+        try:
+            return self.transaction_set.exclude(account__number='5120000').get()
+        except Transaction.DoesNotExist:
+            return None
+
+    @property
+    def method(self):
+        return dict(self.METHOD_CHOICES)[self.cashing_transaction.account.number]
 
 
 class Letter(models.Model):

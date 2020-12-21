@@ -13,9 +13,9 @@ from django.views.generic import ListView, DetailView, TemplateView, View, Creat
 from django.views.generic.detail import SingleObjectMixin
 from django_filters.views import FilterView
 from .filters import BalanceFilter, AccountFilter, ThirdPartyFilter
-from .forms import (PurchaseForm, PurchaseFormSet, SaleForm, SaleFormSet,
+from .forms import (PurchaseForm, PurchaseFormSet, SaleForm, SaleFormSet, CashingForm,
                     IncomeForm, ExpenditureForm, ExpenditureFormSet, ThirdPartyForm)
-from .models import (BankStatement, Transaction, Entry, ThirdParty,
+from .models import (BankStatement, Transaction, Entry, ThirdParty, Cashing,
                      Letter, Purchase, Year, Sale, Income, Expenditure)
 
 
@@ -817,6 +817,65 @@ class ExpenditureDeleteView(YearMixin, WriteMixin, DeleteView):
 
     def get_success_url(self):
         return reverse_lazy('accounting:expenditure_list', args=[self.year.pk])
+
+
+class CashingListView(YearMixin, ReadMixin, ListView):
+    template_name = 'accounting/cashing_list.html'
+
+    def get_queryset(self):
+        return Cashing.objects.filter(year=self.year).order_by('-date', '-pk')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        expense = 0
+        for entry in self.object_list:
+            expense += entry.expense
+        context['expense'] = expense
+        return context
+
+
+class CashingDetailView(YearMixin, ReadMixin, DetailView):
+    template_name = 'accounting/cashing_detail.html'
+    context_object_name = 'cashing'
+
+    def get_queryset(self):
+        return Cashing.objects.filter(year=self.year)
+
+
+class CashingCreateView(YearMixin, WriteMixin, CreateView):
+    template_name = 'accounting/cashing_form.html'
+    form_class = CashingForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['year'] = self.year
+        return kwargs
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:cashing_list', args=[self.year.pk])
+
+
+class CashingUpdateView(YearMixin, WriteMixin, UpdateView):
+    template_name = 'accounting/cashing_form.html'
+    form_class = CashingForm
+
+    def get_queryset(self):
+        return Cashing.objects.filter(year=self.year)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['year'] = self.year
+        return kwargs
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:cashing_list', args=[self.year.pk])
+
+
+class CashingDeleteView(YearMixin, WriteMixin, DeleteView):
+    model = Cashing
+
+    def get_success_url(self):
+        return reverse_lazy('accounting:cashing_list', args=[self.year.pk])
 
 
 class YearListView(YearMixin, ReadMixin, ListView):

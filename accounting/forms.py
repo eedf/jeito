@@ -2,7 +2,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, HTML
 from django import forms
 from django.db.models import Q
-from .models import Account, Journal, Purchase, ThirdParty, Transaction, Sale, Income, Expenditure
+from .models import Account, Journal, Purchase, ThirdParty, Transaction, Sale, Income, Expenditure, Cashing
 
 
 class PurchaseForm(forms.ModelForm):
@@ -417,6 +417,66 @@ class ExpenditureFormSet(forms.BaseInlineFormSet):
             HTML('</div></div>'),
         )
         return formset
+
+
+class CashingForm(forms.ModelForm):
+    amount = forms.DecimalField(label="Montant", max_digits=8, decimal_places=2)
+    method = forms.ChoiceField(label="Type de remise", choices=Cashing.METHOD_CHOICES)
+
+    class Meta:
+        model = Cashing
+        fields = ('title', 'date', 'scan', 'amount', 'method')
+
+    def __init__(self, year, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.year = year
+        cashing = kwargs.get('instance')
+        if cashing:
+            assert self.year == year
+            assert cashing.journal.number == 'BQ'
+            assert cashing.cashing_transaction.revenue == cashing.bank_transaction.expense
+            self.fields['amount'].initial = cashing.cashing_transaction.revenue
+            self.fields['method'].initial = cashing.cashing_transaction.account.number
+        self.helper = FormHelper()
+        self.helper.form_tag = False
+        self.helper.layout = Layout(
+            'title',
+            HTML('<div class="row"><div class="col-md-6">'),
+            'amount',
+            HTML('</div><div class="col-md-6">'),
+            'method',
+            HTML('</div></div>'),
+            HTML('<div class="row"><div class="col-md-6">'),
+            'date',
+            HTML('</div><div class="col-md-6">'),
+            'scan',
+            HTML('</div></div>'),
+        )
+
+    def save(self):
+        # Get values
+        amount = self.cleaned_data['amount']
+        method = self.cleaned_data['method']
+
+        # Save cashing entry
+        cashing = super().save(commit=False)
+        cashing.year = self.year
+        cashing.journal = Journal.objects.get(number='BQ')
+        cashing.save()
+
+        # Save cashing transaction
+        cashing_transaction = self.instance.cashing_transaction or Transaction(entry=self.instance)
+        cashing_transaction.account = Account.objects.get(number=method)
+        cashing_transaction.revenue = amount
+        cashing_transaction.save()
+
+        # Save bank transaction
+        bank_transaction = self.instance.bank_transaction or Transaction(entry=self.instance)
+        bank_transaction.account = Account.objects.get(number='5120000')
+        bank_transaction.expense = amount
+        bank_transaction.save()
+
+        return cashing
 
 
 class ThirdPartyForm(forms.ModelForm):

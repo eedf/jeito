@@ -5,7 +5,7 @@
 
 <div class="container">
 
-    <h1>{% if form.instance.pk %}Modifier la recette {{ income }}{% else %}Ajouter une recette{% endif %}</h1>
+    <h1>{% if form.instance.pk %}Modifier la remise {{ cashing }}{% else %}Ajouter une remise{% endif %}</h1>
 
     <form method="POST" enctype="multipart/form-data">
         {% crispy form %}
