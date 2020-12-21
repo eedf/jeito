@@ -358,7 +358,7 @@ class ExpenditureForm(forms.ModelForm):
         if expenditure.method == 3:
             number = '5300000'
         elif expenditure.method == 6:
-            number = '5117000'
+            number = '5170000'
         else:
             number = '5120000'
         cash_transaction.account = Account.objects.get(number=number)
