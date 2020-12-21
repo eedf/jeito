@@ -138,6 +138,9 @@
                             <a href="{% url 'accounting:checks' year.pk|default:5 %}">Contrôles</a>
                         </li>
                         <li>
+                            <a href="{% url 'accounting:entry-csv' year.pk|default:5 %}">Export SAGE</a>
+                        </li>
+                        <li>
                             <a href="{% url 'accounting:year_list' year.pk|default:5 %}">Exercices</a>
                         </li>
                     </ul>
