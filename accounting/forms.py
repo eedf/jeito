@@ -355,7 +355,13 @@ class ExpenditureForm(forms.ModelForm):
 
         # Save cash transaction
         cash_transaction = self.instance.cash_transaction or Transaction(entry=self.instance)
-        cash_transaction.account = Account.objects.get(number='5300000' if expenditure.method == 3 else '5120000')
+        if expenditure.method == 3:
+            number = '5300000'
+        elif expenditure.method == 6:
+            number = '5117000'
+        else:
+            number = '5120000'
+        cash_transaction.account = Account.objects.get(number=number)
         cash_transaction.revenue = sum([form.cleaned_data['expense'] for form in formset if form.cleaned_data])
         cash_transaction.save()
 

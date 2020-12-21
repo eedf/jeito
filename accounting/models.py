@@ -198,6 +198,7 @@ class Expenditure(Entry):
         (3, "Espèces"),
         (4, "Prélèvement"),
         (5, "Virement"),
+        (6, "Remboursement CB"),
     )
 
     method = models.IntegerField(choices=METHOD_CHOICES)
