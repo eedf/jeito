@@ -8,6 +8,7 @@ from django.db.models.functions import Coalesce
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.utils.formats import date_format
+from django.utils.timezone import now
 from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView, TemplateView, View, CreateView, UpdateView, DeleteView
 from django.views.generic.detail import SingleObjectMixin
@@ -298,6 +299,39 @@ class NextReconciliationView(YearMixin, ReadMixin, ListView):
 class EntryView(YearMixin, ReadMixin, DetailView):
     model = Entry
 
+    def render_to_response(self, context, **response_kwargs):
+        try:
+            return HttpResponseRedirect(
+                reverse('accounting:purchase_detail', args=[self.year.pk, self.object.purchase.pk])
+            )
+        except Purchase.DoesNotExist:
+            pass
+        try:
+            return HttpResponseRedirect(
+                reverse('accounting:sale_detail', args=[self.year.pk, self.object.sale.pk])
+            )
+        except Sale.DoesNotExist:
+            pass
+        try:
+            return HttpResponseRedirect(
+                reverse('accounting:income_detail', args=[self.year.pk, self.object.income.pk])
+            )
+        except Income.DoesNotExist:
+            pass
+        try:
+            return HttpResponseRedirect(
+                reverse('accounting:expenditure_detail', args=[self.year.pk, self.object.expenditure.pk])
+            )
+        except Expenditure.DoesNotExist:
+            pass
+        try:
+            return HttpResponseRedirect(
+                reverse('accounting:cashing_detail', args=[self.year.pk, self.object.cashing.pk])
+            )
+        except Cashing.DoesNotExist:
+            pass
+        return super().render_to_response(context, **response_kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['transactions'] = self.object.transaction_set.order_by('account__number', 'analytic__title')
@@ -381,7 +415,10 @@ class ThirdPartyCsvView(YearMixin, ReadMixin, ListView):
     fields = ('number', 'title', 'type', 'account_number', 'iban', 'bic')
 
     def render_to_response(self, context):
-        response = HttpResponse(content_type='text/csv; charset=cp1252')
+        response = HttpResponse(content_type='application/force-download')
+        response['Content-Disposition'] = 'attachment; filename=tiers_becours_{}_le_{}.txt'.format(
+            self.year, now().strftime('%d_%m_%Y_a_%Hh%M')
+        )
         writer = DictWriter(response, self.fields, delimiter=';', quoting=QUOTE_NONNUMERIC)
         writer.writeheader()
         for obj in self.object_list:
@@ -402,7 +439,10 @@ class EntryCsvView(YearMixin, ReadMixin, ListView):
             .select_related('entry', 'entry__journal', 'account', 'thirdparty')
 
     def render_to_response(self, context):
-        response = HttpResponse(content_type='text/csv; charset=cp1252')
+        response = HttpResponse(content_type='application/force-download')
+        response['Content-Disposition'] = 'attachment; filename=ecritures_becours_{}_le_{}.txt'.format(
+            self.year, now().strftime('%d_%m_%Y_a_%Hh%M')
+        )
         writer = DictWriter(response, self.fields, delimiter=';', quoting=QUOTE_NONNUMERIC)
         writer.writeheader()
 
