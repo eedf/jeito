@@ -16,7 +16,7 @@ fpdf==1.7.2
 flake8==3.7.5
 google-api-python-client==1.6.2
 gunicorn==19.9.0
-lxml==4.3.1
+lxml==4.6.2
 psycopg2==2.8.5
 python-stdnum==1.11
 requests-mock==1.5.2
