@@ -146,3 +146,11 @@ th {
 .table-striped > tbody > tr:nth-of-type(even).balance_pos {
     background-color: #c0f0c0;
 }
+
+.table-striped > tbody > tr:nth-of-type(odd).not_lettered {
+    background-color: #ffe0c0;
+}
+
+.table-striped > tbody > tr:nth-of-type(even).not_lettered {
+    background-color: #ffe0c0;
+}

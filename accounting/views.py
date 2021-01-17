@@ -3,7 +3,7 @@ from collections import OrderedDict
 from datetime import date, timedelta
 from django.conf import settings
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.db.models import F, Q, Min, Max, Sum, Value
+from django.db.models import F, Q, Min, Max, Sum, Count, Value
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse, HttpResponse, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
@@ -86,7 +86,7 @@ class ThirdPartyListView(YearMixin, ReadMixin, FilterView):
     def get_queryset(self):
         year_q = Q(transaction__entry__year=self.year)
         year_qx = year_q & ~Q(transaction__account__number__in=('4090000', '4190000'))
-        qs = ThirdParty.objects.order_by('number')
+        qs = ThirdParty.objects.filter(transaction__entry__year=self.year).order_by('number')
         qs = qs.annotate(
             revenue=Coalesce(Sum('transaction__revenue', filter=year_q), Value(0)),
             expense=Coalesce(Sum('transaction__expense', filter=year_q), Value(0)),
@@ -100,6 +100,7 @@ class ThirdPartyListView(YearMixin, ReadMixin, FilterView):
                 - Sum('transaction__expense', filter=year_qx),
                 Value(0)
             ),
+            not_lettered=Count('transaction', filter=Q(transaction__letter__isnull=True))
         )
         return qs
 

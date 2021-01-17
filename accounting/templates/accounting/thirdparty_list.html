@@ -23,7 +23,7 @@
             <th class="text-right">Solde</th>
         </tr>
         {% for thirdparty in object_list %}
-            <tr class="{% if thirdparty.balance < 0 %}balance_neg{% endif %}{% if thirdparty.balance > 0 %}balance_pos{% endif %}">
+            <tr class="{% if thirdparty.balance < 0 %}balance_neg{% endif %}{% if thirdparty.balance > 0 %}balance_pos{% endif %}{% if thirdparty.balance == 0 and thirdparty.not_lettered > 0 %}not_lettered{% endif %}">
                 <td><a href="{% url 'accounting:thirdparty_detail' year.pk thirdparty.pk %}">{{ thirdparty.number }}</a></td>
                 <td>{{ thirdparty.title }}</td>
                 <td>{{ thirdparty.get_type_display }}</td>
