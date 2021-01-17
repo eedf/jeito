@@ -144,8 +144,7 @@ class SaleForm(forms.ModelForm):
                 self.fields['deposit'].initial = self.deposit_transaction.expense
             except Transaction.DoesNotExist:
                 self.deposit_transaction = None
-            self.client_transaction = sale.transaction_set \
-                .get(account__number__in=('4110000', '4500000', '4670000'))
+            self.client_transaction = sale.transaction_set.get(account__number__startswith='4')
             self.fields['thirdparty'].initial = self.client_transaction.thirdparty
             self.fields['amount'].initial = self.client_transaction.expense
             if self.deposit_transaction:

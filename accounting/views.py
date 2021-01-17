@@ -643,8 +643,7 @@ class SaleDetailView(YearMixin, ReadMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['client_transaction'] = self.object.transaction_set \
-            .get(account__number__in=('4110000', '4500000', '4670000'))
+        context['client_transaction'] = self.object.transaction_set.get(account__number__startswith='4')
         try:
             context['deposit_transaction'] = self.object.transaction_set.get(account__number='4190000')
             context['amount'] = context['client_transaction'].expense + context['deposit_transaction'].expense
