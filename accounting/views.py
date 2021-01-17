@@ -553,8 +553,9 @@ class PurchaseDetailView(YearMixin, ReadMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['revenue'] = self.object.transaction_set.get(account__number__startswith='4')
-        expenses = self.object.transaction_set.filter(account__number__startswith='6') \
-            .order_by('account__number', 'analytic__title')
+        expenses = self.object.transaction_set.filter(
+            Q(account__number__startswith='6') | Q(account__number__startswith='21')
+        ).order_by('account__number', 'analytic__title')
         context['expenses'] = expenses
         return context
 

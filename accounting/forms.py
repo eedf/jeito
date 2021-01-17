@@ -77,8 +77,15 @@ class PurchaseTransactionForm(forms.ModelForm):
             Q(number__startswith='6') |
             Q(number__startswith='21')
         )
-        self.fields['analytic'].required = True
         self.fields['expense'].required = True
+
+    def clean(self):
+        account = self.cleaned_data.get('account')
+        analytic = self.cleaned_data.get('analytic')
+        if account and account.number.startswith('6') and not analytic:
+            raise forms.ValidationError("Le compte analytique doit être précisé pour les charges")
+        if account and account.number.startswith('21') and analytic:
+            raise forms.ValidationError("Le compte analytique ne doit pas être précisé pour les investissements")
 
 
 class PurchaseFormSet(forms.BaseInlineFormSet):
