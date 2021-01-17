@@ -643,12 +643,21 @@ class SaleDetailView(YearMixin, ReadMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['client_transaction'] = self.object.transaction_set.get(account__number__startswith='4')
+        context['amount'] = 0
+        try:
+            context['client_transaction'] = self.object.transaction_set \
+                .exclude(account__number='4190000') \
+                .get(account__number__startswith='4')
+        except Transaction.DoesNotExist:
+            pass
+        else:
+            context['amount'] += context['client_transaction'].expense
         try:
             context['deposit_transaction'] = self.object.transaction_set.get(account__number='4190000')
-            context['amount'] = context['client_transaction'].expense + context['deposit_transaction'].expense
         except Transaction.DoesNotExist:
-            context['amount'] = context['client_transaction'].expense
+            pass
+        else:
+            context['amount'] += context['deposit_transaction'].expense
         profit_transactions = self.object.transaction_set.filter(account__number__startswith='7') \
             .order_by('account__number', 'analytic__title')
         context['profit_transactions'] = profit_transactions
