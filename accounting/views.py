@@ -652,12 +652,14 @@ class SaleDetailView(YearMixin, ReadMixin, DetailView):
             pass
         else:
             context['amount'] += context['client_transaction'].expense
+            context['thirdparty'] = context['client_transaction'].thirdparty
         try:
             context['deposit_transaction'] = self.object.transaction_set.get(account__number='4190000')
         except Transaction.DoesNotExist:
             pass
         else:
             context['amount'] += context['deposit_transaction'].expense
+            context['thirdparty'] = context['deposit_transaction'].thirdparty
         profit_transactions = self.object.transaction_set.filter(account__number__startswith='7') \
             .order_by('account__number', 'analytic__title')
         context['profit_transactions'] = profit_transactions

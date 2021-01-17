@@ -13,7 +13,7 @@
     </p>
 
     <p><b>Date</b> : {{ sale.date|date:"d/m/y" }}</p>
-    <p><b>Client</b> : {{ client_transaction.thirdparty|default:deposit_transaction.thirdparty }}</p>
+    <p><b>Client</b> : {{ thirdparty }}</p>
     <p><b>Montant</b> : {{ amount|floatformat:2 }}</p>
     <p><b>Arrhes versées</b> : {{ deposit_transaction.expense|floatformat:2 }}</p>
     <p><b>Solde à payer</b> : {{ client_transaction.expense|default:0|floatformat:2 }}</p>
