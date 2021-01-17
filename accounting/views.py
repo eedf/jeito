@@ -479,7 +479,7 @@ class ChecksView(YearMixin, ReadMixin, TemplateView):
             thirdparty_min=F('thirdparty_max')
         )
         context['pure_entries'] = Entry.objects.filter(year=self.year) \
-            .filter(purchase__id=None, sale__id=None, income__id=None, expenditure__id=None)
+            .filter(purchase__id=None, sale__id=None, income__id=None, expenditure__id=None, cashing__id=None)
         return context
 
 
