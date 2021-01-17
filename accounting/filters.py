@@ -1,7 +1,7 @@
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout
 from django import forms
-from django.db.models import Sum
+from django.db.models import Sum, Q
 import django_filters
 from .models import Analytic, Account, ThirdParty, Transaction
 
@@ -115,7 +115,7 @@ class AccountFilter(django_filters.FilterSet):
     account = django_filters.ModelChoiceFilter(label="Compte", queryset=Account.objects)
     thirdparty = django_filters.ModelChoiceFilter(label="Tiers", queryset=ThirdParty.objects)
     analytic = django_filters.ModelChoiceFilter(label="Compte analytique", queryset=Analytic.objects)
-    lettered = django_filters.BooleanFilter(label="Lettré", field_name='letter', lookup_expr='isnull', exclude=True)
+    lettered = django_filters.BooleanFilter(label="Lettré", method='filter_lettered')
 
     class Meta:
         model = Transaction
@@ -126,4 +126,9 @@ class AccountFilter(django_filters.FilterSet):
     def qs(self):
         qs = super().qs.order_by('entry__date')
         qs = qs.select_related('entry', 'account', 'thirdparty', 'analytic')
+        return qs
+
+    def filter_lettered(self, qs, name, value):
+        qs = qs.filter(Q(account__number__startswith='4') | Q(account__number__startswith='511'))
+        qs = qs.exclude(letter__isnull=value)
         return qs
