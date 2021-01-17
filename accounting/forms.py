@@ -58,8 +58,9 @@ class PurchaseForm(forms.ModelForm):
 
         # Save provider transaction
         if not self.provider_transaction:
-            self.provider_transaction = Transaction(entry=self.instance, account=thirdparty.account)
+            self.provider_transaction = Transaction(entry=self.instance)
         self.provider_transaction.thirdparty = thirdparty
+        self.provider_transaction.account = thirdparty.account
         self.provider_transaction.revenue = amount
         self.provider_transaction.save()
 
@@ -188,8 +189,9 @@ class SaleForm(forms.ModelForm):
         expense = amount - deposit
         if expense != 0:
             if not self.client_transaction:
-                self.client_transaction = Transaction(entry=self.instance, account=thirdparty.account)
+                self.client_transaction = Transaction(entry=self.instance)
             self.client_transaction.thirdparty = thirdparty
+            self.client_transaction.account = thirdparty.account
             self.client_transaction.expense = expense
             self.client_transaction.save()
         else:
